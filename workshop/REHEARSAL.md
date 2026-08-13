@@ -29,7 +29,7 @@ and test counts, so this script fails rather than quietly reporting a changed pr
 | `dotnet test` after TODO 4 | 2.5 s | **139 passed / 0 failed** |
 | `dotnet run -- run` | 20.4 s | three artifacts |
 | `verify-only --inject-defect altered-number` | 0.6 s | exit 2, defect caught |
-| **Total** | **31.7 s** | |
+| **Total** | **31.7 s** | a rerun of the same script measured 32.2 s |
 
 The test progression 52 → 80 → 139 is deliberate: attendees get visible green twice before the final
 run, so nobody spends 40 minutes unsure whether anything works.
