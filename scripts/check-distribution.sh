@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Proves the repository is distributable: a fresh clone (or a git archive) of the committed tree
+# builds and passes the deterministic tests with no reference back to the working directory.
+#
+#   scripts/check-distribution.sh clone     git clone into a temp dir
+#   scripts/check-distribution.sh archive   git archive HEAD | tar -x into a temp dir
+set -euo pipefail
+
+MODE="${1:-clone}"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+WORK="$(mktemp -d)"
+trap 'rm -rf "$WORK"' EXIT
+
+case "$MODE" in
+  clone)
+    git clone --quiet "$REPO" "$WORK/repo"
+    ;;
+  archive)
+    mkdir -p "$WORK/repo"
+    git -C "$REPO" archive HEAD | tar -x -C "$WORK/repo"
+    ;;
+  *)
+    echo "usage: check-distribution.sh [clone|archive]" >&2
+    exit 2
+    ;;
+esac
+
+cd "$WORK/repo"
+echo "=== $MODE at $WORK/repo"
+
+# The documented commands, run exactly as an attendee would type them.
+dotnet build Workshop.slnx -c Release
+dotnet test Workshop.slnx -c Release --no-build
+dotnet run --project src/Workshop.App -c Release --no-build -- verify-only \
+  --ledger workshop/reference-run/claim-ledger.json --out "$WORK/out"
+
+for artifact in claim-ledger.json verification.json incident-brief.md; do
+  [[ -s "$WORK/out/$artifact" ]] || { echo "distribution FAIL: $artifact not produced" >&2; exit 1; }
+done
+
+for script in scripts/*.sh; do
+  [[ -x "$script" ]] || { echo "distribution FAIL: $script is not executable in $MODE" >&2; exit 1; }
+done
+
+echo "DISTRIBUTION ($MODE): PASS"

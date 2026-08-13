@@ -1,0 +1,239 @@
+{
+  "provenance": {
+    "capturedAtUtc": "2026-08-13T17:39:38Z",
+    "lane": "LOCAL",
+    "endpoint": "http://localhost:11434/v1",
+    "model": "nemotron-3-nano:4b",
+    "modelDigest": "6cc467f054393a55",
+    "modelQuantization": "Q4_K_M",
+    "modelParameterSize": "4.0B",
+    "runtimeVersion": "0.32.9",
+    "placement": "30% CPU / 70% GPU (2,245,724,732 of 3,198,149,837 bytes in VRAM)",
+    "settings": {
+      "temperature": "0",
+      "reasoningEffort": "none",
+      "reasoningOutput": "none",
+      "streaming": "off",
+      "contextLength": "runtime default (not set by this application)",
+      "requestBudgetSeconds": "90",
+      "prosesourcesSentToModel": "status.txt, customer-email.txt"
+    },
+    "hardware": {
+      "os": "Ubuntu 24.04.4 LTS",
+      "architecture": "X64",
+      "dotnet": ".NET 10.0.10",
+      "logicalCores": "16",
+      "cpu": "12th Gen Intel(R) Core(TM) i7-12700H",
+      "memory": "49329780 kB",
+      "gpu": "not enumerable from this process; see placement for what the runtime actually offloaded"
+    }
+  },
+  "repeat": 5,
+  "smoke": {
+    "passed": true,
+    "text": "JACKDAW_OK"
+  },
+  "runs": [
+    {
+      "index": 1,
+      "seconds": 19.37,
+      "gatherSeconds": 3.66,
+      "extractSeconds": 15.69,
+      "toolCalls": [
+        "status.txt",
+        "customer-email.txt"
+      ],
+      "toolContractHeld": true,
+      "typedExtractionValid": true,
+      "semanticExtractionCorrect": true,
+      "semanticShortfalls": [],
+      "claims": 7,
+      "passed": 30,
+      "failed": 0,
+      "unverified": 2,
+      "failedRuleIds": []
+    },
+    {
+      "index": 2,
+      "seconds": 19.86,
+      "gatherSeconds": 3.68,
+      "extractSeconds": 16.18,
+      "toolCalls": [
+        "status.txt",
+        "customer-email.txt"
+      ],
+      "toolContractHeld": true,
+      "typedExtractionValid": true,
+      "semanticExtractionCorrect": true,
+      "semanticShortfalls": [],
+      "claims": 7,
+      "passed": 30,
+      "failed": 0,
+      "unverified": 2,
+      "failedRuleIds": []
+    },
+    {
+      "index": 3,
+      "seconds": 22,
+      "gatherSeconds": 4,
+      "extractSeconds": 18,
+      "toolCalls": [
+        "status.txt",
+        "customer-email.txt"
+      ],
+      "toolContractHeld": true,
+      "typedExtractionValid": true,
+      "semanticExtractionCorrect": true,
+      "semanticShortfalls": [],
+      "claims": 7,
+      "passed": 30,
+      "failed": 0,
+      "unverified": 2,
+      "failedRuleIds": []
+    },
+    {
+      "index": 4,
+      "seconds": 22.01,
+      "gatherSeconds": 4.22,
+      "extractSeconds": 17.8,
+      "toolCalls": [
+        "status.txt",
+        "customer-email.txt"
+      ],
+      "toolContractHeld": true,
+      "typedExtractionValid": true,
+      "semanticExtractionCorrect": true,
+      "semanticShortfalls": [],
+      "claims": 7,
+      "passed": 30,
+      "failed": 0,
+      "unverified": 2,
+      "failedRuleIds": []
+    },
+    {
+      "index": 5,
+      "seconds": 20.94,
+      "gatherSeconds": 4,
+      "extractSeconds": 16.94,
+      "toolCalls": [
+        "status.txt",
+        "customer-email.txt"
+      ],
+      "toolContractHeld": true,
+      "typedExtractionValid": true,
+      "semanticExtractionCorrect": true,
+      "semanticShortfalls": [],
+      "claims": 7,
+      "passed": 30,
+      "failed": 0,
+      "unverified": 2,
+      "failedRuleIds": []
+    }
+  ],
+  "defects": [
+    {
+      "defect": "PhantomSource",
+      "expectedRuleId": "R1-SOURCE-WHITELIST",
+      "expectedStatus": "Fail",
+      "attempts": 3,
+      "rejected": 3,
+      "ruleFiredAsIntended": true,
+      "keptOutOfVerifiedFacts": true,
+      "touchedClaimIds": [
+        "C900"
+      ],
+      "failedRuleIds": [
+        "R1-SOURCE-WHITELIST"
+      ]
+    },
+    {
+      "defect": "AlteredNumber",
+      "expectedRuleId": "R5-AFFECTED-CUSTOMERS",
+      "expectedStatus": "Fail",
+      "attempts": 3,
+      "rejected": 3,
+      "ruleFiredAsIntended": true,
+      "keptOutOfVerifiedFacts": true,
+      "touchedClaimIds": [
+        "C003"
+      ],
+      "failedRuleIds": [
+        "R5-AFFECTED-CUSTOMERS"
+      ]
+    },
+    {
+      "defect": "AlteredTimestamp",
+      "expectedRuleId": "R6-TIMESTAMP",
+      "expectedStatus": "Fail",
+      "attempts": 3,
+      "rejected": 3,
+      "ruleFiredAsIntended": true,
+      "keptOutOfVerifiedFacts": true,
+      "touchedClaimIds": [
+        "C004"
+      ],
+      "failedRuleIds": [
+        "R6-TIMESTAMP"
+      ]
+    },
+    {
+      "defect": "MislabelledCause",
+      "expectedRuleId": "R12-KIND-SEMANTICS",
+      "expectedStatus": "Fail",
+      "attempts": 3,
+      "rejected": 3,
+      "ruleFiredAsIntended": true,
+      "keptOutOfVerifiedFacts": true,
+      "touchedClaimIds": [
+        "C903"
+      ],
+      "failedRuleIds": [
+        "R12-KIND-SEMANTICS"
+      ]
+    },
+    {
+      "defect": "UnsupportedEvent",
+      "expectedRuleId": "R11-EVENT-SUPPORTED",
+      "expectedStatus": "Unverified",
+      "attempts": 3,
+      "rejected": 3,
+      "ruleFiredAsIntended": true,
+      "keptOutOfVerifiedFacts": true,
+      "touchedClaimIds": [
+        "C904"
+      ],
+      "failedRuleIds": []
+    },
+    {
+      "defect": "SplicedQuote",
+      "expectedRuleId": "R2-QUOTE-PRESENT",
+      "expectedStatus": "Fail",
+      "attempts": 3,
+      "rejected": 3,
+      "ruleFiredAsIntended": true,
+      "keptOutOfVerifiedFacts": true,
+      "touchedClaimIds": [
+        "C905"
+      ],
+      "failedRuleIds": [
+        "R2-QUOTE-PRESENT"
+      ]
+    }
+  ],
+  "latency": {
+    "medianSeconds": 20.94,
+    "worstSeconds": 22.01,
+    "within30": true,
+    "perCallBudgetSeconds": 90
+  },
+  "gates": {
+    "L1-smoke": "PASS",
+    "L2-semantic-extraction": "PASS",
+    "L3-tool-contract": "PASS",
+    "L4-integrated": "PASS",
+    "L5-seeded-defects": "PASS",
+    "L6-latency-30s": "PASS",
+    "L6b-hard-fail-90s": "PASS"
+  },
+  "outcome": "PASS"
+}

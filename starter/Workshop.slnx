@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Workshop.Core/Workshop.Core.csproj" />
+    <Project Path="src/Workshop.App/Workshop.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Workshop.Core.Tests/Workshop.Core.Tests.csproj" />
+    <Project Path="tests/Workshop.LocalModel.Tests/Workshop.LocalModel.Tests.csproj" />
+  </Folder>
+</Solution>

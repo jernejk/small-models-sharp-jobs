@@ -1,0 +1,5 @@
+timestamp,event
+2026-08-13T09:12:00+10:00,error rate alert fired
+2026-08-13T09:21:00+10:00,stale routing rule identified
+2026-08-13T09:34:00+10:00,routing rule replaced
+2026-08-13T09:39:00+10:00,submissions verified healthy
