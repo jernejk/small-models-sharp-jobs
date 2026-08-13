@@ -43,7 +43,7 @@ Also do:
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| Empty response, ~57 s | Reasoning left on. The runtime auto-enables thinking when `reasoning_effort` is absent. | `ReasoningEffort.None` — already set in `CreateAgent`. If someone deleted it, restore it. |
+| Empty response, ~57 s | Reasoning was left on in the measured failure; the exact runtime mechanism remains inferred. See `CLAIMS-AND-LIMITS.md`. | `ReasoningEffort.None` — already set in `CreateAgent`. If someone deleted it, restore it. |
 | `{"claims": []}` in ~1.4 s | Tools and structured output in the same call. | They are separate agent runs on purpose. Do not "simplify" this. |
 | `connection refused` on 11434 | Ollama not running. | `ollama serve` |
 | `model not found` | Model not pulled. | `ollama pull nemotron-3-nano:4b` (2.8 GB — recovery lane if on venue Wi-Fi) |
