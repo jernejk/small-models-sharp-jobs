@@ -36,11 +36,15 @@ ollama pull nemotron-3-nano:4b
 dotnet restore
 
 # 4. prove it all works
-dotnet test                                    # expect 63 passed
-dotnet run --project src/Workshop.App -- smoke # expect: smoke: PASS [JACKDAW_OK]
+dotnet test                                    # expect 139 passed
+dotnet run --project src/Workshop.App -- ready # expect: READY: PASS
 ```
 
-If step 4 prints `smoke: PASS [JACKDAW_OK]`, you are ready. Nothing else needs the internet.
+If step 4 prints `READY: PASS`, you are ready. Nothing else needs the internet.
+
+`ready` is deliberately more than a smoke test: it runs the whole path once and checks that your
+machine actually produced all three artifacts, that they agree with each other, and that it
+finished inside 90 seconds. A machine can answer `JACKDAW_OK` and still fail the workshop.
 
 ## 3. Platform notes
 
@@ -53,8 +57,9 @@ Two supported shapes:
 - **Native Windows** — install both natively. Not run end-to-end by us; see
   [CLAIMS-AND-LIMITS.md](CLAIMS-AND-LIMITS.md).
 
-A discrete GPU helps but is not required. The reference machine has a 4 GB RTX 3050 Ti and Ollama
-placed the model 70% GPU / 30% CPU, still finishing the full path in under 25 seconds.
+A discrete GPU helps but is not required. On the reference machine Ollama placed the model 70% GPU / 30% CPU
+and the full path finished in about 20 seconds. We cannot enumerate that GPU from our environment,
+so we quote the placement, not the card.
 
 ### Apple Silicon
 
@@ -64,7 +69,7 @@ Unified memory means a 4B model is comfortable on 16 GB. Not run end-to-end by u
 
 ### Low-spec machine or no GPU
 
-The model still runs on CPU, just slower. If your `smoke` command takes more than about 90 seconds,
+The model still runs on CPU, just slower. If your `ready` command fails or takes more than about 90 seconds,
 use the recovery lane on the day rather than fighting it. Tell a facilitator at the start.
 
 ### LM Studio

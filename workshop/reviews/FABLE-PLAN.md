@@ -41,6 +41,10 @@ Opus's disposition of each constraint, with evidence, is in
 
 | Lane | Role | Status |
 | --- | --- | --- |
-| Fable | planning, then verification | plan constraints received; **implementation verification not yet run** |
-| Opus 5 | implementation | complete |
-| Sol high | independent third-party review | **not yet run** — scheduled after implementation |
+| Fable | planning, then verification | plan constraints received; verification **run** — see [FABLE-VERIFICATION.md](FABLE-VERIFICATION.md) |
+| Opus 5 | implementation, then correction cycle | complete — see [OPUS-DISPOSITION.md](OPUS-DISPOSITION.md) |
+| Sol high | independent third-party review | **run**, verdict `revise` / PARTIAL — see [SOL-REVIEW.md](SOL-REVIEW.md) |
+
+Constraint 10 of the plan asked for "seeded defects 3/3 with intended rule IDs". The implementation
+originally read that as three defects checked once each. Sol's review read it as each defect
+rejected three times. The stricter reading is now implemented: six defects, three attempts each.

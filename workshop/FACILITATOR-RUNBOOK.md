@@ -25,7 +25,7 @@ Escalation order, in order:
 
 ```bash
 python3 scripts/generate-starter.py --check    # starter/ and solution/ match src/
-dotnet test                                    # 63 passed
+dotnet test                                    # 139 passed
 dotnet run --project src/Workshop.App -- gates --repeat 5
 ```
 
@@ -49,14 +49,14 @@ Also do:
 | `model not found` | Model not pulled. | `ollama pull nemotron-3-nano:4b` (2.8 GB — recovery lane if on venue Wi-Fi) |
 | Restore fails offline | Packages never cached. | Needs network once. Recovery lane today. |
 | Run takes 60 s+ | CPU-only or a loaded machine. | Fine for one run. If it repeats, recovery lane. |
-| `dotnet test` fails in `starter/` | Expected before the TODOs. | 10 passed / 53 failed is the correct start. |
-| Verification fails on a clean run | Usually a hand-edited evidence pack. | `git checkout evidence-pack/` |
+| `dotnet test` fails in `starter/` | Expected before the TODOs. | 52 passed / 87 failed is the correct start. |
+| Verification fails on a clean run | Usually a hand-edited evidence pack. | `scripts/reset-workshop.sh` |
 
 ## Reading the room
 
-- **Minute 17 (60-min) / 45 (120-min)** — ask for a show of hands on 31 passing. Below two-thirds,
+- **Minute 17 (60-min) / 45 (120-min)** — ask for a show of hands on 80 passing. Below two-thirds,
   walk TODO 1 on the screen rather than waiting.
-- **The green moment** is `dotnet test` → 63 passed. Call it out. Let people enjoy it.
+- **The green moment** is `dotnet test` → 139 passed. Call it out. Let people enjoy it.
 - **The teaching moment** is `incident-brief.md`. Read the *Shown but not verified* section aloud.
   If you land nothing else, land this: the model reported the customer's claim, and code refused to
   promote it to a fact.
@@ -79,12 +79,13 @@ correctness.
 the room. Typed output guarantees *shape*. The verifier is what addresses *content*. JSON grammar is
 not truth.
 
-**"Will this work on my laptop?"** Ours ran on a 4 GB laptop GPU at 70% offload in under 25 seconds.
+**"Will this work on my laptop?"** Ours placed 70% of the model on the GPU and finished the full path in about 20 seconds.
 We have not tested every machine and we do not claim it runs everywhere — that is what the recovery
 lane is for.
 
 ## After the session
 
-- `git checkout evidence-pack/ artifacts/` to reset for the next run.
+- `scripts/reset-workshop.sh` to reset for the next run. (`git checkout artifacts/` never worked:
+  `artifacts/` is ignored, so git has nothing to restore and the command errors.)
 - Note actual times against [AGENDA-60.md](AGENDA-60.md) checkpoints and update
   [REHEARSAL.md](REHEARSAL.md) with what really happened, including anything that broke.

@@ -43,10 +43,42 @@ the clean-run gate. The email was rewritten to carry only impact and an unsuppor
 conflicting-number scenario now lives in the seeded defects, where it is deliberate rather than
 incidental.
 
-## Not done
+## Correction cycle — 14 August 2026
 
-- Fable implementation verification — **not yet run**.
-- Sol high independent review — **not yet run**.
+Both review lanes have now run. Fable verified independently and returned six findings; Sol returned
+`revise` / PARTIAL with ten must-fixes and seven additional notes. Every one was corrected in a
+single bounded cycle.
 
-Both are scheduled after this implementation lane and are required before the workshop can be called
-complete.
+- Fable's findings and their dispositions: [FABLE-VERIFICATION.md](FABLE-VERIFICATION.md)
+- Sol's must-fixes and their dispositions: [SOL-REVIEW.md](SOL-REVIEW.md)
+
+**What changed architecturally**, beyond the itemised fixes:
+
+1. **The trust boundary moved from the label to the meaning.** `R9` used to key off `claim.Kind`,
+   a field the model chooses. A claim's kind is now evidence, not authority: `ClaimSemantics`
+   detects causal wording in the value and the quotes, `R12-KIND-SEMANTICS` fails a claim whose
+   label contradicts its content, and `R11-EVENT-SUPPORTED` grades event text against phrases
+   parsed from `events.csv`. Rules that depend on a field the model controls are not rules.
+2. **`R2` is scoped to one physical line**, closing a splice that both review lanes missed.
+3. **Rejection is no longer synonymous with failure.** `UNVERIFIED` counts as rejecting a defect,
+   because the property that matters is "never reached Verified facts", not "went red". The gate
+   and the tests assert that property directly, per defect, three times each.
+4. **Provenance is captured, not asserted.** Model digest, runtime version, settings, hardware and
+   CPU/GPU placement are read from the runtime into every gate report.
+5. **Every model call is bounded.** The 90 s ceiling is enforced by cancellation rather than
+   observed after the fact.
+6. **The tree became a repository.** Clean clone and `git archive` are both proven to build and
+   test; scripts are executable in the index.
+
+**Two claims in this repo were found to be wrong by re-reading primary sources**, not by anything
+failing: Ollama's OpenAI-compatible endpoint does not support `tool_choice`, and the cited page
+never stated that thinking is auto-enabled when `reasoning_effort` is absent. Corrected in
+[CLAIMS-AND-LIMITS.md](../CLAIMS-AND-LIMITS.md).
+
+## Still not done
+
+- **A non-author human rehearsal of the 60-minute path.** Cannot be fabricated. The agenda remains
+  credible rather than proven until someone who did not write this sits it end to end.
+- **Any live hosted call.** The lane is configuration-only and unit-tested; nothing has been sent.
+- **Tier B offline** — physically disconnecting the radio.
+- **LM Studio parity**, and any machine other than the reference machine.

@@ -19,6 +19,9 @@ dotnet run --project src/Workshop.App -- smoke
 
 **Want:** `smoke: PASS [JACKDAW_OK]`
 
+Smoke only proves the runtime answers. To prove the machine can do the workshop:
+`dotnet run --project src/Workshop.App -- ready` → **want** `READY: PASS`.
+
 ---
 
 ### 2. Code problem? Copy the answer.
@@ -38,7 +41,7 @@ Not cheating. Falling silently behind is the only failure here.
 ```bash
 export MAF_ENDPOINT=<facilitator gives you this>
 export MAF_MODEL=<facilitator gives you this>
-export MAF_API_KEY=<facilitator gives you this, if any>
+export MAF_API_KEY=<facilitator gives you this>
 
 dotnet run --project src/Workshop.App -- run
 ```
@@ -56,7 +59,7 @@ ledger will not match your neighbour's exactly. That is expected.
 Everything except extraction runs with no model whatsoever:
 
 ```bash
-dotnet test                                                        # 63 tests
+dotnet test                                                        # 139 tests
 dotnet run --project src/Workshop.App -- verify-only               # verify + render an existing ledger
 dotnet run --project src/Workshop.App -- verify-only --inject-defect altered-number
 ```
@@ -72,8 +75,10 @@ exercise. Ask a neighbour for theirs.
 | --- | --- |
 | 0 | verification passed |
 | 2 | verification failed — a claim did not hold up (this is the tool working) |
-| 3 | pipeline error — bad path, model unreachable |
+| 3 | pipeline error — bad path, model unreachable, or the request budget ran out |
 | 4 | gate failed |
+| 5 | tool contract broken — the agent did not fetch what it was told to |
+| 6 | readiness check failed |
 
 ## The three commands that matter
 
@@ -82,3 +87,5 @@ dotnet test
 dotnet run --project src/Workshop.App -- run
 dotnet run --project src/Workshop.App -- verify-only --inject-defect altered-number
 ```
+
+Facilitator reset between sessions: `scripts/reset-workshop.sh`.

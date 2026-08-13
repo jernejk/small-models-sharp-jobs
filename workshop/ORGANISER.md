@@ -23,7 +23,7 @@ that reads a fictional service-incident pack, uses a small open-weight model to 
 ledger, and turns only verified claims into a cited Markdown brief. Deterministic code — not another
 model — checks evidence IDs, dates, numbers and source references, making omissions and fabrications
 visible. Run the measured 4B reference model locally where laptop preflight passes, or point the same
-Chat Completions client at a controlled hosted fallback. You'll leave with a runnable repo and a
+Chat Completions client at a controlled hosted fallback by changing configuration only. You'll leave with a runnable repo and a
 reusable pattern: narrow jobs, constrained tools, explicit workflows and verification before trust.
 
 *"Proves its work" refers to the declared checks, not proof of every semantic claim or real-world
@@ -62,8 +62,9 @@ Full instructions with a four-command verification: [SETUP.md](SETUP.md).
 
 No API key, account or credit card is needed for the default path.
 
-**A discrete GPU is not required.** The reference machine used a 4 GB laptop GPU at 70% offload and
-finished the full path in under 25 seconds.
+**A discrete GPU is not required.** On the reference machine Ollama placed 70% of the model on the
+GPU and the full path finished in about 20 seconds. We quote the measured placement, not the card:
+the GPU is not enumerable from our environment.
 
 ## Asks of the organiser
 
@@ -71,9 +72,9 @@ finished the full path in under 25 seconds.
    risk to this workshop is 40 people downloading 2.8 GB on venue Wi-Fi.
 2. **Room with power and desks.** People are typing for an hour, not watching.
 3. **A screen we can put a terminal on**, legibly. Font size 18+.
-4. **Confirm the recovery lane** — either an organiser-owned Azure OpenAI `gpt-5.4-mini` deployment,
-   or accept that machines failing preflight pair up. Needs a decision two weeks out; see
-   *Outstanding* below.
+4. **Confirm the recovery lane** — either an organiser-owned OpenAI-compatible deployment (Azure
+   OpenAI's `/openai/v1` route with a key works unchanged) plus the key to hand out, or accept that
+   machines failing preflight pair up. Needs a decision two weeks out; see *Outstanding* below.
 5. **One extra facilitator per ~15 attendees** if possible. The five-minute recovery rule needs
    someone free to walk over.
 6. **Confirm the slot length** (60 vs 120) two weeks out. Both agendas are written; they are
@@ -84,14 +85,15 @@ finished the full path in under 25 seconds.
 | Decision | Owner | Needed by | Notes |
 | --- | --- | --- | --- |
 | Slot length: 60 or 120 minutes | organiser | 2 weeks out | both agendas ready |
-| Recovery lane: Azure deployment or pair-up | organiser | 2 weeks out | Azure needs a human `az login --use-device-code`; the seam is built but **no live call has been made** |
+| Recovery lane: hosted endpoint or pair-up | organiser | 2 weeks out | Needs an OpenAI-compatible endpoint, a deployment name and a key. No code change; the seam is unit-tested but **no live call has been made**. Entra/`az login` is not implemented |
 | Attendee runtime blessed as Ollama | done | — | LM Studio remains a compatibility target, not verified against these gates |
 
 ## Honesty note for anyone quoting this workshop
 
 Performance and reliability figures come from **one** reference machine, measured 14 August 2026.
 The local lane is verified; LM Studio parity, the hosted lanes, other operating systems and other
-hardware are **not**. A non-author has not yet rehearsed the 60-minute path.
+hardware are **not**. **A non-author has not yet rehearsed the 60-minute path, so the one-hour
+agenda is credible rather than proven.**
 
 Every claim is itemised as measured, documented, inferred or unverified in
 [CLAIMS-AND-LIMITS.md](CLAIMS-AND-LIMITS.md). Please read it before repeating a number in

@@ -18,11 +18,12 @@ the evidence pack. The model can ask for a file; it cannot reach anything else o
 the tool only accepts names on a whitelist.
 
 **Workflow** — the fixed order of steps your code runs: fetch evidence, extract claims, verify,
-render. You decide the order, not the model. The model does one narrow job inside it.
+render. You decide the order, not the model. The model does one narrow job inside it. Here that
+order is plain C# you can step through, not a workflow engine and not the MAF Workflows API.
 
-**Claim ledger** (`claim-ledger.json`) — the model's output as data. Every claim carries a kind, a
-value, the source it came from and the exact quote that supports it. A claim without a quote is
-just an assertion.
+**Claim ledger** (`claim-ledger.json`) — the claims as data. The model proposes each claim's kind,
+value and quote; code attaches the source it came from, normalizes kind spellings, merges
+duplicates, assigns the ids and writes the file. A claim without a quote is just an assertion.
 
 **Verifier** (`verification.json`) — ordinary code that checks each claim against the evidence and
 against facts parsed independently from the source files. It emits one of three results per rule:
@@ -42,12 +43,20 @@ every time. The model does not write this file.
 expressions and a CSV parse. Because the model never touches this path, comparing the two is a real
 check rather than a model grading itself.
 
-**Seeded defect** — a deliberate corruption we inject to prove the verifier bites: a phantom source,
-an altered number, an altered timestamp.
+**Seeded defect** — a deliberate corruption we inject to prove the verifier bites. Six of them: a
+phantom source, an altered number, an altered timestamp, a cause relabelled as an event, a quote
+spliced from two lines, and an event the log does not contain. The last produces `UNVERIFIED` and
+exit 0 — still rejected, because it never reaches Verified facts.
 
 **LOCAL / FREE CLOUD / CONTROLLED CLOUD** — three different things this workshop never blurs:
 
 - **LOCAL** — runs on your machine, offline once models and packages are cached.
 - **FREE CLOUD** — someone else's hosted free tier. Throttled, mutable, possibly logged. Diagnostic
   only, fictional data only, never a workshop dependency.
-- **CONTROLLED CLOUD** — an organiser-owned Azure OpenAI deployment used as a recovery lane.
+- **CONTROLLED CLOUD** — an organiser-owned, OpenAI-compatible deployment used as a recovery lane,
+  reached with a key and three environment variables. No code change.
+
+**Causal marker** — wording that asserts one thing produced another ("caused by", "due to",
+"because", "triggered by"). Code looks for these as whole-token spans in a claim's value and in its
+quotes. Finding one makes the claim a cause claim no matter what kind the model declared, which is
+what stops a mislabel from slipping past the rule that refuses to assert causation.

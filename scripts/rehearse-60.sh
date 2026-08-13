@@ -64,11 +64,12 @@ rm -rf "$WORK"/src/*/bin "$WORK"/src/*/obj "$WORK"/tests/*/bin "$WORK"/tests/*/o
 echo "--- minute 0: attendee opens the starter"
 step "dotnet restore (warm NuGet cache)" dotnet restore "$WORK/Workshop.slnx"
 step "dotnet build (first, cold)" dotnet build "$WORK/Workshop.slnx" -c Release --no-restore
-WANT_PASSED="${STARTER_PASSED:-}" WANT_FAILED="${STARTER_FAILED:-}" test_step "dotnet test (expected red)"
+# The checkpoints the agendas tell facilitators to call out. Quoted in the docs, so drift must fail here.
+WANT_PASSED="${STARTER_PASSED:-52}" WANT_FAILED="${STARTER_FAILED:-87}" test_step "dotnet test (expected red)"
 
 echo "--- TODO 1: constrain the evidence tool"
 cp "$REPO/solution/src/Workshop.Core/EvidenceStore.cs" "$WORK/src/Workshop.Core/EvidenceStore.cs"
-WANT_PASSED="${AFTER_TODO1_PASSED:-}" test_step "dotnet test after TODO 1"
+WANT_PASSED="${AFTER_TODO1_PASSED:-80}" test_step "dotnet test after TODO 1"
 
 echo "--- TODO 2 and 3: register the tool, connect typed extraction"
 cp "$REPO/solution/src/Workshop.App/IncidentPipeline.cs" "$WORK/src/Workshop.App/IncidentPipeline.cs"
@@ -76,7 +77,7 @@ step "dotnet build after TODO 2+3" dotnet build "$WORK/Workshop.slnx" -c Release
 
 echo "--- TODO 4: the first verification rule"
 cp "$REPO/solution/src/Workshop.Core/Verifier.cs" "$WORK/src/Workshop.Core/Verifier.cs"
-WANT_FAILED=0 test_step "dotnet test after TODO 4 (expected green)"
+WANT_PASSED="${AFTER_TODO4_PASSED:-139}" WANT_FAILED=0 test_step "dotnet test after TODO 4 (expected green)"
 
 echo "--- the payoff: three artifacts"
 step "dotnet run -- run" dotnet run --project "$WORK/src/Workshop.App" -c Release --no-build -- run --evidence "$WORK/evidence-pack" --out "$WORK/artifacts"

@@ -11,17 +11,17 @@ Attendees start in `starter/`, which compiles and has four TODOs. No blank-proje
 **Cut from this version:** model comparison, routing theory, Harness, DevUI, LM Studio parity, the
 cloud escalation demo. If you find yourself explaining any of them, you are late.
 
-Measured machine time across the whole path is about 34 seconds of waiting (one 24-second model run,
+Measured machine time across the whole path is about 32 seconds of waiting (one 20-second model run,
 the rest builds and tests). The clock below is human time.
 
 | Time | Segment | Facilitator cue |
 | --- | --- | --- |
-| 0–4 | **Setup check** | "Run `dotnet test` in `starter/`. You want **10 passed, 53 failed**." Anyone red on the build goes to the recovery lane *now*, not at minute 30. |
+| 0–4 | **Setup check** | "Run `dotnet test` in `starter/`. You want **52 passed, 87 failed**." Anyone red on the build goes to the recovery lane *now*, not at minute 30. |
 | 4–9 | **The problem** | Show `evidence-pack/`. Ask: "the customer email blames the billing system, the event log says stale routing rule — which one goes in the brief?" Do not answer it. Show the three artifacts from a finished run instead. |
-| 9–17 | **TODO 1 — the tool** | Whitelist, not path-checking. Point at `expected-facts.json` sitting unreadable in the same folder. Cue: `dotnet test --filter EvidenceStoreTests` → **31 passed**. |
+| 9–17 | **TODO 1 — the tool** | Whitelist, not path-checking. Point at `expected-facts.json` sitting unreadable in the same folder. Cue: `dotnet test --filter EvidenceStoreTests` → **14 passed** (whole suite: 52 → 80). |
 | 17–28 | **TODO 2 + 3 — model does one job** | Register the tool, then the typed call. Say plainly: structured output and tools **cannot** be combined on this model — it returns `{"claims": []}` in 1.4s. That constraint is the lesson. Cue: build succeeds. |
-| 28–37 | **TODO 4 — the verifier** | "Who decides this is true?" Write `R2-QUOTE-PRESENT`. Cue: `dotnet test` → **63 passed**. This is the moment the room goes green. |
-| 37–45 | **Run it** | `dotnet run --project src/Workshop.App -- run`. ~25 seconds — talk over it. Then read `incident-brief.md` **together**, out loud. Land the two observations: the cause claim is `UNVERIFIED`, and the timeline came from code. |
+| 28–37 | **TODO 4 — the verifier** | "Who decides this is true?" Write `R2-QUOTE-PRESENT`. Cue: `dotnet test` → **139 passed**. This is the moment the room goes green. |
+| 37–45 | **Run it** | `dotnet run --project src/Workshop.App -- run`. ~20 seconds — talk over it. Then read `incident-brief.md` **together**, out loud. Land the two observations: the cause claim is `UNVERIFIED`, and the timeline came from code. |
 | 45–53 | **Break it** | `verify-only --inject-defect altered-number` → exit 2. Then have them hand-edit a quote in `claim-ledger.json` and watch *their own rule* catch it. This is the best five minutes of the workshop; do not let it get squeezed. |
 | 53–58 | **So what** | Narrow job, constrained tool, deterministic verification, deterministic render. Name what did *not* happen: no vector database, no second model grading the first, no agent framework theatre. |
 | 58–60 | **Close** | Point at `solution/`, `CLAIMS-AND-LIMITS.md` and the recovery lane. |
@@ -34,8 +34,8 @@ Call these out loud. If the room is not here, use the five-minute rule (see
 | By minute | Everyone should have |
 | --- | --- |
 | 4 | `dotnet test` running at all |
-| 17 | 31 passing |
-| 37 | 63 passing |
+| 17 | 80 passing (14 on the filtered EvidenceStoreTests run) |
+| 37 | 139 passing |
 | 45 | three files in `artifacts/` |
 | 53 | seen a defect caught |
 
