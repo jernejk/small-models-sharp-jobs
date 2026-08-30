@@ -1,7 +1,7 @@
 # Checkpoints
 
 Work from one checkpoint at a time. The bundled Victorian crash sample is the only core corpus.
-CP-01 onwards needs an endpoint configured — `dotnet user-secrets --project src/Workshop.App set
+CP-01, CP-02 and CP-04 onwards need an endpoint configured (CP-03 Gather never calls the model) — `dotnet user-secrets --project src/Workshop.App set
 MAF_ENDPOINT ...`, per [SETUP.md](SETUP.md).
 
 | Checkpoint | Outcome | Acceptance |
@@ -13,7 +13,11 @@ MAF_ENDPOINT ...`, per [SETUP.md](SETUP.md).
 | CP-05 Analyse | Only validated selected records reach the analysis call. | Low confidence takes the caution branch. If you see `confidence: 0` on every run, your instruction never asked for a 0-100 confidence — the model is not being cautious, it is filling a field it was not told about. |
 | CP-06 Workflow | Explicit calls become the same linear fixed workflow. | No evidence bypasses Extract and Analyse. |
 
+The negative paths in the acceptance column (malformed output, unknown or duplicate IDs, low confidence) are not
+something you can make the model do on demand; they are exercised by `tests/Workshop.Core.Tests/CrashWorkflowTests.cs` —
+read those tests, or run `dotnet test` and watch them pass.
+
 Fell behind? `workshop/checkpoints/` has a `CrashPipeline.cs` for CP-03 (stubs), CP-04 (Extract done) and CP-05 (both done) — copy one over `starter/src/Workshop.App/CrashPipeline.cs`.
 
-The `starter/` and `solution/` trees are generated. Use `python3 scripts/generate-starter.py --check`
-to prove they match canonical `src/`.
+Presenter note: `starter/` and `solution/` are generated from `src/`; `python3 scripts/generate-starter.py --check`
+proves they match. Attendees edit `starter/` only and never need to run this.

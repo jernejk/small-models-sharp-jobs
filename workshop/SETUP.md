@@ -22,7 +22,7 @@ Any .NET 10 SDK should work; 10.0.302 is what the reference machine ran.
 
 ## 2. Prefetch checklist
 
-Run all four. Each one must finish before you travel.
+Run every command in this block. Each one must finish before you travel.
 
 ```bash
 # 1. the repo
