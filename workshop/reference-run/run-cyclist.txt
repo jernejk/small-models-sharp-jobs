@@ -1,0 +1,5 @@
+explicit calls | LOCAL | model=nvidia-nemotron-3-nano-4b
+question: What patterns should an insurance and safety analyst review in the selected crash records?
+gathered: 0 record(s)
+gate: NoEvidence
+No matching records. Extract and Analyse were not called.

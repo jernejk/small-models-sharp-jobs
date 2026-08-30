@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Workshop.App;
 using Workshop.Core;
 using Xunit;
@@ -17,65 +18,81 @@ public sealed class LocalModelFactAttribute : FactAttribute
 }
 
 /// <summary>
-/// The fast confidence check against a real model. The full gate matrix
-/// (L1-L6, seeded defects, latency) lives in `Workshop.App gates`.
+/// The fast confidence check against a real model: the two setup checkpoints, the supported crash
+/// path, the branch that must never reach the model, and the warm latency budget.
 /// </summary>
 public class LocalModelTests
 {
-    private static string EvidenceDir
-    {
-        get
-        {
-            var directory = new DirectoryInfo(AppContext.BaseDirectory);
-            while (directory is not null)
-            {
-                var candidate = Path.Combine(directory.FullName, "evidence-pack");
-                if (Directory.Exists(candidate)) return candidate;
-                directory = directory.Parent;
-            }
-            throw new DirectoryNotFoundException("evidence-pack not found above the test binary");
-        }
-    }
+    private const string Question = "What patterns should an insurance and safety analyst review in the selected crash records?";
 
-    private static IncidentPipeline Pipeline() =>
-        new(ModelSettings.FromEnvironment(), new EvidenceStore(EvidenceDir));
+    private static ModelSettings Settings() => ModelSettings.FromEnvironment();
+
+    private static CrashPipeline Pipeline() => new(Settings());
+
+    private static EvidencePack Gather(string term) =>
+        IncidentDataset.Gather(
+            IncidentDataset.Load(WorkshopPaths.Resolve(null, "workshop/data/victoria-road-crash-sample.json")),
+            new IncidentQuery(null, null, term));
 
     [LocalModelFact]
-    public async Task SmokeReturnsTheExactToken() =>
-        Assert.Equal("JACKDAW_OK", await Pipeline().SmokeAsync());
-
-    [LocalModelFact]
-    public async Task FullPathProducesAVerifiedLedger()
+    public async Task SmokeReturnsTheExactToken()
     {
-        var result = await Pipeline().RunAsync();
+        var check = await Pipeline().HelloAsync();
 
-        Assert.True(result.ToolContractHeld, $"tool calls were [{string.Join(", ", result.ToolCalls)}]");
-        Assert.True(result.TypedExtractionValid);
-        Assert.False(result.Report.HasFailures,
-            $"failed rules: {string.Join(", ", result.Report.RuleIdsWithStatus(VerificationStatus.Fail))}");
-        Assert.Equal("INC-042", result.Ledger.IncidentId);
-        Assert.Equal(7, result.Ledger.AffectedCustomers);
+        Assert.True(check.TokenPresent, $"reply was '{check.Reply}'");
     }
 
     [LocalModelFact]
-    public async Task WarmFullPathStaysWithinTheLatencyBudget()
+    public async Task TypedCallParsesIntoTheContract()
     {
-        await Pipeline().RunAsync();
-        var warm = await Pipeline().RunAsync();
+        var check = await Pipeline().TypedAsync();
 
-        Assert.True(warm.TotalSeconds <= 30.0, $"warm full path took {warm.TotalSeconds}s");
+        Assert.True(check.IsValid, $"raw was '{check.Raw}'");
+        Assert.NotEmpty(check.Value!.Greeting);
+        Assert.InRange(check.Value.Confidence, 0, 100);
     }
 
     [LocalModelFact]
-    public async Task SeededDefectsAreCaughtInTheRealPipeline()
+    public async Task SupportedTermSelectsRecordsAndProducesAFinding()
     {
-        var clean = await Pipeline().RunAsync();
-        var facts = SourceFactsParser.Parse(new EvidenceStore(EvidenceDir));
+        var evidence = Gather("intersection");
+        Assert.False(evidence.IsEmpty);
 
-        foreach (var defect in new[] { SeededDefect.PhantomSource, SeededDefect.AlteredNumber, SeededDefect.AlteredTimestamp })
-        {
-            var report = Verifier.Verify(DefectInjector.Inject(clean.Ledger, defect), facts, new EvidenceStore(EvidenceDir));
-            Assert.Contains(DefectInjector.ExpectedRuleId(defect), report.RuleIdsWithStatus(VerificationStatus.Fail));
-        }
+        var run = await Pipeline().RunAsync(Question, evidence);
+
+        Assert.Equal(CrashGate.Supported, run.Gate);
+        Assert.NotEmpty(run.Selection!.RecordIds);
+        Assert.All(run.Selection.RecordIds, id => Assert.Contains(evidence.Records, record => record.Id == id));
+        Assert.False(string.IsNullOrWhiteSpace(run.Analysis!.Finding));
+    }
+
+    [LocalModelFact]
+    public async Task NoResultTermStopsBeforeExtractAndAnalyse()
+    {
+        var evidence = Gather("no-such-term-in-the-approved-sample");
+        Assert.True(evidence.IsEmpty);
+
+        var started = Stopwatch.GetTimestamp();
+        var run = await Pipeline().RunAsync(Question, evidence);
+
+        Assert.Equal(CrashGate.NoEvidence, run.Gate);
+        Assert.Null(run.Selection);
+        Assert.Null(run.Analysis);
+        Assert.True(Stopwatch.GetElapsedTime(started) < TimeSpan.FromSeconds(1), "the no-evidence branch reached the model");
+    }
+
+    [LocalModelFact]
+    public async Task WarmFullPathStaysWithinTheRequestBudget()
+    {
+        var evidence = Gather("intersection");
+        var pipeline = Pipeline();
+        await pipeline.RunAsync(Question, evidence);
+
+        var started = Stopwatch.GetTimestamp();
+        await pipeline.RunAsync(Question, evidence);
+        var warm = Stopwatch.GetElapsedTime(started);
+
+        Assert.True(warm <= Settings().RequestBudget,
+            $"warm full path took {warm.TotalSeconds:F1}s against a {Settings().RequestBudget.TotalSeconds:F0}s budget");
     }
 }

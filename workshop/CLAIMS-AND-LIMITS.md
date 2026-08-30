@@ -1,3 +1,5 @@
+> Historical (pre-29-Aug pivot): describes the earlier incident-pack build. Current path: AGENDA-85.md.
+
 # Claims and limits
 
 Every factual claim this workshop makes, sorted by how we know it. Read this before repeating any
@@ -34,7 +36,7 @@ One machine is one data point. Nothing here claims a second machine behaves the 
 
 | Claim | Evidence |
 | --- | --- |
-| Deterministic tests pass 139/139, no model required | `dotnet test Workshop.slnx` (120 core + 19 provider-seam; 4 model tests skipped by default) |
+| Deterministic tests pass 142/142, no model required | `dotnet test Workshop.slnx` (120 core + 22 provider-seam; 4 model tests skipped by default) |
 | Local gates all pass | `Workshop.App gates --repeat 5` → `OUTCOME: PASS`, twice |
 | Semantic extraction 5/5, tool contract 5/5, integrated 5/5 | both gate runs, 5 repetitions each |
 | Warm full path: median 19.6–20.9 s, worst 22.0 s | two gate runs the same day: 19.4/19.9/22.0/22.0/20.9 and 19.6/19.2/19.6/20.0/19.8. Expect roughly **19–22 s** warm |
@@ -43,8 +45,8 @@ One machine is one data point. Nothing here claims a second machine behaves the 
 | Model placement 30% CPU / 70% GPU | Ollama `/api/ps`, captured into `gate-report.json` provenance |
 | Runs are reproducible: identical claims and counts across 10 runs | both gate runs: 7 claims / 30 pass / 0 fail / 2 unverified every time |
 | Starter and solution both compile; no drift outside TODO regions | `generate-starter.py --check`, `dotnet build` on both |
-| Starter is red (52 passed / 87 failed), solution green (139/139) | `dotnet test` on each tree |
-| Test progression 52 → 80 → 139 across the four TODOs | `scripts/rehearse-60.sh`, which asserts each checkpoint |
+| Starter is red (55 passed / 87 failed), solution green (142/142) | `dotnet test` on each tree |
+| Test progression 55 → 83 → 142 across the four TODOs | `scripts/rehearse-60.sh`, which asserts each checkpoint |
 | `dotnet test --filter EvidenceStoreTests` gives **14 passed** | run on `solution/`. The 31 in earlier drafts was wrong; 80 is the whole-suite total after TODO 1 |
 | Full path runs with **no non-loopback network**, restoring from local cache only | `scripts/offline-proof.sh` → `OFFLINE_PROOF: PASS` |
 | 60-minute path costs 31.7 s of machine waiting end to end, of which 20.4 s is the single model run | `scripts/rehearse-60.sh` |
@@ -57,6 +59,20 @@ One machine is one data point. Nothing here claims a second machine behaves the 
 | Sending all four evidence files through the model projects to ≈ 39.8 s, over budget | measured per-source extraction latency |
 | A C# `enum` for claim kinds made semantic accuracy *worse* than a string plus an allowed-value list | probe: enum returned `Severity` for `7` and `Duration` for timestamps |
 | First run with default reasoning returned an empty visible answer after 57.7 s | prior readiness work; why `ReasoningEffort.None` is set |
+| **LM Studio runs the full path**, on one machine, all gates green | `gates --repeat 5` via LM Studio 0.12.11 on an M4 Max, 24 Aug 2026 — see [LM-STUDIO-SWEEP.md](LM-STUDIO-SWEEP.md) |
+| `nemotron-3-nano:4b` through LM Studio reproduces the Ollama output exactly: 7 claims / 30 pass / 0 fail / 2 unverified | same sweep, 5 runs |
+| Of six local models, one fails the gates: `google/gemma-4-12b` scores L2 0/5 and L3 0/5 at a 94.6 s median | same sweep |
+| Model size does not predict fitness — the fastest model (4.8 s) is the largest file (15.64 GB, 4B active); the slowest (94.6 s) is 6.77 GB | same sweep |
+| `qwen/qwen3.8-27b` is not reproducible across repeats; every other model was byte-identical over 5 runs at temperature 0 | same sweep |
+| **Apple Silicon runs the local lane**: 142/142 deterministic tests, full path, and `REHEARSE_60: PASS` on macOS arm64 | this repo on an M4 Max, 24 Aug 2026 |
+| `gates` crashed against any non-Ollama runtime before the provenance fix — all gates green, then exit 3, no report | reproduced on LM Studio; closed by `ProvenanceTests` |
+| `scripts/rehearse-60.sh` never worked on macOS: `grep -oP` is GNU-only, and `dotnet run --no-build` could not load `Workshop.Core` | both reproduced and fixed 24 Aug 2026 |
+| **The full path completes with no GPU at all**, proven by placement rather than inferred from timing | reference machine (Jackdaw, commit `800c2dc`), 24 Aug 2026: `num_gpu 0` derived model, Ollama `/api/ps` reported `size_vram: 0`, re-checked after the run |
+| CPU-only is **1.65× slower by median** (36.57 s vs 22.14 s) and 3.01× by worst run | `gates --repeat 5` on both placements, same machine, same day |
+| CPU-only **fails the 30 s L6 gate on merit**, not on cold start — warm runs cluster at ~36 s | CPU runs: 68.17, 36.11, 36.63, 35.80, 36.57 s. Exit code 4; the 90 s ceiling was never breached |
+| **Placement changes speed and nothing else.** GPU and CPU-only produced `claims=7 pass=30 fail=0 unver=2` on every run | same two gate runs; L1–L5 pass 5/5 in both |
+| First run on CPU costs **68 s vs ~36 s warm** — a 1.9× cold-start penalty | same run; no comparable spike appeared on the GPU baseline |
+| The GPU baseline independently reproduced at **22.14 s median** on the reference machine | consistent with the 19–22 s measured there on 14 Aug, a different build |
 
 ## DOCUMENTED
 
@@ -82,10 +98,9 @@ sources rather than by anything failing:
 | Claim | Basis | Risk |
 | --- | --- | --- |
 | The 57.7 s empty answer was caused by reasoning being on by default | the same call with `ReasoningEffort.None` returns promptly and correctly; no primary source states the default | the mechanism is unconfirmed. **Reasoning-off is still a required compatibility invariant here** — that part is measured |
-| Apple Silicon will run the local lane | same runtime and SDK ship for arm64; unified memory suits a 4B model | not run once |
 | Native Windows will run the local lane | same SDK and runtime | not run once |
 | A non-author can finish the 60-minute core by minute 55 | ≈ 32 s machine time leaves ≈ 55 min of human time for four small edits, with staged checkpoints and a copy-from-solution escape | **a human has not sat this. See UNVERIFIED.** |
-| Attendee first-run will be slower than 20 s | cold model load and cold JIT; gates measure warm runs | unquantified on attendee hardware |
+| Attendee first-run will be slower than 20 s | cold model load and cold JIT; gates measure warm runs | **now measured for the CPU-only case** (68 s cold vs ~36 s warm). Still unquantified on GPU and on attendee hardware generally |
 | The hosted recovery lane works by changing three environment variables | the endpoint shape is documented above and the client is the stock OpenAI one; the seam is unit-tested | **no live hosted call has been made.** See UNVERIFIED |
 
 ## UNVERIFIED — not run, do not imply otherwise
@@ -100,11 +115,15 @@ sources rather than by anything failing:
   which is not in the attendee prefetch and is not referenced by this repo. The `MAF_AUTH=azure-cli`
   flag that used to appear in `.env.example` did nothing and has been removed rather than left to be
   discovered on the day. Use a key against the OpenAI-compatible endpoint.
-- **LM Studio parity.** Not run against these gates. Templates and tool parsers differ between
-  runtimes; passing on Ollama certifies nothing about LM Studio. It stays a compatibility target.
+- **LM Studio parity beyond one machine.** LM Studio now passes the same gates on an M4 Max with
+  six models ([LM-STUDIO-SWEEP.md](LM-STUDIO-SWEEP.md)), so it is no longer untested — but that is
+  one machine, and the sweep ran at a 262144-token context rather than the intended one. Ollama
+  stays the blessed runtime.
 - **Free cloud lane.** Not exercised by this application at all. Hosted free routes are throttled,
   mutable and possibly logged; fictional data only, never a workshop dependency.
-- **Native Windows and macOS end-to-end.** See INFERRED.
+- **Native Windows Ollama.** Still not run. The 24 Aug CPU-only verification confirmed no native-Windows
+  Ollama install exists on the reference machine, so every measurement labelled "Windows" in this repo
+  is WSL2. macOS arm64 is measured.
 - **Any hardware other than the reference machine**, and any claim about its GPU beyond the measured
   placement percentage.
 - **Qwen3.5 4B under this architecture.** Prior work found it passed typed extraction but dropped a

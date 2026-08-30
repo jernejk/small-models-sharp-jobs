@@ -7,6 +7,7 @@
          not the MAF Workflows API, so that package is deliberately not referenced or pinned. -->
     <PackageVersion Include="Microsoft.Agents.AI" Version="1.17.0" />
     <PackageVersion Include="Microsoft.Agents.AI.OpenAI" Version="1.17.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.11" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />

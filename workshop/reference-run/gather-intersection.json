@@ -1,0 +1,38 @@
+{
+  "records": [
+    {
+      "id": "T20200020837",
+      "date": "2020-11-08",
+      "title": "Road crash record: cross traffic at an intersection",
+      "summary": "Historic non-fatal Victorian road-crash record in Casey, Greater Metro. Crash type: collision with vehicle; category: cross traffic at an intersection; reported severity: serious injury accident; vehicles recorded: 2.",
+      "severity": "Serious injury accident",
+      "sourceReference": "Victoria Road Crash Data: T20200020837"
+    },
+    {
+      "id": "T20190026336",
+      "date": "2019-12-27",
+      "title": "Road crash record: right-near movement at an intersection",
+      "summary": "Historic non-fatal Victorian road-crash record in Banyule, Inner Metro. Crash type: collision with vehicle; category: right-near movement at an intersection; reported severity: other injury accident; vehicles recorded: 2.",
+      "severity": "Other injury accident",
+      "sourceReference": "Victoria Road Crash Data: T20190026336"
+    },
+    {
+      "id": "T20190023360",
+      "date": "2019-11-22",
+      "title": "Road crash record: cross traffic at an intersection",
+      "summary": "Historic non-fatal Victorian road-crash record in Boroondara, Inner Metro. Crash type: collision with vehicle; category: cross traffic at an intersection; reported severity: other injury accident; vehicles recorded: 2.",
+      "severity": "Other injury accident",
+      "sourceReference": "Victoria Road Crash Data: T20190023360"
+    },
+    {
+      "id": "T20140024624",
+      "date": "2014-11-27",
+      "title": "Road crash record: cross traffic at an intersection",
+      "summary": "Historic non-fatal Victorian road-crash record in Wellington, Gippsland. Crash type: collision with vehicle; category: cross traffic at an intersection; reported severity: other injury accident; vehicles recorded: 2.",
+      "severity": "Other injury accident",
+      "sourceReference": "Victoria Road Crash Data: T20140024624"
+    }
+  ],
+  "isEmpty": false
+}
+

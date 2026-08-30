@@ -66,7 +66,7 @@ dotnet test Workshop.slnx -c Release --no-build >"$test_log" 2>&1 || {
 grep -E "^Passed!" "$test_log" | sed 's/^/  /'
 
 status=0
-dotnet run --project src/Workshop.App -c Release --no-build -- ready || status=$?
+dotnet run --project src/Workshop.App -c Release --no-build -- ready --term intersection || status=$?
 [[ $status -eq 0 ]] || fail "readiness check exited $status - this machine cannot produce the three artifacts yet"
 
 echo

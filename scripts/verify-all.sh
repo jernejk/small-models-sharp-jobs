@@ -43,7 +43,10 @@ check "solution/ compiles" dotnet build solution/Workshop.slnx -c Release
 check "solution/ tests are green" dotnet test solution/Workshop.slnx -c Release --no-build
 
 echo "=== attendee experience"
-check_fails "starter/ is red before the TODOs" dotnet test starter/Workshop.slnx -c Release --no-build
+# The TODOs live in the App, not in Core, so the deterministic suite stays green in starter/.
+# What the unfinished tree cannot do is clear a gate: `run` takes the caution branch and exits 2.
+check_fails "starter/ cannot clear a gate before the TODOs" \
+  dotnet run --project starter/src/Workshop.App -c Release --no-build -- run --term intersection
 
 echo "=== distribution"
 if [[ "${SKIP_PACKAGING:-0}" == "1" ]]; then
@@ -58,20 +61,17 @@ else
 fi
 
 echo "=== demos"
-if [[ "${SKIP_MODEL:-0}" == "1" ]]; then
-  echo "model-backed demo SKIPPED (SKIP_MODEL=1)"
-else
-  check "demo 1 clean run" bash scripts/demo-clean-run.sh
-fi
-check "demo 2 break it, every seeded defect" bash scripts/demo-break-it.sh
+check "bounded Gather returns records" dotnet run --project src/Workshop.App -c Release --no-build -- gather --term intersection
+check "no-result Gather is a clean empty pack" dotnet run --project src/Workshop.App -c Release --no-build -- gather --term cyclist
 
 echo "=== local model (needs the runtime up)"
 if [[ "${SKIP_MODEL:-0}" == "1" ]]; then
   echo "local model gates SKIPPED (SKIP_MODEL=1)"
 else
   check "smoke" dotnet run --project src/Workshop.App -c Release --no-build -- smoke
-  check "attendee readiness" dotnet run --project src/Workshop.App -c Release --no-build -- ready
-  check "gates L1-L6, 5 repetitions" dotnet run --project src/Workshop.App -c Release --no-build -- gates --repeat 5
+  check "typed contract" dotnet run --project src/Workshop.App -c Release --no-build -- typed
+  check "attendee readiness" dotnet run --project src/Workshop.App -c Release --no-build -- ready --term intersection
+  check "model-backed tests" env WORKSHOP_LOCAL_MODEL=1 dotnet test tests/Workshop.LocalModel.Tests -c Release --no-build
 fi
 
 echo

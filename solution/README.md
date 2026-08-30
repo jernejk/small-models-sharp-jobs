@@ -4,10 +4,8 @@ Generated from the canonical `src/` tree with the TODO markers stripped. Do not 
 
 Completed here:
 
-- **TODO 1** — `src/Workshop.Core/EvidenceStore.cs`
-- **TODO 2** — `src/Workshop.App/IncidentPipeline.cs`
-- **TODO 3** — `src/Workshop.App/IncidentPipeline.cs`
-- **TODO 4** — `src/Workshop.Core/Verifier.cs`
+- **TODO 4** — `src/Workshop.App/CrashPipeline.cs`
+- **TODO 5** — `src/Workshop.App/CrashPipeline.cs`
 
 ```bash
 dotnet test

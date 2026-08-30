@@ -8,3 +8,9 @@ obj/
 # workshop/reference-run/ instead, so a demo run never overwrites what was measured.
 **/artifacts/*
 !**/artifacts/.gitkeep
+
+# macOS Finder litter; fails the tree-is-clean distribution check.
+.DS_Store
+
+# Local benchmark/trial logs; archived outside the repo.
+.agent/

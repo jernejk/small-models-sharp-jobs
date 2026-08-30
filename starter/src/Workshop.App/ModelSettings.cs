@@ -1,4 +1,5 @@
 using System.Globalization;
+using Microsoft.Extensions.Configuration;
 
 namespace Workshop.App;
 
@@ -14,11 +15,33 @@ internal sealed record ModelSettings(string Endpoint, string ApiKey, string Mode
     public const string DefaultModel = "nemotron-3-nano:4b";
     public const int DefaultBudgetSeconds = 90;
 
-    public static ModelSettings FromEnvironment() => From(
-        Environment.GetEnvironmentVariable("MAF_ENDPOINT"),
-        Environment.GetEnvironmentVariable("MAF_API_KEY"),
-        Environment.GetEnvironmentVariable("MAF_MODEL"),
-        Environment.GetEnvironmentVariable("MAF_TIMEOUT_SECONDS"));
+    // Precedence: shell variables > dotnet user-secrets > .env > defaults.
+    public static ModelSettings FromEnvironment()
+    {
+        var stored = new ConfigurationBuilder()
+            .AddInMemoryCollection(ReadDotEnv())
+            .AddUserSecrets(typeof(ModelSettings).Assembly, optional: true)
+            .Build();
+        return From(Get("MAF_ENDPOINT"), Get("MAF_API_KEY"), Get("MAF_MODEL"), Get("MAF_TIMEOUT_SECONDS"));
+        string? Get(string key) => Environment.GetEnvironmentVariable(key) ?? stored[key];
+    }
+
+    private static Dictionary<string, string?> ReadDotEnv()
+    {
+        var path = Path.Combine(WorkshopPaths.RepoRoot(), ".env");
+        var values = new Dictionary<string, string?>(StringComparer.Ordinal);
+        if (!File.Exists(path)) return values;
+        foreach (var raw in File.ReadAllLines(path))
+        {
+            var line = raw.Trim();
+            if (line.Length == 0 || line[0] == '#') continue;
+            if (line.StartsWith("export ", StringComparison.Ordinal)) line = line[7..].TrimStart();
+            var eq = line.IndexOf('=');
+            if (eq <= 0) continue;
+            values[line[..eq].Trim()] = line[(eq + 1)..].Trim().Trim('"', '\'');
+        }
+        return values;
+    }
 
     public static ModelSettings From(string? endpoint, string? apiKey, string? model, string? budgetSeconds) => new(
         Or(endpoint, DefaultEndpoint),

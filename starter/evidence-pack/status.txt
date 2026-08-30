@@ -1,5 +1,0 @@
-INC-042 STATUS PAGE
-Severity: SEV-2
-Started: 2026-08-13T09:12:00+10:00
-Resolved: 2026-08-13T09:39:00+10:00
-Impact: 7 customers could not submit construction inspection forms.

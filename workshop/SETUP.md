@@ -1,8 +1,7 @@
 # Setup — do this before the workshop
 
-Attendees complete an evidence lookup tool, connect a typed extraction step, add one deterministic
-verification rule, then run the application to create a claim ledger, verification report and cited
-incident brief.
+Attendees complete two typed model steps in the crash-review pipeline — Extract and Analyse — behind
+Gather's deterministic evidence pack and code-owned validation gates.
 
 **Do this on the network you have at home or in the office, not on venue Wi-Fi.** You are
 downloading roughly 3.5 GB. Once it is cached, the workshop runs offline.
@@ -27,7 +26,7 @@ Run all four. Each one must finish before you travel.
 
 ```bash
 # 1. the repo
-git clone <workshop-repo-url> && cd global-ai-construct-offline-workshop
+git clone https://github.com/jernejk/small-models-sharp-jobs && cd small-models-sharp-jobs   # placeholder URL until the repo is published
 
 # 2. the model  (~2.8 GB)
 ollama pull nemotron-3-nano:4b
@@ -36,15 +35,50 @@ ollama pull nemotron-3-nano:4b
 dotnet restore
 
 # 4. prove it all works
-dotnet test                                    # expect 139 passed
-dotnet run --project src/Workshop.App -- ready # expect: READY: PASS
+dotnet test                                             # expect 9 passed, then 22 passed / 5 skipped
+dotnet run --project src/Workshop.App -- smoke          # expect: reply: WORKSHOP_OK
+dotnet run --project src/Workshop.App -- ready --term intersection # expect: READY: model-backed supported path completed.
 ```
 
-If step 4 prints `READY: PASS`, you are ready. Nothing else needs the internet.
+The two test projects report separately: `Workshop.Core.Tests` 9 passed, `Workshop.LocalModel.Tests`
+22 passed with 5 skipped. The 5 skips need a running model — `WORKSHOP_LOCAL_MODEL=1 dotnet test`
+runs all 27.
 
-`ready` is deliberately more than a smoke test: it runs the whole path once and checks that your
-machine actually produced all three artifacts, that they agree with each other, and that it
-finished inside 90 seconds. A machine can answer `JACKDAW_OK` and still fail the workshop.
+### Point the app at your model
+
+`dotnet user-secrets` is the recommended way to set this: the values stay out of the repo and out of
+your shell history. Run from the repo root.
+
+```bash
+# Ollama (the default — you only need this if you changed something)
+dotnet user-secrets --project src/Workshop.App set MAF_ENDPOINT http://localhost:11434/v1
+dotnet user-secrets --project src/Workshop.App set MAF_MODEL nemotron-3-nano:4b
+dotnet user-secrets --project src/Workshop.App set MAF_API_KEY ollama
+
+# LM Studio
+dotnet user-secrets --project src/Workshop.App set MAF_ENDPOINT http://localhost:1234/v1
+dotnet user-secrets --project src/Workshop.App set MAF_MODEL nvidia-nemotron-3-nano-4b
+dotnet user-secrets --project src/Workshop.App set MAF_API_KEY lm-studio
+```
+
+`dotnet user-secrets --project src/Workshop.App list` shows what is set; `remove MAF_ENDPOINT` or
+`clear` undoes it. Keys: `MAF_ENDPOINT`, `MAF_MODEL`, `MAF_API_KEY`, `MAF_TIMEOUT_SECONDS`.
+
+Precedence is **shell variables > user-secrets > `.env` at the repo root > built-in defaults**, so an
+`export` in your terminal wins over everything and is the fastest way to try one value. Copying
+`.env.example` to `.env` also works; it loses to a secret with the same key.
+
+`smoke` is the 1-second check that your endpoint answers at all. LM Studio serves whichever model is
+loaded no matter what `MAF_MODEL` says, so a wrong name will still pass `smoke` — check the
+`model=` line in LM Studio's server log if results look odd.
+
+If step 4 prints `READY: model-backed supported path completed.`, you are ready. Nothing else needs
+the internet. Run step 4 from the repo root (finished code); inside `starter/` it reports
+`READY: not ready` until you have done TODO 4 and TODO 5 — that is the exercise, not a broken setup.
+
+`ready` is deliberately more than a smoke test: it runs the whole Gather → Extract → Analyse path
+once against your loaded model and checks it reaches the supported outcome inside the 90-second
+per-call budget. A model that merely answers is not enough — it has to clear every gate.
 
 ## 3. Platform notes
 
@@ -74,9 +108,17 @@ use the recovery lane on the day rather than fighting it. Tell a facilitator at 
 
 ### LM Studio
 
-LM Studio is a **compatibility target, not a blessed runtime.** It has not passed the same
-end-to-end gates as Ollama. If you already run LM Studio, bring Ollama as well. `.env.example` has
-the LM Studio settings for anyone who wants to try after the core works.
+LM Studio is a first-class runtime: every presenter rehearsal and the seven-model benchmark ran on it.
+Load `nvidia-nemotron-3-nano-4b`, start the server (port 1234), then set the LM Studio values from
+[Point the app at your model](#point-the-app-at-your-model). For a one-off run, exporting works too:
+
+```bash
+export MAF_ENDPOINT=http://localhost:1234/v1
+export MAF_MODEL=nvidia-nemotron-3-nano-4b
+export MAF_API_KEY=lm-studio
+```
+
+`.env.example` has both sets; copy it to `.env` if you prefer a file over user-secrets.
 
 ## 4. Recovery lane (no local model)
 
@@ -84,12 +126,17 @@ If your machine cannot run the model, the same application points at an organise
 by changing configuration only — no code changes:
 
 ```bash
-export MAF_ENDPOINT=<organiser supplies>
-export MAF_MODEL=<organiser supplies>
+dotnet user-secrets --project src/Workshop.App set MAF_ENDPOINT <organiser supplies>
+dotnet user-secrets --project src/Workshop.App set MAF_MODEL <organiser supplies>
+dotnet user-secrets --project src/Workshop.App set MAF_API_KEY <organiser supplies>
 ```
 
-The organiser will hand out details on the day. **Only the fictional evidence pack in this repo may
-be sent anywhere off your machine.** Never point this at real incident data, a private repository or
+Keep the key in user-secrets rather than `.env` so it cannot be committed. The organiser will hand
+out details on the day. On OpenRouter only `nvidia/nemotron-3-ultra-550b-a55b:free`
+was confirmed working on 30 Aug (`qwen/qwen3-coder:free` and `openai/gpt-oss-120b:free` return 404
+"unavailable for free"), and roughly 1 call in 3 fails with "provider returned no answer (upstream
+overloaded)" — just run the command again. **Only the bundled Victorian crash sample in this
+repo may be sent anywhere off your machine.** Never point this at real incident data, a private repository or
 a credential.
 
 ## 5. Nothing to bring but the laptop

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "INC-100",
+    "date": "2026-07-12",
+    "title": "Billing checkout timeout",
+    "summary": "A routing configuration caused checkout requests to time out for customers in the northern region. The rollback restored service.",
+    "severity": "high",
+    "sourceReference": "synthetic:INC-100"
+  },
+  {
+    "id": "INC-101",
+    "date": "2026-07-15",
+    "title": "Search index delay",
+    "summary": "Search results were delayed while an index rebuild completed. No customer transaction was lost.",
+    "severity": "low",
+    "sourceReference": "synthetic:INC-101"
+  },
+  {
+    "id": "INC-102",
+    "date": "2026-07-22",
+    "title": "Billing routing recovery",
+    "summary": "A stale routing rule delayed billing confirmation for some customers. The team removed the rule and verified recovery.",
+    "severity": "medium",
+    "sourceReference": "synthetic:INC-102"
+  },
+  {
+    "id": "INC-103",
+    "date": "2026-08-03",
+    "title": "Report export failure",
+    "summary": "Scheduled report exports failed after a dependency update. Manual exports remained available.",
+    "severity": "medium",
+    "sourceReference": "synthetic:INC-103"
+  },
+  {
+    "id": "INC-104",
+    "date": "2026-08-10",
+    "title": "Authentication latency",
+    "summary": "Authentication latency increased during a cache restart. The service recovered after capacity was restored.",
+    "severity": "high",
+    "sourceReference": "synthetic:INC-104"
+  },
+  {
+    "id": "INC-105",
+    "date": "2026-08-18",
+    "title": "Data import duplicate alert",
+    "summary": "A duplicate import alert was raised and resolved before customer records were changed.",
+    "severity": "low",
+    "sourceReference": "synthetic:INC-105"
+  }
+]

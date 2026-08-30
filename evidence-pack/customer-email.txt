@@ -1,6 +1,0 @@
-From: site.admin@brisbaneconstruct.example
-To: support@fieldops.example
-Subject: Cannot submit inspection forms
-
-Our crews could not submit inspection forms at several sites.
-Our team believes the outage was caused by the new billing system.

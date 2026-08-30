@@ -1,19 +1,15 @@
-# Reference run
+# Saved reference output
 
-The measured artifacts every number in this repo comes from. Committed on purpose: a readiness
-claim with no artifact behind it is a story.
+Recorded 30 Aug 2026 on the presenter Mac (M4 Max, LM Studio, `nvidia-nemotron-3-nano-4b`, 16k context). Use these in the recovery lane when a machine has no working model: read the file instead of running the command.
 
-| File | What it is |
-| --- | --- |
-| `claim-ledger.json` | the ledger from one clean run — the model proposed the claims, code assembled the file |
-| `verification.json` | what deterministic code decided about it: 30 passed, 0 failed, 2 unverified |
-| `incident-brief.md` | the rendered brief, built only from claims that passed |
-| `gate-report.json` | first gate matrix, 5 repetitions — median 20.9 s, worst 22.0 s |
-| `gate-report-2.json` | second gate matrix, 5 repetitions — median 19.6 s, worst 20.0 s |
+| File | Command | Result |
+|---|---|---|
+| `smoke.txt` | `smoke` | `reply: WORKSHOP_OK` |
+| `typed.txt` | `typed` | raw JSON + parsed greeting/confidence |
+| `gather-intersection.json` | `gather --term intersection` | 4 records (deterministic, no model) |
+| `run-intersection.txt` | `run --term intersection` | Extract 4 IDs → Analyse finding, `gate: Supported` |
+| `run-cyclist.txt` | `run --term cyclist` | `gate: NoEvidence` — Extract/Analyse never called |
+| `workflow-intersection.txt` | `workflow --term intersection` | same as `run`, workflow-labelled |
+| `ready.txt` | `ready` | `READY: model-backed supported path completed.` |
 
-Both gate reports carry a `provenance` block: model digest, quantization, runtime version, the
-settings actually used, the machine, and the measured CPU/GPU placement. Read that before repeating
-a number.
-
-`scripts/check-distribution.sh` verifies a clean clone against `claim-ledger.json` here, so this
-directory is load-bearing, not decorative. `scripts/reset-workshop.sh` never touches it.
+Model output is not deterministic across runtimes; the shape and the gate outcomes are what matter.

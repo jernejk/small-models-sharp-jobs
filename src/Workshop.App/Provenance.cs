@@ -35,7 +35,7 @@ internal sealed record Provenance(
         if (settings.Lane == ModelLane.Local)
         {
             using var http = new HttpClient { BaseAddress = new Uri(settings.RuntimeApiRoot + "/"), Timeout = budget };
-            runtime = await TextAsync(http, "api/version", root => root.GetProperty("version").GetString()) ?? Unavailable;
+            runtime = await TextAsync(http, "api/version", RuntimeVersionFrom) ?? Unavailable;
 
             var tags = await ElementAsync(http, "api/tags");
             var entry = FindModel(tags, "models", settings.Model);
@@ -70,7 +70,7 @@ internal sealed record Provenance(
                 ["streaming"] = "off",
                 ["contextLength"] = "runtime default (not set by this application)",
                 ["requestBudgetSeconds"] = ((int)settings.RequestBudget.TotalSeconds).ToString(CultureInfo.InvariantCulture),
-                ["prosesourcesSentToModel"] = string.Join(", ", IncidentPipeline.ProseSources)
+                ["modelInputBoundary"] = "Extract receives only the bounded Gather evidence pack; Analyse receives only validated selected records"
             },
             DescribeHardware());
     }
@@ -134,6 +134,9 @@ internal sealed record Provenance(
         }
         return null;
     }
+
+    /// <summary>LM Studio answers unknown paths with 200 and a JSON error body, so a parse success is not proof of runtime.</summary>
+    internal static string RuntimeVersionFrom(JsonElement root) => Value(root, "version");
 
     private static string Value(JsonElement element, string property) =>
         element.TryGetProperty(property, out var value) ? value.GetString() ?? Unavailable : Unavailable;

@@ -2,9 +2,9 @@
 # Tier A offline proof. Run as root on the reference machine:
 #   sudo scripts/offline-proof.sh
 #
-# Blocks every non-loopback packet for the workshop user, then proves the full path still
-# restores from the local NuGet cache and produces all three artifacts. Ollama listens on
-# loopback under its own uid, so the model stays reachable while the internet does not.
+# Blocks every non-loopback packet for the workshop user, then proves the full Gather -> Extract ->
+# Analyse path still restores from the local NuGet cache and reaches a supported gate. Ollama listens
+# on loopback under its own uid, so the model stays reachable while the internet does not.
 #
 # Tier B (physically pulling Wi-Fi) is a human rehearsal step and cannot be automated here.
 set -euo pipefail
@@ -13,7 +13,6 @@ WORKSHOP_USER="${WORKSHOP_USER:-fleet-jackdaw}"
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 UID_NUMBER="$(id -u "$WORKSHOP_USER")"
 NUGET_CONFIG=/tmp/offline-proof-nuget.config
-OUT_DIR="$REPO/artifacts"
 FAILURES=0
 
 [[ $EUID -eq 0 ]] || { echo "must run as root (needs iptables)"; exit 1; }
@@ -66,22 +65,19 @@ check "dotnet build" as_user "dotnet build Workshop.slnx -c Release --no-restore
 echo "--- deterministic tests with no network"
 check "dotnet test" as_user "dotnet test Workshop.slnx -c Release --no-build"
 
+echo "--- deterministic Gather with no network"
+check "gather (no model call)" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- gather --term intersection"
+
 echo "--- full local path with no network"
-as_user "rm -f artifacts/claim-ledger.json artifacts/verification.json artifacts/incident-brief.md"
-check "pipeline run" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- run"
-for artifact in claim-ledger.json verification.json incident-brief.md; do
-  check "produced $artifact" test -s "$OUT_DIR/$artifact"
-done
+check "smoke" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- smoke"
+check "pipeline run" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- run --term intersection"
 
 echo "--- attendee readiness with no network"
-check "ready" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- ready"
-
-echo "--- seeded defects with no network"
-check "break it (every seeded defect)" as_user "bash scripts/demo-break-it.sh"
+check "ready" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- ready --term intersection"
 
 echo
 if [[ $FAILURES -eq 0 ]]; then
-  echo "OFFLINE_PROOF: PASS (no non-loopback egress, local cache only, all three artifacts)"
+  echo "OFFLINE_PROOF: PASS (no non-loopback egress, local cache only, supported gate reached)"
 else
   echo "OFFLINE_PROOF: FAIL ($FAILURES check(s) failed)"
 fi

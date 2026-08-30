@@ -31,12 +31,9 @@ echo "=== $MODE at $WORK/repo"
 # The documented commands, run exactly as an attendee would type them.
 dotnet build Workshop.slnx -c Release
 dotnet test Workshop.slnx -c Release --no-build
-dotnet run --project src/Workshop.App -c Release --no-build -- verify-only \
-  --ledger workshop/reference-run/claim-ledger.json --out "$WORK/out"
+dotnet run --project src/Workshop.App -c Release --no-build -- gather --term intersection >"$WORK/gather.json"
 
-for artifact in claim-ledger.json verification.json incident-brief.md; do
-  [[ -s "$WORK/out/$artifact" ]] || { echo "distribution FAIL: $artifact not produced" >&2; exit 1; }
-done
+grep -q '"id"' "$WORK/gather.json" || { echo "distribution FAIL: Gather returned no bounded records" >&2; exit 1; }
 
 for script in scripts/*.sh; do
   [[ -x "$script" ]] || { echo "distribution FAIL: $script is not executable in $MODE" >&2; exit 1; }
