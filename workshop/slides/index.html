@@ -95,10 +95,15 @@ pre{
 }
 pre b{color:var(--accent);font-weight:700}
 pre .c{color:var(--muted)}
+pre .k{color:var(--sky)}
+pre .s{color:var(--amber)}
+pre .t{color:var(--teal)}
+pre .a{color:var(--purple)}
+pre .n{color:var(--rose)}
 pre.code{font-size:clamp(.95rem,1.55vw,1.45rem);line-height:1.5}
 .slide--tight pre.code{font-size:clamp(.85rem,1.3vw,1.2rem);margin-top:2vh;padding:1.4vh 1.4vw}
 .slide--tight .cols{margin-top:2.6vh}
-.card pre{white-space:pre;overflow:hidden}
+.card pre{white-space:pre-wrap;overflow-wrap:anywhere}
 .hint{margin:2.2vh 0 0;font-size:clamp(1.05rem,1.76vw,1.72rem);color:var(--muted)}
 .hint b{color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.8em}
 
@@ -116,6 +121,7 @@ pre.code{font-size:clamp(.95rem,1.55vw,1.45rem);line-height:1.5}
   color:var(--accent);opacity:.12;
   pointer-events:none;user-select:none;
 }
+.interlude-mark.interlude-art{opacity:1;background:center/contain no-repeat;-webkit-text-stroke:0;mix-blend-mode:screen}
 .interlude-time{margin-top:3vh;font:700 clamp(1.05rem,1.5vw,1.55rem)/1.25 var(--mono);color:var(--accent);letter-spacing:.08em}
 
 .slide--cover{
@@ -458,9 +464,9 @@ AIAgent agent = chat.AsAIAgent(
 
 var response = await agent.RunAsync("Find crashes involving an intersection.");</pre>
   <div class="cols">
-    <div class="card"><b>Model</b>Picks the function<span>Chooses the name and the arguments from the <code>[Description]</code> and the signature.</span></div>
-    <div class="card"><b>Framework</b>Runs the C#<span>Returns the result to the model and lets it continue. Only registered delegates can run.</span></div>
-    <div class="card"><b>Tonight</b>No tools on the 4B<span>Typed-only ran 9/9. Ask for a tool <em>and</em> JSON output in the same call and the 4B answers with JSON and never calls the tool. So code gathers, and we paste the pack into the prompt.</span></div>
+    <div class="card"><b>Model</b>Picks the function<span>Name and arguments, from the description and signature.</span></div>
+    <div class="card"><b>Framework</b>Runs the C#<span>Hands the result back; the model continues.</span></div>
+    <div class="card"><b>Tonight</b>No tools on the 4B<span>Tool <em>and</em> JSON output in one call: the 4B answers with JSON and never calls the tool. So code gathers.</span></div>
   </div>
 </section>
 
@@ -630,24 +636,30 @@ analyse JSON
 <section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="Where MAF Workflows fit">
   <div class="eyebrow">Workflows and graceful failure · Microsoft.Agents.AI.Workflows</div>
   <h2 class="title">Where MAF Workflows fit</h2>
-  <pre class="code">record Stage(EvidencePack Pack, CrashSelection? Selection, IReadOnlyList&lt;IncidentRecord&gt; Selected,
-             CrashAnalysis? Analysis, CrashGate? Gate);                <span class="c">// Gate == null means "keep going"</span>
-
-var workflow = new WorkflowBuilder(gather)
-    .AddEdge&lt;Stage&gt;(gather,  report,  s =&gt; s is { Gate: not null })   <span class="c">// NoEvidence → straight to report</span>
-    .AddEdge&lt;Stage&gt;(gather,  extract, s =&gt; s is { Gate: null })
-    .AddEdge&lt;Stage&gt;(extract, report,  s =&gt; s is { Gate: not null })   <span class="c">// bad selection → report</span>
-    .AddEdge&lt;Stage&gt;(extract, analyse, s =&gt; s is { Gate: null })
+  <pre class="code">var workflow = new WorkflowBuilder(gather)
+    .AddEdge&lt;Stage&gt;(gather,  report,  s =&gt; s.Gate is not null)   // NoEvidence → report
+    .AddEdge&lt;Stage&gt;(gather,  extract, s =&gt; s.Gate is null)
+    .AddEdge&lt;Stage&gt;(extract, report,  s =&gt; s.Gate is not null)   // bad selection → report
+    .AddEdge&lt;Stage&gt;(extract, analyse, s =&gt; s.Gate is null)
     .AddEdge(analyse, report)
     .WithOutputFrom(report)
     .Build();
 
 var run = await InProcessExecution.RunAsync(workflow, term);</pre>
-  <div class="cols">
-    <div class="card"><b>Workflow</b>Typed executors joined by edges<span>Conditions on edges, an event per step, checkpoints you can resume. The same gates, as a graph.</span></div>
-    <div class="card"><b>This lab</b>The same sequence in plain C#<span>Every gate is a line you can step through. Tested tonight with this exact graph — same output, <code>cyclist</code> in 47 ms with no model call.</span></div>
-    <div class="card"><b>Gotcha</b>Executor exceptions don't throw<span>They arrive as <code>WorkflowErrorEvent</code>. Miss that and "endpoint down" exits 0 looking like <code>Supported</code>.</span></div>
+  <div class="cols two">
+    <div class="card"><b>Workflow</b>Typed executors joined by edges<span>Conditions on edges, an event per step, checkpoints. The same gates, as a graph.</span></div>
+    <div class="card"><b>This lab</b>The same sequence in plain C#<span>Every gate is a line you can step through. Tested with this exact graph — same output.</span></div>
   </div>
+</section>
+
+<section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="Workflows: the gotcha">
+  <div class="eyebrow">Workflows and graceful failure</div>
+  <h2 class="title">Exceptions <em>don't throw</em></h2>
+  <pre class="code">var failure = run.OutgoingEvents.OfType&lt;WorkflowErrorEvent&gt;()
+    .Select(e =&gt; e.Data).OfType&lt;Exception&gt;().FirstOrDefault();
+
+if (failure is not null) { Console.Error.WriteLine($"pipeline error: {failure.Message}"); return 3; }</pre>
+  <p class="hint">Miss that and "endpoint down" exits 0 — and <code>LastOrDefault()</code> over no output reads as <code>Supported</code>, enum value 0.</p>
 </section>
 
 <section class="slide" data-section="Workflows and graceful failure" data-group="outro" data-title="Key takeaways">
@@ -747,12 +759,12 @@ const SHOW_AGENDA = true;
 
 const SECTIONS = {
   "Welcome":                         { accent: "#2dd4bf", result: "What we build and how the night runs." },
-  "Local models":                    { accent: "#fb923c", result: "LM Studio, Ollama, and why a 4B model." },
-  "Get started":                     { accent: "#c084fc", result: "Clone, configure with user-secrets, first call from C#." },
-  "Talking to a model":              { accent: "#38bdf8", result: "Plain chat, tool calls, structured output, reasoning effort." },
-  "The dataset and Gather":          { accent: "#4ade80", result: "24 crash records and the C# that narrows them." },
-  "Extract and Analyse":             { accent: "#fb7185", result: "The two model calls you write, and the code that checks them." },
-  "Workflows and graceful failure":  { accent: "#fbbf24", result: "Gates as flow control, the same steps as a workflow, swapping models." }
+  "Local models":                    { accent: "#fb923c", art: "../assets/section-local-models.jpg", result: "LM Studio, Ollama, and why a 4B model." },
+  "Get started":                     { accent: "#c084fc", art: "../assets/section-get-started.jpg", result: "Clone, configure with user-secrets, first call from C#." },
+  "Talking to a model":              { accent: "#38bdf8", art: "../assets/section-talking.jpg", result: "Plain chat, tool calls, structured output, reasoning effort." },
+  "The dataset and Gather":          { accent: "#4ade80", art: "../assets/section-dataset.jpg", result: "24 crash records and the C# that narrows them." },
+  "Extract and Analyse":             { accent: "#fb7185", art: "../assets/section-extract.jpg", result: "The two model calls you write, and the code that checks them." },
+  "Workflows and graceful failure":  { accent: "#fbbf24", art: "../assets/section-workflows.jpg", result: "Gates as flow control, the same steps as a workflow, swapping models." }
 };
 
 /* ---------- offline QR (byte mode, versions 1-6, ECC M then L) ---------- */
@@ -1005,6 +1017,29 @@ function buildGeneratedSlides() {
   });
 }
 
+const CS_KEYWORDS = /\b(?:var|new|await|async|static|return|try|catch|when|is|not|null|true|false|record|string|int|bool|using|if|else|out|private|public|sealed|class|Task|ValueTask)\b/;
+function highlightCSharp(pre) {
+  const src = pre.textContent;
+  const re = /("""[\s\S]*?""")|(\$?"(?:[^"\\\n]|\\.)*")|(\/\/[^\n]*|#[^\n]*)|(\[[A-Z][\w.]*(?:\([^\]]*\))?\])|(\b[A-Z][\w]*(?=[\s<>(\[?.,;)]))|(\b\d+(?:\.\d+)?\b)|(\b[a-z]+\b)/g;
+  let out = "", last = 0, m;
+  const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  while ((m = re.exec(src))) {
+    out += esc(src.slice(last, m.index));
+    const [tok, raw, str, com, attr, type, num, word] = m;
+    if (raw || str) out += `<span class="s">${esc(tok)}</span>`;
+    else if (com) out += `<span class="c">${esc(tok)}</span>`;
+    else if (attr) out += `<span class="a">${esc(tok)}</span>`;
+    else if (type) out += `<span class="t">${esc(tok)}</span>`;
+    else if (num) out += `<span class="n">${esc(tok)}</span>`;
+    else if (word && CS_KEYWORDS.test(word)) out += `<span class="k">${esc(tok)}</span>`;
+    else out += esc(tok);
+    last = re.lastIndex;
+  }
+  out += esc(src.slice(last));
+  pre.innerHTML = out;
+}
+document.querySelectorAll("pre.code").forEach(highlightCSharp);
+
 function decorate() {
   deck.all = Array.from(document.querySelectorAll("section.slide"));
   const order = [];
@@ -1015,7 +1050,8 @@ function decorate() {
       const mark = document.createElement("div");
       mark.className = "interlude-mark";
       mark.setAttribute("aria-hidden", "true");
-      mark.textContent = String(order.indexOf(slide.dataset.section)).padStart(2, "0");
+      if (meta.art) { mark.classList.add("interlude-art"); mark.style.backgroundImage = `url("${meta.art}")`; }
+      else mark.textContent = String(order.indexOf(slide.dataset.section)).padStart(2, "0");
       slide.appendChild(mark);
     }
     if (meta.accent) slide.style.setProperty("--accent", meta.accent);
