@@ -11,18 +11,18 @@ The dataset and Gather → Extract and Analyse → Workflows and graceful failur
 | Min | Segment | Mode | Result on screen |
 |---|---|---|---|
 | 0–4 | Welcome · build along or observe · the core sequence · agenda | talk | slides 1–4 |
-| 4–7 | **Local models** · LM Studio and Ollama, both env triples (LM Studio :1234, Ollama :11434) · why a 4B | talk | slides 5–9 |
-| 7–14 | **Get started** · clone, build, `user-secrets`, CP-01 `smoke`. Five-minute rule: anyone without `WORKSHOP_OK` by minute 13 pairs up or reads `workshop/reference-run/` | attendees run | slides 10–14 · `reply: WORKSHOP_OK` |
-| 14–18 | **Talking to a model** · chat, tool call, structured output · CP-02 `typed` · reasoning effort | attendees run | slides 15–19 · raw JSON then parsed greeting |
-| 18–26 | **The dataset and Gather** · CP-03 `gather --term intersection`, then `--term cyclist` → empty pack. No model involved | attendees run | slides 20–22 · 4 records · `isEmpty: true` |
-| 26–44 | **Extract and Analyse** · CP-04 — **presenter types TODO 4 live** (`Agent(...)`, `RunAsync<CrashSelection>`, serialize the pack, catch malformed → null). Attendees type along or paste from `solution/`. Run: gate moves `UnsupportedSelection` → `UnsupportedAnalysis` | build-along | slides 23–25 · extract JSON with 4 IDs |
-| 44–54 | **Extract and Analyse** · CP-05 — attendees write TODO 5 (the marker lists finding, actions, questions, **0–100 confidence**) or paste. Run: `gate: Supported`, exit 0. Watch for `confidence: 0` — the instruction forgot to ask | attendees build | slides 26–27 · analyse JSON, ~5 s |
-| 54–64 | **Workflows and graceful failure** · live gates you can actually show: the starter stub (`UnsupportedSelection`), `cyclist` (`NoEvidence`); invalid / duplicate / low-confidence via `CrashWorkflowTests.cs` on screen. Then CP-06 `workflow --term intersection` and `ready` | presenter | slides 28–31 · same output, workflow-labelled; `READY:` line |
+| 4–7 | **Local models** · LM Studio and Ollama, both env triples (LM Studio :1234, Ollama :11434) · why a 4B | talk | slides 5–10 |
+| 7–14 | **Get started** · clone, build, `user-secrets`, CP-01 `smoke`. Five-minute rule: anyone without `WORKSHOP_OK` by minute 13 pairs up or reads `workshop/reference-run/` | attendees run | slides 11–16 · `reply: WORKSHOP_OK` |
+| 14–18 | **Talking to a model** · structured output · CP-02 `typed` · reasoning: levels, what it costs, the code | attendees run | slides 17–21 · raw JSON then parsed greeting |
+| 18–26 | **The dataset and Gather** · CP-03 `gather --term intersection`, then `--term cyclist` → empty pack. No model involved | attendees run | slides 22–26 · 4 records · `isEmpty: true` |
+| 26–44 | **Extract and Analyse** · CP-04 — **presenter types TODO 4 live** (`Agent(...)`, `RunAsync<CrashSelection>`, serialize the pack, catch malformed → null). Attendees type along or paste from `solution/`. Run: gate moves `UnsupportedSelection` → `UnsupportedAnalysis` | build-along | slides 27–31 · extract JSON with 4 IDs |
+| 44–54 | **Extract and Analyse** · CP-05 — attendees write TODO 5 (the marker lists finding, actions, questions, **0–100 confidence**) or paste. Run: `gate: Supported`, exit 0. Watch for `confidence: 0` — the instruction forgot to ask | attendees build | slides 32–35 · analyse JSON, ~5 s |
+| 54–64 | **Workflows and graceful failure** · live gates you can actually show: the starter stub (`UnsupportedSelection`), `cyclist` (`NoEvidence`); invalid / duplicate / low-confidence via `CrashWorkflowTests.cs` on screen. Then CP-06 `workflow --term intersection` and `ready` | presenter | slides 36–40 · same output, workflow-labelled; `READY:` line |
 | 64–72 | One extra (`h` to reveal): `#extra-coding` (three local coding models did both TODOs; Gemma 4 26B compiled with tests green and gated `LowConfidence` forever — one missing sentence) or `#extra-models` (seven models, same app) | talk | hidden slide |
-| 72–80 | Key takeaways · thank-you · QR · questions | talk | slides 32–33 |
+| 72–80 | Key takeaways · thank-you · QR · questions | talk | slides 41–42 |
 | 80–85 | slack | — | — |
 
-33 slides in the flow; 5 hidden extras behind `h` (38 total).
+42 slides in the flow; 7 hidden extras behind `h` (49 total).
 
 ## Notes the runbook does not repeat
 
