@@ -461,7 +461,7 @@ raw:
 {"greeting": "Hello everyone, welcome to our offline .NET workshop.", "confidence": 95}
 greeting: Hello everyone, welcome to our offline .NET workshop.
 confidence: 95</pre>
-  <p class="hint">The C# type is your contract. <b>Deserialising successfully doesn't mean it's right.</b></p>
+  <p class="hint">The C# type is your contract, and <b>a clean parse tells you nothing about the content</b>.</p>
 </section>
 
 <section class="slide" data-section="Talking to a model" data-group="core" data-title="Reasoning levels">
@@ -683,14 +683,14 @@ analyse JSON
   <h2 class="title">Gates are flow control</h2>
   <div class="mtable gates">
     <div class="mrow mrow--head"><span>Gate</span><span>What happens</span><span>Exit</span></div>
-    <div class="mrow"><strong>NoEvidence</strong><span>Gather found nothing. Extract and Analyse never run.</span><span class="num ok">0</span></div>
-    <div class="mrow"><strong>UnsupportedSelection</strong><span>Bad IDs or shape from Extract. Stop before Analyse.</span><span class="num warn">2</span></div>
-    <div class="mrow"><strong>LowConfidence</strong><span>Valid shape, confidence under 60. Stop, say so.</span><span class="num warn">2</span></div>
+    <div class="mrow"><strong>NoEvidence</strong><span>Gather found nothing, so Extract and Analyse never run.</span><span class="num ok">0</span></div>
+    <div class="mrow"><strong>UnsupportedSelection</strong><span>Bad IDs or shape from Extract. The run stops before Analyse.</span><span class="num warn">2</span></div>
+    <div class="mrow"><strong>LowConfidence</strong><span>Valid shape, confidence under 60. The run stops, with the reason on screen.</span><span class="num warn">2</span></div>
     <div class="mrow"><strong>UnsupportedAnalysis</strong><span>Analyse returned nothing usable. Caution branch.</span><span class="num warn">2</span></div>
     <div class="mrow"><strong>Supported</strong><span>Show the finding — with the evidence still on screen.</span><span class="num ok">0</span></div>
     <div class="mrow"><strong>pipeline error</strong><span>Endpoint down, model not loaded, timeout. You see the real error.</span><span class="num slow">3</span></div>
   </div>
-  <p class="mfoot">Predictable failure: the app stops <b>and tells you why</b>. A run that stops at a gate is still a correct run.</p>
+  <p class="mfoot">Predictable failure: the app stops <b>and tells you why</b>.</p>
 </section>
 
 <section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="The flow, in plain C#">
@@ -739,10 +739,10 @@ var run = await InProcessExecution.RunAsync(workflow, term);</pre>
   <div class="eyebrow">Key takeaways</div>
   <h2 class="title">Small models, <em>sharp jobs.</em></h2>
   <ul class="takeaways">
-    <li>Give a small model one specific task. Filter the data before you call it.</li>
-    <li>Ask for typed output, then validate IDs, ranges and required fields in C#.</li>
-    <li>Handle missing data, bad output and low confidence as normal branches, not exceptions.</li>
-    <li>Valid JSON doesn't mean it's right. Check the result.</li>
+    <li>Give the model one narrow task over data you already filtered.</li>
+    <li>Ask for typed output so you can validate IDs, ranges and required fields in C#.</li>
+    <li>Missing data, bad output and low confidence are ordinary branches you handle in code.</li>
+    <li>Valid JSON doesn't mean it's right, so read the finding.</li>
     <li>Same <code>IChatClient</code>, any model &mdash; you proved it tonight by swapping mid-lab.</li>
   </ul>
   <div class="join">

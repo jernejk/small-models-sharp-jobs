@@ -54,7 +54,7 @@ One machine is one data point. Nothing here claims a second machine behaves the 
 | A mislabelled cause used to pass every rule and reach Verified facts | hand-built ledger labelling the customer's causal sentence `event`: 22 passed, 0 failed, exit 0 **before** R12; `R12-KIND-SEMANTICS` FAIL + `R9` UNVERIFIED after |
 | A quote spliced from two different source lines used to pass `R2` | same probe; whole-file matching accepted it, line-scoped matching rejects it |
 | A broken tool contract exits 5, not 0 | stub endpoint that never calls the tool → `TOOL CONTRACT BROKEN`, exit 5 |
-| The 90 s per-call ceiling is enforced, not just observed | stub endpoint sleeping 30 s with `MAF_TIMEOUT_SECONDS=5` → aborts at 5 s, exit 3 |
+| The 90 s per-call ceiling aborts the call | stub endpoint sleeping 30 s with `MAF_TIMEOUT_SECONDS=5` → aborts at 5 s, exit 3 |
 | Structured output **and** tools in one call returns `{"claims": []}` in ≈ 1.4 s, tool never invoked | isolated three-case probe; untyped+tools and typed-without-tools both worked |
 | Sending all four evidence files through the model projects to ≈ 39.8 s, over budget | measured per-source extraction latency |
 | A C# `enum` for claim kinds made semantic accuracy *worse* than a string plus an allowed-value list | probe: enum returned `Severity` for `7` and `Duration` for timestamps |
