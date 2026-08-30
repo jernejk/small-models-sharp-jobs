@@ -469,7 +469,7 @@ confidence: 95</pre>
   <div class="cols">
     <div class="card"><b>None</b>Answer directly<span>Fastest. Fine when the input is small and the output is typed.</span></div>
     <div class="card"><b>Low · Medium</b>Think a little<span>More tokens, more latency, sometimes a better answer.</span></div>
-    <div class="card"><b>High</b>Think a lot<span>Pays off for open-ended problems, wastes time on specific tasks.</span></div>
+    <div class="card"><b>High</b>Think a lot<span>Worth it on open-ended problems. On a narrow job like tonight's it's mostly wasted seconds.</span></div>
   </div>
 </section>
 
@@ -593,7 +593,7 @@ if (gate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
   <div class="cols">
     <div class="card"><b>Rejected</b>Unknown, duplicate or blank IDs<span>Null or oversized selections. Confidence outside 0–100. Blank rationale.</span></div>
     <div class="card"><b>LowConfidence</b>Under 60<span>Valid shape, but the model clearly isn't sure &mdash; stop before Analyse.</span></div>
-    <div class="card"><b>We decide the flow</b>Not the model<span>Plain C# decides whether the next model call happens at all.</span></div>
+    <div class="card"><b>We control the flow</b>Not the model<span>Plain old C# decides if we even make the next call.</span></div>
   </div>
 </section>
 
@@ -661,9 +661,9 @@ analyse JSON
   <div class="eyebrow">Extract and Analyse</div>
   <h2 class="title"><em>Read</em> the answer</h2>
   <div class="cols">
-    <div class="card"><b>Supported means</b>IDs, required fields and confidence passed the code checks</div>
-    <div class="card"><b>Supported ≠ proven</b>Nobody checked the facts<span>The gate checks shape and IDs, not facts. That bold sentence is wrong: <code>T20200020837</code> is a <em>Serious</em> injury accident.</span></div>
-    <div class="card"><b>So</b>Read the finding<span>Validated input and typed output are necessary, not sufficient. Someone still has to read the answer &mdash; that someone is you.</span></div>
+    <div class="card"><b>Supported means</b>The gate said yes<span>The IDs exist, the JSON parsed, confidence is in range. That's all it checked.</span></div>
+    <div class="card"><b>Valid shape ≠ correct facts</b>The gate checks JSON and IDs, not content<span>That bold sentence is wrong: <code>T20200020837</code> is a <em>Serious</em> injury accident.</span></div>
+    <div class="card"><b>So</b>Read the finding<span>Typed output and a passing gate get you a candidate answer. Someone still has to read it.</span></div>
   </div>
 </section>
 
@@ -677,9 +677,9 @@ analyse JSON
     <div class="mrow"><strong>LowConfidence</strong><span>Valid shape, confidence under 60. Stop, say so.</span><span class="num warn">2</span></div>
     <div class="mrow"><strong>UnsupportedAnalysis</strong><span>Analyse returned nothing usable. Caution branch.</span><span class="num warn">2</span></div>
     <div class="mrow"><strong>Supported</strong><span>Show the finding — with the evidence still on screen.</span><span class="num ok">0</span></div>
-    <div class="mrow"><strong>pipeline error</strong><span>Endpoint down, model not loaded, timeout. Named, not swallowed.</span><span class="num slow">3</span></div>
+    <div class="mrow"><strong>pipeline error</strong><span>Endpoint down, model not loaded, timeout. You see the real error.</span><span class="num slow">3</span></div>
   </div>
-  <p class="mfoot">Graceful failure means the app stops <b>predictably and says why</b>. Not every run ends in success, and that's by design.</p>
+  <p class="mfoot">Predictable failure: the app stops <b>and tells you why</b>. A run that stops at a gate is still a correct run.</p>
 </section>
 
 <section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="The flow, in plain C#">
@@ -695,7 +695,7 @@ if (selectionGate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
 
 var analysis = await AnalyseAsync(question, selected);
 return new(evidence, selection, analysis, CrashWorkflow.ValidateAnalysis(selected, analysis), "…");</pre>
-  <p class="hint">Readable, debuggable, and every branch is explicit. This is the code you'll run in the lab.</p>
+  <p class="hint">Easy to read and debug. This is exactly what you'll run tonight.</p>
 </section>
 
 <section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="The same flow as a MAF Workflow">
@@ -789,13 +789,13 @@ var response = await agent.RunAsync("Find crashes involving an intersection.");<
 <section class="slide" data-hidden id="extra-harness" data-section="Workflows and graceful failure" data-group="extras" data-title="Extra: Workflow vs Harness">
   <div class="eyebrow">Presenter extra</div>
   <h2 class="title">Fixed workflow vs <em>coding-agent harness</em></h2>
-  <p class="sub">A workflow is fixed and code-owned: the safe sequence is already known. A Harness packages a model-directed loop — planning, session state, compaction, approvals, recovery and stopping. Write one by hand and you own all of those. <strong>A Harness earns its keep when the investigation is genuinely open-ended.</strong></p>
+  <p class="sub">A workflow is code you wrote, in an order you chose. A harness (Codex, Claude Code, OpenCode) is a loop the model drives &mdash; planning, session state, compaction, approvals, recovery, knowing when to stop. Write one by hand and you're building all of that yourself. <strong>Use a harness when the problem is open-ended enough to be worth it.</strong></p>
 </section>
 
 <section class="slide" data-hidden id="extra-mcp" data-section="Workflows and graceful failure" data-group="extras" data-title="Extra: MCP">
   <div class="eyebrow">Presenter extra</div>
   <h2 class="title">MCP exposes tools; <em>code sets policy.</em></h2>
-  <p class="sub">MCP and function tools expose capability. They do not decide when to stop, what to trust, or what the controller is allowed to see. Keep tool output constrained if the controller should never see raw evidence.</p>
+  <p class="sub">MCP hands the model tools. It doesn't decide when to stop or what to trust &mdash; your code does. If the model should never see raw evidence, don't hand it raw evidence.</p>
 </section>
 
 <section class="slide" data-hidden id="extra-models" data-section="Workflows and graceful failure" data-group="extras" data-title="Extra: Same app, seven models">
