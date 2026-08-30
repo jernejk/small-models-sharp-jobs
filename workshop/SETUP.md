@@ -26,7 +26,7 @@ Run all four. Each one must finish before you travel.
 
 ```bash
 # 1. the repo
-git clone https://github.com/jernejk/small-models-sharp-jobs && cd small-models-sharp-jobs   # placeholder URL until the repo is published
+git clone https://github.com/jernejk/small-models-sharp-jobs && cd small-models-sharp-jobs
 
 # 2. the model  (~2.8 GB)
 ollama pull nemotron-3-nano:4b

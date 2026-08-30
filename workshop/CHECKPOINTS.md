@@ -13,5 +13,7 @@ MAF_ENDPOINT ...`, per [SETUP.md](SETUP.md).
 | CP-05 Analyse | Only validated selected records reach the analysis call. | Low confidence takes the caution branch. If you see `confidence: 0` on every run, your instruction never asked for a 0-100 confidence — the model is not being cautious, it is filling a field it was not told about. |
 | CP-06 Workflow | Explicit calls become the same linear fixed workflow. | No evidence bypasses Extract and Analyse. |
 
+Fell behind? `workshop/checkpoints/` has a `CrashPipeline.cs` for CP-03 (stubs), CP-04 (Extract done) and CP-05 (both done) — copy one over `starter/src/Workshop.App/CrashPipeline.cs`.
+
 The `starter/` and `solution/` trees are generated. Use `python3 scripts/generate-starter.py --check`
 to prove they match canonical `src/`.
