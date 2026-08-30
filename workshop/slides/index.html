@@ -63,6 +63,10 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:
 .join strong{font:700 clamp(1.1rem,1.7vw,1.7rem)/1.3 var(--mono);color:var(--fg)}
 .card pre{margin-top:1.2vh;white-space:pre-wrap;font-size:clamp(.85rem,1.25vw,1.2rem)}
 .cols .card{min-width:0}
+.flow.flow--grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.6vw}
+.flow.flow--grid span{position:relative;text-align:center}
+.flow.flow--grid span:not(:last-child)::after{content:"→";position:absolute;right:-1.1vw;top:50%;transform:translate(50%,-50%);color:var(--accent);opacity:.55;font-weight:800}
+.shot{margin-top:3vh;max-height:62vh;width:auto;max-width:100%;border:1px solid var(--rule);border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
 .cols.steps.four{grid-template-columns:repeat(4,1fr)}
 .cols.steps{grid-template-columns:repeat(5,1fr);gap:1.6vw;margin-top:3.6vh}
 .cols.steps .card{font-size:clamp(1.05rem,1.6vw,1.6rem)}
@@ -311,10 +315,10 @@ pre.code{font-size:clamp(.95rem,1.55vw,1.45rem);line-height:1.5}
 <section class="slide" data-section="Welcome" data-group="intro" data-title="What we build tonight">
   <div class="eyebrow">What we build tonight</div>
   <h2 class="title">A crash-review agent that runs on <em>your laptop.</em></h2>
-  <div class="flow">
-    <span class="is-code">Gather</span><i>→</i>
-    <span>Extract</span><i>→</i>
-    <span class="is-code">Validate</span><i>→</i>
+  <div class="flow flow--grid">
+    <span class="is-code">Gather</span>
+    <span>Extract</span>
+    <span class="is-code">Validate</span>
     <span>Analyse</span>
   </div>
   <div class="cols steps four">
@@ -328,16 +332,18 @@ pre.code{font-size:clamp(.95rem,1.55vw,1.45rem);line-height:1.5}
 <section class="slide" data-section="Local models" data-group="core" data-title="LM Studio">
   <div class="eyebrow">Local models</div>
   <h2 class="title">LM Studio</h2>
-  <p class="sub">Downloads and serves open-weight models. Exposes an OpenAI-compatible API on <strong>http://localhost:1234/v1</strong>.</p>
-  <div class="cols two">
-    <div class="card"><b>In the app</b>Discover &rarr; Download &rarr; Developer &rarr; Start server<span>Search <code>nemotron 3 nano 4b</code>, download, then start the server from the Developer tab.</span></div>
-    <div class="card"><b>From the terminal</b><code>lms</code> ships with LM Studio
-<pre>lms get nvidia/nemotron-3-nano-4b
-lms load nvidia-nemotron-3-nano-4b -c 16384
-lms server start
-lms ps</pre></div>
-  </div>
-  <p class="hint"><b>Names</b> download key <code>nvidia/nemotron-3-nano-4b</code>, loaded id <code>nvidia-nemotron-3-nano-4b</code> &mdash; the id is what goes in <code>MAF_MODEL</code>. <b>Gotcha</b> whatever is loaded is what answers; LM Studio ignores the name in the request.</p>
+  <p class="sub">Download open-weight models, load one, serve it on <strong>http://localhost:1234/v1</strong>.</p>
+  <img class="shot" src="../assets/lm-studio-my-models.png" alt="LM Studio: My Models list with Nemotron 3 Nano 4B">
+</section>
+
+<section class="slide" data-section="Local models" data-group="core" data-title="LM Studio from the terminal">
+  <div class="eyebrow">Local models</div>
+  <h2 class="title">LM Studio from the terminal</h2>
+  <pre>lms get nvidia/nemotron-3-nano-4b                   <span class="c"># download</span>
+lms load nvidia-nemotron-3-nano-4b -c 16384         <span class="c"># load with a 16k context</span>
+lms server start                                    <span class="c"># http://localhost:1234/v1</span>
+lms ps                                              <span class="c"># what is loaded right now</span></pre>
+  <p class="hint"><b>Gotcha</b> whatever is loaded is what answers — LM Studio ignores the model name in the request.</p>
 </section>
 
 <section class="slide" data-section="Local models" data-group="core" data-title="Ollama">
@@ -347,11 +353,7 @@ lms ps</pre></div>
   <pre>ollama pull nemotron-3-nano:4b
 ollama run nemotron-3-nano:4b "Say hello in five words"
 ollama ps</pre>
-  <div class="cols">
-    <div class="card"><b>Serve</b>Starts on demand<span>The API is up whenever Ollama runs; the model loads on the first request.</span></div>
-    <div class="card"><b>Pick</b><code>MAF_MODEL</code> selects the model<span>Unlike LM Studio, the name in the request decides what answers.</span></div>
-    <div class="card"><b>Same C#</b>Only endpoint and name change<span>Pipeline and gates are identical on both runtimes.</span></div>
-  </div>
+  <p class="hint">Here the model name in the request decides what answers. Same C# either way — only endpoint and name change.</p>
 </section>
 
 <section class="slide" data-section="Local models" data-group="core" data-title="Which model, and why">
