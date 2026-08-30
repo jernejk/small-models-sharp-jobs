@@ -388,12 +388,12 @@ lms ps                                          <span class="c"># what is loaded
   <pre>git clone <b>https://github.com/jernejk/small-models-sharp-jobs</b>
 cd small-models-sharp-jobs/<b>starter</b>
 dotnet build
-dotnet test        <span class="c"># should pass out of the box &mdash; that's your safety net</span></pre>
+dotnet test        <span class="c"># passes already; 5 model tests stay skipped until you set an endpoint</span></pre>
   <div class="cols two">
     <div class="card"><b>starter/</b>Your workspace<span>Two TODOs in <code>src/Workshop.App/CrashPipeline.cs</code> &mdash; search for <code>TODO 4</code> and <code>TODO 5</code>. Everything else already runs.</span></div>
     <div class="card"><b>../solution/</b>The finished version<span>Fall behind? Copy one file across and keep going.</span></div>
   </div>
-  <p class="hint">You're done when <code>run --term intersection</code> exits 0 with <code>gate: Supported</code>.</p>
+  <p class="hint">You're done when <code>run --term intersection</code> exits 0 with <code>gate: Supported</code> — gates are explained in a few slides.</p>
 </section>
 
 <section class="slide" data-section="Get started" data-group="core" data-title="Point it at your model">
@@ -425,6 +425,7 @@ AIAgent agent = client.AsAIAgent(
 
 var response = await agent.RunAsync("Reply with exactly this token: WORKSHOP_OK");
 Console.WriteLine(response.Text);   <span class="c">// WORKSHOP_OK</span></pre>
+  <p class="hint">Local servers don't check the key; <code>settings.ApiKey</code> is a placeholder like <code>lm-studio</code> unless you point at a hosted endpoint.</p>
 </section>
 
 <section class="slide" data-section="Get started" data-group="core" data-title="One client, any provider">
@@ -444,7 +445,7 @@ Console.WriteLine(response.Text);   <span class="c">// WORKSHOP_OK</span></pre>
 
 reply: <b>WORKSHOP_OK</b>
 elapsed: 258 ms</pre>
-  <p class="hint">The <code>smoke</code> command also prints which endpoint and model answered. <b>No reply?</b> Run <code>lms ps</code> or <code>ollama ps</code> &mdash; nine times out of ten the model isn't loaded, or the port doesn't match your secrets.</p>
+  <p class="hint">The <code>smoke</code> command also prints which endpoint and model answered (trimmed here). <b>No reply?</b> Run <code>lms ps</code> or <code>ollama ps</code> &mdash; nine times out of ten the model isn't loaded, or the port doesn't match your secrets.</p>
 </section>
 
 <section class="slide" data-section="Talking to a model" data-group="core" data-title="Structured output">
@@ -456,7 +457,8 @@ var response = await agent.RunAsync&lt;TypedGreeting&gt;("Greet the room.");
 TypedGreeting greeting = response.Result;</pre>
   <pre>$ dotnet run --project src/Workshop.App -- typed
 
-raw:  {"greeting": "Hello everyone, welcome to our offline .NET workshop.", "confidence": 95}
+raw:
+{"greeting": "Hello everyone, welcome to our offline .NET workshop.", "confidence": 95}
 greeting: Hello everyone, welcome to our offline .NET workshop.
 confidence: 95</pre>
   <p class="hint">The C# type is your contract. <b>Deserialising successfully doesn't mean it's right.</b></p>
@@ -536,13 +538,19 @@ confidence: 95</pre>
 <section class="slide" data-section="The dataset and Gather" data-group="core" data-title="Gather: run it">
   <div class="eyebrow">The dataset and Gather</div>
   <h2 class="title">Run it</h2>
-  <pre>$ dotnet run --project src/Workshop.App -- gather --term intersection
+  <pre class="small">$ dotnet run --project src/Workshop.App -- gather --term intersection
+{
+  "records": [
+    { "id": "T20200020837", "date": "2020-11-08", "severity": "Serious injury accident", … },
+    … 3 more …
+  ],
+  "isEmpty": false
+}
 GATHER: <b>4 bounded record(s)</b>. Pass this compact pack, not the dataset, to Extract.
-        T20200020837 · T20190026336 · T20190023360 · T20140024624
 
 $ dotnet run --project src/Workshop.App -- gather --term cyclist
-GATHER: <b>no matching evidence</b> in the approved Victorian crash sample.
-        Extract and Analyse stop here.</pre>
+{ "records": [], "isEmpty": <b>true</b> }
+GATHER: <b>no matching evidence</b> in the approved Victorian crash sample. Extract and Analyse stop here.</pre>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Extract: in and out">
@@ -560,7 +568,7 @@ Evidence pack JSON:
   "rationale": "…",
   "confidence": 95 }</pre></div>
   </div>
-  <p class="hint">The model just picks IDs. It doesn't enforce the rules.</p>
+  <p class="hint">The model picks IDs, a rationale and a confidence. It doesn't enforce the rules — the next slide does.</p>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Extract: the code">
@@ -569,13 +577,15 @@ Evidence pack JSON:
   <pre class="code">var agent = Agent("ExtractAgent", """
     Select only relevant records from the provided evidence pack for the user's question.
     Return recordIds from the pack exactly, a short rationale, and 0-100 confidence.
-    Do not invent records, facts, causes, or recommendations.
+    Do not invent records, facts, causes, or recommendations. You have no tools.
     """);
 
 var response = await agent.RunAsync&lt;CrashSelection&gt;(
     $"Question: {question}\nEvidence pack JSON:\n{WorkshopJson.Serialize(evidence)}");
 
-return response.Result;</pre>
+try { return response.Result; }
+catch (Exception ex) when (ex is InvalidOperationException or JsonException) { return null; }</pre>
+  <p class="hint"><code>Agent(name, instructions)</code> is a one-line helper in the same file. The catch turns malformed JSON into <code>null</code>, which the gate reports as <code>UnsupportedSelection</code> instead of a crash.</p>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Validate the selection">
@@ -639,7 +649,8 @@ Validated records JSON:
 var response = await agent.RunAsync&lt;CrashAnalysis&gt;(
     $"Question: {question}\nValidated selected records JSON:\n{WorkshopJson.Serialize(selected)}");
 
-return response.Result;</pre>
+try { return response.Result; }
+catch (Exception ex) when (ex is InvalidOperationException or JsonException) { return null; }</pre>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Extract and Analyse: run it">
@@ -711,6 +722,7 @@ return new(evidence, selection, analysis, CrashWorkflow.ValidateAnalysis(selecte
     .Build();
 
 var run = await InProcessExecution.RunAsync(workflow, term);</pre>
+  <p class="hint"><code>gather</code>, <code>extract</code>, <code>analyse</code>, <code>report</code> are executors; <code>Stage</code> carries the pack, the selection and a nullable <code>Gate</code> — null means keep going. Not in <code>starter/</code>: it needs the Workflows package and a <code>WorkflowErrorEvent</code> check (see <code>workshop/reviews/</code>).</p>
 </section>
 
 <section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="Workflow or plain code?">
@@ -731,7 +743,7 @@ var run = await InProcessExecution.RunAsync(workflow, term);</pre>
     <li>Ask for typed output, then validate IDs, ranges and required fields in C#.</li>
     <li>Handle missing data, bad output and low confidence as normal branches, not exceptions.</li>
     <li>Valid JSON doesn't mean it's right. Check the result.</li>
-    <li>Swap the runtime or the model behind the same <code>IChatClient</code>; the pipeline and gates stay the same.</li>
+    <li>Same <code>IChatClient</code>, any model &mdash; you proved it tonight by swapping mid-lab.</li>
   </ul>
   <div class="join">
     <span class="eyebrow">Join the conversation</span>
