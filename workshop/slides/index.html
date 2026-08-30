@@ -294,7 +294,7 @@ pre.code{font-size:clamp(.95rem,1.55vw,1.45rem);line-height:1.5}
 <section class="slide slide--cover" data-section="Welcome" data-group="intro" data-chrome="off" data-title="Cover">
   <div class="eyebrow">Global AI Construct · Brisbane</div>
   <h1 class="title">Small Models, <em>Sharp Jobs.</em></h1>
-  <p class="sub">Build a local agent with Microsoft Agent Framework.</p>
+  <p class="sub">Build a local agent with Microsoft Agent Framework &mdash; on your laptop, no cloud, no API key.</p>
 </section>
 
 <section class="slide slide--about" data-section="Welcome" data-group="intro" data-chrome="off" data-title="Speaker">
@@ -366,7 +366,7 @@ pre.code{font-size:clamp(.95rem,1.55vw,1.45rem);line-height:1.5}
 lms load nvidia-nemotron-3-nano-4b -c 16384     <span class="c"># load, 16k context</span>
 lms server start                                <span class="c"># http://localhost:1234/v1</span>
 lms ps                                          <span class="c"># what is loaded</span></pre>
-  <p class="hint"><b>Gotcha</b> whatever is loaded is what answers — LM Studio ignores the model name in the request.</p>
+  <p class="hint"><b>Gotcha</b> whatever is loaded is what answers. LM Studio ignores the model name in your request, so check <code>lms ps</code> if the answers look like they came from the wrong model.</p>
 </section>
 
 <section class="slide" data-section="Local models" data-group="core" data-title="Which model, and why">
@@ -379,7 +379,7 @@ lms ps                                          <span class="c"># what is loaded
     <div class="mrow"><strong>Qwen 3.8 27B</strong><span class="num">16 GB</span><span class="num slow">~20 s</span><span>correct, slow</span></div>
     <div class="mrow"><strong>LFM2.5 1.2B</strong><span class="num">1.25 GB</span><span class="num ok">~2 s</span><span>fastest; findings read like instructions</span></div>
   </div>
-  <p class="mfoot">Measured end to end on one M4 Max with LM Studio; your hardware will differ. <b>Bigger is not automatically better for a narrow job &mdash; the code does not change when you swap.</b></p>
+  <p class="mfoot">Measured end to end on one M4 Max with LM Studio; your hardware will differ. <b>Bigger isn't always better for a focused task. The code stays the same when you swap.</b></p>
 </section>
 
 <section class="slide" data-section="Get started" data-group="core" data-title="Clone and build">
@@ -388,12 +388,12 @@ lms ps                                          <span class="c"># what is loaded
   <pre>git clone <b>https://github.com/jernejk/small-models-sharp-jobs</b>
 cd small-models-sharp-jobs/<b>starter</b>
 dotnet build
-dotnet test        <span class="c"># already green: the baseline, not the finish line</span></pre>
+dotnet test        <span class="c"># should pass out of the box &mdash; that's your safety net</span></pre>
   <div class="cols two">
-    <div class="card"><b>starter/</b>Your workspace<span>Two TODOs in <code>src/Workshop.App/CrashPipeline.cs</code> &mdash; search for <code>TODO 4</code>. Everything else already runs.</span></div>
+    <div class="card"><b>starter/</b>Your workspace<span>Two TODOs in <code>src/Workshop.App/CrashPipeline.cs</code> &mdash; search for <code>TODO 4</code> and <code>TODO 5</code>. Everything else already runs.</span></div>
     <div class="card"><b>../solution/</b>The finished version<span>Fall behind? Copy one file across and keep going.</span></div>
   </div>
-  <p class="hint"><b>Done</b> means <code>run --term intersection</code> exits 0 with <code>gate: Supported</code>.</p>
+  <p class="hint">You're done when <code>run --term intersection</code> exits 0 with <code>gate: Supported</code>.</p>
 </section>
 
 <section class="slide" data-section="Get started" data-group="core" data-title="Point it at your model">
@@ -407,7 +407,7 @@ dotnet user-secrets set MAF_MODEL nvidia-nemotron-3-nano-4b --project src/Worksh
 <span class="c"># Ollama</span>
 dotnet user-secrets set MAF_ENDPOINT http://localhost:11434/v1 --project src/Workshop.App
 dotnet user-secrets set MAF_MODEL nemotron-3-nano:4b --project src/Workshop.App</pre>
-  <p class="hint">Set nothing and you get Ollama. <code>MAF_API_KEY</code> only when your server wants one. Shell variables override secrets; secrets override <code>.env</code>.</p>
+  <p class="hint">Set nothing and you get Ollama. <code>MAF_API_KEY</code> only when your server wants one. Shell variables beat secrets, secrets beat <code>.env</code>.</p>
 </section>
 
 <section class="slide" data-section="Get started" data-group="core" data-title="Your first call">
@@ -433,7 +433,7 @@ Console.WriteLine(response.Text);   <span class="c">// WORKSHOP_OK</span></pre>
   <div class="cols">
     <div class="card"><b>OpenAIClient</b>Any OpenAI-compatible server<span>LM Studio, Ollama, OpenAI, Azure OpenAI, OpenRouter — the endpoint and key change, the code does not.</span></div>
     <div class="card"><b>AsAIAgent</b>Chat client &rarr; agent<span>Instructions and a name turn a raw chat client into something you can run.</span></div>
-    <div class="card"><b>RunAsync</b>One turn<span>Text in, text back. Typed output comes next.</span></div>
+    <div class="card"><b>RunAsync</b>One request<span>Text goes in, text comes back. Typed output next.</span></div>
   </div>
 </section>
 
@@ -444,7 +444,7 @@ Console.WriteLine(response.Text);   <span class="c">// WORKSHOP_OK</span></pre>
 
 reply: <b>WORKSHOP_OK</b>
 elapsed: 258 ms</pre>
-  <p class="hint">The <code>smoke</code> command also prints which endpoint and model answered. <b>No reply?</b> <code>lms ps</code> or <code>ollama ps</code> — is the model loaded, and is the port the one in your secrets?</p>
+  <p class="hint">The <code>smoke</code> command also prints which endpoint and model answered. <b>No reply?</b> Run <code>lms ps</code> or <code>ollama ps</code> &mdash; nine times out of ten the model isn't loaded, or the port doesn't match your secrets.</p>
 </section>
 
 <section class="slide" data-section="Talking to a model" data-group="core" data-title="Structured output">
@@ -459,7 +459,7 @@ TypedGreeting greeting = response.Result;</pre>
 raw:  {"greeting": "Hello everyone, welcome to our offline .NET workshop.", "confidence": 95}
 greeting: Hello everyone, welcome to our offline .NET workshop.
 confidence: 95</pre>
-  <p class="hint">The C# type is the contract. <b>A valid shape still does not make the content true.</b></p>
+  <p class="hint">The C# type is your contract. <b>Deserialising successfully doesn't mean it's right.</b></p>
 </section>
 
 <section class="slide" data-section="Talking to a model" data-group="core" data-title="Reasoning levels">
@@ -469,7 +469,7 @@ confidence: 95</pre>
   <div class="cols">
     <div class="card"><b>None</b>Answer directly<span>Fastest. Fine when the input is small and the output is typed.</span></div>
     <div class="card"><b>Low · Medium</b>Think a little<span>More tokens, more latency, sometimes a better answer.</span></div>
-    <div class="card"><b>High</b>Think a lot<span>Pays off on open-ended problems. On a narrow job it mostly costs.</span></div>
+    <div class="card"><b>High</b>Think a lot<span>Pays off for open-ended problems, wastes time on specific tasks.</span></div>
   </div>
 </section>
 
@@ -477,7 +477,7 @@ confidence: 95</pre>
   <div class="eyebrow">Talking to a model</div>
   <h2 class="title">What it costs</h2>
   <img class="shot shot--chart" src="../assets/reasoning-effort-chart.png" alt="Reasoning effort vs output tokens and recall on the Extract task">
-  <p class="hint">Same IDs at every level. Reasoning on: <b>3.8× the tokens, 3.5× the time</b>. And the runtime treats it as on/off — Low, Medium and High are identical.</p>
+  <p class="hint">Same IDs every time. Reasoning used <b>3.8× more tokens and 3.5× more time</b>. And on this runtime Low, Medium and High all do the same thing.</p>
 </section>
 
 <section class="slide" data-section="Talking to a model" data-group="core" data-title="Reasoning: the code">
@@ -490,8 +490,8 @@ confidence: 95</pre>
     Reasoning = new ReasoningOptions { Effort = ReasoningEffort.None, Output = ReasoningOutput.None }
 }</pre>
   <div class="cols two">
-    <div class="card"><b>Tonight</b>Reasoning off on the 4B<span>Narrow job, small input, typed output.</span></div>
-    <div class="card"><b>Always cap output</b>MaxOutputTokens<span>A 12B model attempted 5,800 tokens with reasoning off. The 700 cap turned a hang into a gate result.</span></div>
+    <div class="card"><b>Tonight</b>Reasoning off on the 4B<span>Simple task, small input, typed output.</span></div>
+    <div class="card"><b>Always cap output</b>MaxOutputTokens<span>A 12B model tried to spit out 5,800 tokens with reasoning off. The 700 cap stopped it hanging.</span></div>
   </div>
 </section>
 
@@ -530,7 +530,7 @@ confidence: 95</pre>
     .Where(r =&gt; string.IsNullOrEmpty(term) || Matches(r, term))
     .OrderByDescending(r =&gt; r.Date).ThenBy(r =&gt; r.Id)
     .Take(Math.Clamp(query.MaxResults, 1, 20));</pre>
-  <p class="hint">No model is called. Ordered, bounded, attributable — and only this compact pack goes to Extract.</p>
+  <p class="hint">No model involved yet &mdash; it's just LINQ. But it buys you a list that's ordered, capped and traceable, and only this compact pack goes to Extract.</p>
 </section>
 
 <section class="slide" data-section="The dataset and Gather" data-group="core" data-title="Gather: run it">
@@ -560,7 +560,7 @@ Evidence pack JSON:
   "rationale": "…",
   "confidence": 95 }</pre></div>
   </div>
-  <p class="hint">The model selects IDs. It does not decide whether they are allowed.</p>
+  <p class="hint">The model just picks IDs. It doesn't enforce the rules.</p>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Extract: the code">
@@ -592,8 +592,8 @@ if (gate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
     return …;                                   <span class="c">// Analyse is never called</span></pre>
   <div class="cols">
     <div class="card"><b>Rejected</b>Unknown, duplicate or blank IDs<span>Null or oversized selections. Confidence outside 0–100. Blank rationale.</span></div>
-    <div class="card"><b>LowConfidence</b>Under 60<span>Valid shape, weak conviction — stop before Analyse.</span></div>
-    <div class="card"><b>We decide the flow</b>Not the model<span>Ordinary C# chooses whether the next model call happens at all.</span></div>
+    <div class="card"><b>LowConfidence</b>Under 60<span>Valid shape, but the model clearly isn't sure &mdash; stop before Analyse.</span></div>
+    <div class="card"><b>We decide the flow</b>Not the model<span>Plain C# decides whether the next model call happens at all.</span></div>
   </div>
 </section>
 
@@ -605,7 +605,7 @@ if (gate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
 gathered: 4 record(s)
 gate: <b>UnsupportedAnalysis</b>
 extract JSON:  { "recordIds": [ …4 IDs… ], "rationale": "…", "confidence": 95 }</pre>
-  <p class="hint">Extract works; Analyse is still the stub, so the second gate stops you. That is the expected state.</p>
+  <p class="hint">Extract works. Analyse is still a stub, so the second gate blocks it. Exactly what we want here.</p>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Analyse: in and out">
@@ -662,8 +662,8 @@ analyse JSON
   <h2 class="title"><em>Read</em> the answer</h2>
   <div class="cols">
     <div class="card"><b>Supported means</b>IDs, required fields and confidence passed the code checks</div>
-    <div class="card"><b>Supported ≠ proven</b>Every sentence was not checked<span>The gate checks shape and IDs, not facts. That bold sentence is wrong: <code>T20200020837</code> is a <em>Serious</em> injury accident.</span></div>
-    <div class="card"><b>So</b>Validated input + typed output<span>Necessary. Not sufficient. Read the finding.</span></div>
+    <div class="card"><b>Supported ≠ proven</b>Nobody checked the facts<span>The gate checks shape and IDs, not facts. That bold sentence is wrong: <code>T20200020837</code> is a <em>Serious</em> injury accident.</span></div>
+    <div class="card"><b>So</b>Read the finding<span>Validated input and typed output are necessary, not sufficient. Someone still has to read the answer &mdash; that someone is you.</span></div>
   </div>
 </section>
 
@@ -679,7 +679,7 @@ analyse JSON
     <div class="mrow"><strong>Supported</strong><span>Show the finding — with the evidence still on screen.</span><span class="num ok">0</span></div>
     <div class="mrow"><strong>pipeline error</strong><span>Endpoint down, model not loaded, timeout. Named, not swallowed.</span><span class="num slow">3</span></div>
   </div>
-  <p class="mfoot">Graceful failure: the app stops <b>predictably and says why</b>. Not every branch is a success — that is the point.</p>
+  <p class="mfoot">Graceful failure means the app stops <b>predictably and says why</b>. Not every run ends in success, and that's by design.</p>
 </section>
 
 <section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="The flow, in plain C#">
@@ -695,7 +695,7 @@ if (selectionGate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
 
 var analysis = await AnalyseAsync(question, selected);
 return new(evidence, selection, analysis, CrashWorkflow.ValidateAnalysis(selected, analysis), "…");</pre>
-  <p class="hint">Readable, debuggable, and the branches are explicit. This is what the lab runs.</p>
+  <p class="hint">Readable, debuggable, and every branch is explicit. This is the code you'll run in the lab.</p>
 </section>
 
 <section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="The same flow as a MAF Workflow">
@@ -719,7 +719,7 @@ var run = await InProcessExecution.RunAsync(workflow, term);</pre>
   <div class="cols">
     <div class="card"><b>Workflow</b>Typed executors joined by edges<span>Conditions on edges, an event per step, checkpoints you can resume from.</span></div>
     <div class="card"><b>Plain C#</b>The same sequence you can step through<span>Tested tonight with this exact graph — same output, same gates.</span></div>
-    <div class="card"><b>Reach for a workflow when</b>Topology earns it<span>Fan-out, resumability, observability. Not for a straight line with two model calls. Gotchas: <code>workshop/reviews/</code>.</span></div>
+    <div class="card"><b>Use a workflow when</b>You actually need fan-out or resuming<span>Don't bother for two calls in a straight line. Gotchas: <code>workshop/reviews/</code>.</span></div>
   </div>
 </section>
 
@@ -727,10 +727,10 @@ var run = await InProcessExecution.RunAsync(workflow, term);</pre>
   <div class="eyebrow">Key takeaways</div>
   <h2 class="title">Small models, <em>sharp jobs.</em></h2>
   <ul class="takeaways">
-    <li>Give a small model one narrow job; bound the context before the call.</li>
+    <li>Give a small model one specific task. Filter the data before you call it.</li>
     <li>Ask for typed output, then validate IDs, ranges and required fields in C#.</li>
-    <li>Treat no evidence, malformed output and low confidence as control flow.</li>
-    <li>A passing shape is not proof. Read the finding.</li>
+    <li>Handle missing data, bad output and low confidence as normal branches, not exceptions.</li>
+    <li>Valid JSON doesn't mean it's right. Check the result.</li>
     <li>Swap the runtime or the model behind the same <code>IChatClient</code>; the pipeline and gates stay the same.</li>
   </ul>
   <div class="join">
