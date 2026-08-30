@@ -470,8 +470,8 @@ confidence: 95</pre>
   <p class="sub">A hint to the model about how much to think before it answers. Support varies by runtime and model.</p>
   <div class="cols">
     <div class="card"><b>None</b>Answer directly<span>Fastest. Fine when the input is small and the output is typed.</span></div>
-    <div class="card"><b>Low · Medium</b>Think a little<span>More tokens, more latency, sometimes a better answer.</span></div>
-    <div class="card"><b>High</b>Think a lot<span>Worth it on open-ended problems. On a narrow job like tonight's it's mostly wasted seconds.</span></div>
+    <div class="card"><b>Low · Medium · High</b>Think first<span>More tokens, more latency, sometimes a better answer. Worth it on open-ended problems; on a job like tonight's it's mostly wasted seconds.</span></div>
+    <div class="card"><b>On this runtime</b>A switch, not a dial<span>LM Studio renders Low, Medium and High identically for this model — next slide has the numbers.</span></div>
   </div>
 </section>
 
@@ -729,7 +729,7 @@ var run = await InProcessExecution.RunAsync(workflow, term);</pre>
   <div class="eyebrow">Workflows and graceful failure</div>
   <h2 class="title">Workflow or plain code?</h2>
   <div class="cols">
-    <div class="card"><b>Workflow</b>Typed executors joined by edges<span>Conditions on edges, an event per step, checkpoints you can resume from.</span></div>
+    <div class="card"><b>Workflow</b>Typed executors joined by edges<span>Conditions on edges, an event per step, checkpoints. But <code>RunAsync</code> swallows executor exceptions — re-raise <code>WorkflowErrorEvent</code> or a dead endpoint exits 0.</span></div>
     <div class="card"><b>Plain C#</b>The same sequence you can step through<span>Tested tonight with this exact graph — same output, same gates.</span></div>
     <div class="card"><b>Use a workflow when</b>You actually need fan-out or resuming<span>Don't bother for two calls in a straight line. Gotchas: <code>workshop/reviews/</code>.</span></div>
   </div>
