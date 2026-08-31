@@ -16,7 +16,8 @@ projects arrive at lab 04.
 | [03 — Gather](03-gather/) | A `GatherAgent` whose filter C# validates, then deterministic bounded retrieval | Yes |
 | [04 — Extract](04-extract/) | Focused, tool-free selection | Yes |
 | [05 — Analyse](05-analyse/) | Grounded analysis after a code gate | Yes |
-| [06 — Workflow](06-workflow/) | The complete explicit pipeline | Yes |
+| [06 — Workflow](06-workflow/) | The same pipeline on the MAF Workflows API (`Executor<,>`) | Yes |
+| [final](final/) | Nothing — every checkpoint already implemented | Yes |
 
 Do not start in `facilitator/`; it contains presenter material, research, reference runs, and a
 completed recovery solution.
