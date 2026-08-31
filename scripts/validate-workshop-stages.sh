@@ -9,17 +9,14 @@ stages=(01-getting-started 02-typed-json 03-gather 04-extract 05-analyse 06-work
 # Labs 01-02 are a single Program.cs with no test project; tests start at lab 03.
 for stage in "${stages[@]}"; do
   echo "== $stage: build =="
-  app="$root/workshop/$stage/src/Workshop.App/Workshop.App.csproj"
-  [[ -f "$app" ]] || app="$root/workshop/$stage/Workshop.App/Workshop.App.csproj"
+  app="$(find "$root/workshop/$stage" -name Workshop.App.csproj -not -path '*/bin/*' -not -path '*/obj/*' | head -1)"
+  [[ -n "$app" ]] || { echo "no Workshop.App.csproj under $stage" >&2; exit 1; }
   dotnet build "$app" --nologo
   if [[ -f "$root/workshop/$stage/Workshop.slnx" ]]; then
     echo "== $stage: test =="
     dotnet test "$root/workshop/$stage/Workshop.slnx" --nologo
   fi
 done
-
-echo "== 03-gather: deterministic empty-pack check =="
-dotnet run --project "$root/workshop/03-gather/src/Workshop.App" -- gather --term definitely-not-present
 
 if [[ -n "${MAF_ENDPOINT:-}" && -n "${MAF_MODEL:-}" ]]; then
   echo "== 06-workflow: configured model path =="

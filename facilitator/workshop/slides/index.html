@@ -686,34 +686,26 @@ var selected = records
 <section class="slide slide--query-filter" data-section="The dataset and Gather" data-group="core" data-title="Model fills the filter">
   <div class="eyebrow">The dataset and Gather · Model + C#</div>
   <h2 class="title">Model fills the <em>filter</em></h2>
-  <pre class="code">var agent = Agent("QueryAgent", """
-    Turn the prompt into a date range, term and result cap.
-    Return only the typed contract.
-    """);
+  <pre class="code">var agent = GatherAgent.Create(client);
 
 var response = await agent.RunAsync&lt;QueryFilter&gt;(prompt);
-var filter = IncidentDataset.ValidateFilter(response.Result);
-var evidence = IncidentDataset.Gather(records, filter);</pre>
+var filter = Utilities.ValidateFilter(response.Result);
+var evidence = Utilities.Gather(records, filter);</pre>
   <p class="hint">The <b>model</b> returns a typed <code>QueryFilter</code>. C# validates it, then filters the one approved local corpus.</p>
 </section>
 
 <section class="slide slide--gather-run" data-section="The dataset and Gather" data-group="core" data-title="Gather: run it">
   <div class="eyebrow">The dataset and Gather</div>
   <h2 class="title">Run it</h2>
-  <pre class="small"><span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> src/Workshop.App -- query <span class="flag">--prompt</span> <span class="s">"Show up to 5 intersection crashes from 2012."</span>
-raw:            { … <span class="json-key">"term"</span>: <span class="json-string">"intersection crash"</span>, <span class="json-key">"maxResults"</span>: <span class="n">5</span> }
+  <pre class="small"><span class="cmd">dotnet</span> <span class="verb">run</span> -- <span class="s">"Show up to 5 intersection crashes from 2012."</span>
+model filter:     { … <span class="json-key">"term"</span>: <span class="json-string">"intersection crash"</span>, <span class="json-key">"maxResults"</span>: <span class="n">5</span> }
 validated filter: { <span class="json-key">"from"</span>: <span class="json-string">"2012-01-01"</span>, <span class="json-key">"to"</span>: <span class="json-string">"2012-12-31"</span>, <span class="json-key">"term"</span>: <span class="json-string">"intersection"</span>, <span class="json-key">"maxResults"</span>: <span class="n">5</span> }
+gathered: <b>5 record(s)</b>
 MODEL asked for <b>"intersection crash"</b>. C# validation cut it to <b>"intersection"</b>.
 
-<span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> src/Workshop.App -- run <span class="flag">--prompt</span> <span class="s">"Show up to 5 intersection crashes from 2012."</span>
-filter source: tool-free typed QueryAgent, then C# validation
-gathered: <b>5 record(s)</b>
-gate: <span class="ok">Supported</span>          <span class="c"># Extract and Analyse follow</span>
-
-<span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> src/Workshop.App -- run <span class="flag">--prompt</span> <span class="s">"Find cyclist crashes."</span>
+<span class="cmd">dotnet</span> <span class="verb">run</span> -- <span class="s">"Find cyclist crashes."</span>
 validated filter: { <span class="json-key">"from"</span>: <span class="ok">null</span>, <span class="json-key">"to"</span>: <span class="ok">null</span>, <span class="json-key">"term"</span>: <span class="json-string">"cyclist"</span>, <span class="json-key">"maxResults"</span>: <span class="n">8</span> }
-gathered: <b>0 record(s)</b>
-gate: <span class="warn">NoEvidence</span>        <span class="c"># Extract and Analyse were not called</span></pre>
+gathered: <b>0 record(s)</b>        <span class="c"># a correct answer, not a failure</span></pre>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Extract: in and out">

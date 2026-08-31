@@ -4,14 +4,15 @@ Work from one checkpoint at a time. The bundled Victorian crash sample is the on
 Every checkpoint needs an endpoint configured: CP-03's `query` asks the model for the filter, and only
 its `gather --term` debug check is model-free.
 Each numbered lab has the exact command and one focused TODO; use [SETUP.md](SETUP.md) for configuration.
-Labs 01 and 02 are one `Program.cs` each with no subcommands, no data and no tests; the crash sample,
-the command switch and the test projects arrive at lab 03.
+Labs 01, 02 and 03 are a single flat project each with no subcommands: the only input is the prompt.
+Lab 03 adds `GatherAgent.cs`, `Models.cs`, `Utilities.cs` and the crash sample. The command switch and
+the test projects arrive at lab 04.
 
 | Checkpoint | Outcome | Acceptance |
 |---|---|---|
 | CP-01 | Local hello | `dotnet run --project Workshop.App` echoes the exact token; a down endpoint or unloaded model throws. |
 | CP-02 | Typed JSON | The same command prints `WORKSHOP_OK`, then raw JSON, then the parsed contract. |
-| CP-03 Gather | The model fills an untrusted filter; C# validates it, then filters the approved crash sample by date, term and cap. | `query --prompt "Show up to 5 intersection crashes from 2012."` prints a validated filter; `gather --term definitely-not-present` reports an empty pack. |
+| CP-03 Gather | The model fills an untrusted filter; C# validates it, then filters the approved crash sample by date, term and cap. | `dotnet run -- "Show up to 5 intersection crashes from 2012."` prints the model filter, the validated filter, then 5 records; `dotnet run -- "Find cyclist crashes."` gathers 0. |
 | CP-04 Extract | Question plus compact pack becomes typed selected record IDs and confidence. | Unknown/duplicate IDs and malformed output are rejected in code. |
 | CP-05 Analyse | Only validated selected records reach the analysis call. | Low confidence takes the caution branch. If you see `confidence: 0` on every run, your instruction never asked for a 0-100 confidence — the model is not being cautious, it is filling a field it was not told about. |
 | CP-06 Workflow | Explicit calls become the same linear fixed workflow. | No evidence bypasses Extract and Analyse. |
