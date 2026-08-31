@@ -25,10 +25,7 @@ catch (Exception ex)
     var root = ex; while (root.InnerException is not null) root = root.InnerException;
     Console.Error.WriteLine($"call failed: {root.Message}");
     Console.Error.WriteLine("Check `lms ps` or `ollama ps`, then the endpoint and model name above.");
-    return 1;
 }
-
-return 0;
 
 internal sealed record ModelSettings(string Endpoint, string ApiKey, string Model)
 {
