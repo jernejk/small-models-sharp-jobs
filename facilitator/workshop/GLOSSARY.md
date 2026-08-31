@@ -19,9 +19,10 @@ asks for. Tool-calling only comes up in the bonus Harness/MCP comparison.
 
 **Workflow** — the fixed order of steps your code runs: Gather, Extract, Analyse, with a code-owned
 gate after each typed step. You decide the order, not the model; the model does one narrow job
-inside it. Here that order is plain C# (`CrashPipeline`) you can step through, not a workflow engine
-and not the MAF Workflows API. The `workflow` command shows the identical sequence relabelled as the
-reusable workflow step.
+inside it. Labs 03-05 run that order as plain C# you can step through in a debugger. Lab 06 expresses
+the same order with the MAF Workflows API: `Executor<TIn, TOut>` nodes and conditional edges, where
+omitting a gate is not a representable path. Note that `InProcessExecution.RunAsync` reports executor
+failures as a `WorkflowErrorEvent` rather than throwing, so lab 06 checks for one explicitly.
 
 **Selection** (`CrashSelection`) — Extract's typed output: record IDs chosen from the Gather pack, a
 short rationale and a 0–100 confidence. A selection with an ID that isn't in the pack is just as
