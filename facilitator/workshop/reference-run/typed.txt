@@ -1,0 +1,6 @@
+typed json | LOCAL | endpoint=http://localhost:11434/v1 | model=nemotron-3-nano:4b
+raw:
+{ "action": "mute", "target": "microphone" }
+action: mute
+target: microphone
+elapsed: 433 ms

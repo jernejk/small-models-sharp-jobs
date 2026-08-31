@@ -1,0 +1,70 @@
+{
+  "records": [
+    {
+      "id": "T20250034221",
+      "date": "2025-12-30",
+      "title": "Road crash record: right near (intersections only)",
+      "summary": "Historic non-fatal Victorian road-crash record in Maroondah, Greater Metro. Crash type: collision with vehicle; category: right near (intersections only); reported severity: Other Injury Accident; vehicles recorded: 2.",
+      "severity": "Other Injury Accident",
+      "sourceReference": "Victoria Road Crash Data: T20250034221"
+    },
+    {
+      "id": "T20250030995",
+      "date": "2025-11-26",
+      "title": "Road crash record: right near (intersections only)",
+      "summary": "Historic non-fatal Victorian road-crash record in Casey, Greater Metro. Crash type: collision with vehicle; category: right near (intersections only); reported severity: Serious Injury Accident; vehicles recorded: 2.",
+      "severity": "Serious Injury Accident",
+      "sourceReference": "Victoria Road Crash Data: T20250030995"
+    },
+    {
+      "id": "T20250021952",
+      "date": "2025-08-14",
+      "title": "Road crash record: cross traffic (intersections only)",
+      "summary": "Historic non-fatal Victorian road-crash record in Bayside, Inner Metro. Crash type: collision with vehicle; category: cross traffic (intersections only); reported severity: Other Injury Accident; vehicles recorded: 2.",
+      "severity": "Other Injury Accident",
+      "sourceReference": "Victoria Road Crash Data: T20250021952"
+    },
+    {
+      "id": "T20250021328",
+      "date": "2025-08-12",
+      "title": "Road crash record: right near (intersections only)",
+      "summary": "Historic non-fatal Victorian road-crash record in Wangaratta, Hume. Crash type: collision with vehicle; category: right near (intersections only); reported severity: Other Injury Accident; vehicles recorded: 2.",
+      "severity": "Other Injury Accident",
+      "sourceReference": "Victoria Road Crash Data: T20250021328"
+    },
+    {
+      "id": "T20250020900",
+      "date": "2025-08-07",
+      "title": "Road crash record: left near (intersections only)",
+      "summary": "Historic non-fatal Victorian road-crash record in Frankston, Greater Metro. Crash type: collision with vehicle; category: left near (intersections only); reported severity: Serious Injury Accident; vehicles recorded: 2.",
+      "severity": "Serious Injury Accident",
+      "sourceReference": "Victoria Road Crash Data: T20250020900"
+    },
+    {
+      "id": "T20250022128",
+      "date": "2025-07-31",
+      "title": "Road crash record: cross traffic (intersections only)",
+      "summary": "Historic non-fatal Victorian road-crash record in Melbourne, Inner Metro. Crash type: collision with vehicle; category: cross traffic (intersections only); reported severity: Other Injury Accident; vehicles recorded: 2.",
+      "severity": "Other Injury Accident",
+      "sourceReference": "Victoria Road Crash Data: T20250022128"
+    },
+    {
+      "id": "T20250017463",
+      "date": "2025-07-01",
+      "title": "Road crash record: left near (intersections only)",
+      "summary": "Historic non-fatal Victorian road-crash record in Loddon, Loddon Mallee. Crash type: collision with vehicle; category: left near (intersections only); reported severity: Other Injury Accident; vehicles recorded: 2.",
+      "severity": "Other Injury Accident",
+      "sourceReference": "Victoria Road Crash Data: T20250017463"
+    },
+    {
+      "id": "T20250016597",
+      "date": "2025-06-22",
+      "title": "Road crash record: cross traffic (intersections only)",
+      "summary": "Historic non-fatal Victorian road-crash record in Geelong, Barwon South West. Crash type: collision with vehicle; category: cross traffic (intersections only); reported severity: Serious Injury Accident; vehicles recorded: 2.",
+      "severity": "Serious Injury Accident",
+      "sourceReference": "Victoria Road Crash Data: T20250016597"
+    }
+  ],
+  "isEmpty": false
+}
+

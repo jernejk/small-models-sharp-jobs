@@ -1,0 +1,16 @@
+typed query | LOCAL | endpoint=http://localhost:11434/v1 | model=nemotron-3-nano:4b
+raw:
+{
+  "from": "2012-01-01",
+  "to": "2012-12-31",
+  "term": "intersection crash",
+  "maxResults": 5
+}
+validated filter:
+{
+  "from": "2012-01-01",
+  "to": "2012-12-31",
+  "term": "intersection",
+  "maxResults": 5
+}
+

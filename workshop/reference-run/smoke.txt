@@ -1,3 +1,0 @@
-local hello | LOCAL | endpoint=http://localhost:1234/v1 | model=nvidia-nemotron-3-nano-4b
-reply: WORKSHOP_OK
-elapsed: 258 ms

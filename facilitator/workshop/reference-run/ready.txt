@@ -1,0 +1,47 @@
+filter source: tool-free typed QueryAgent, then C# validation
+validated filter: {
+  "from": "2012-01-01",
+  "to": "2012-12-31",
+  "term": "intersection",
+  "maxResults": 5
+}
+
+readiness rehearsal | LOCAL | model=nemotron-3-nano:4b
+prompt: Show up to 5 intersection crashes from 2012.
+gathered: 5 record(s)
+gate: Supported
+Supported finding: display the grounded analysis.
+extract JSON:
+{
+  "recordIds": [
+    "T20130000048",
+    "T20120026799",
+    "T20120027309",
+    "T20120018619",
+    "T20120014426"
+  ],
+  "rationale": "All five records are from 2012 and involve intersection-only crashes (as indicated by \u0027intersections only\u0027 in the category), matching the query for up to 5 intersection crashes from 2012.",
+  "confidence": 100
+}
+
+analyse JSON:
+{
+  "finding": "Five intersection-only crashes occurred in 2012, all non-fatal, with varying severity levels. The most severe was a \u0027Serious Injury Accident\u0027 (T20120014426, 2012-06-22, Hume), while others were \u0027Other Injury Accident\u0027 (T20120026799, T20120027309, T20120018619, T20130000048). All involved collisions with vehicles at intersections, with 2\u20133 vehicles involved per incident.",
+  "actions": [
+    "Verify if \u0027Other Injury Accident\u0027 is a consistent category for non-fatal crashes with minor injuries, or if it should be reclassified.",
+    "Check if \u0027right far\u0027, \u0027other adjacent\u0027, \u0027right near\u0027, and \u0027cross traffic\u0027 are standardized intersection categories or if they reflect specific crash dynamics.",
+    "Confirm whether the \u0027Serious Injury Accident\u0027 (T20120014426) was a true intersection-only crash or involved additional factors.",
+    "Cross-reference these incidents with local road safety reports to assess if they were part of a larger pattern.",
+    "Ensure all records are correctly classified under \u0027intersections only\u0027 and not mislabeled as non-intersection events."
+  ],
+  "questions": [
+    "Are the categories \u0027right far\u0027, \u0027other adjacent\u0027, \u0027right near\u0027, and \u0027cross traffic\u0027 mutually exclusive or overlapping?",
+    "Was the \u0027Serious Injury Accident\u0027 (T20120014426) truly an intersection-only event, or did it involve a non-intersection component?",
+    "Do the \u0027Other Injury Accident\u0027 categories indicate consistent minor injury outcomes, or are they underreported?",
+    "Are the dates and locations accurate for the 2012 timeframe and region?",
+    "Is the \u00272 vehicles recorded\u0027 count accurate for each incident, or does it include only the primary vehicles involved?"
+  ],
+  "confidence": 95
+}
+
+READY: model-backed supported path completed.

@@ -1,0 +1,1429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Small Models, Sharp Jobs</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2309090b'/%3E%3Crect x='10' y='14' width='14' height='36' fill='%232dd4bf'/%3E%3Crect x='28' y='14' width='10' height='36' fill='%23c084fc'/%3E%3Crect x='42' y='14' width='6' height='36' fill='%234ade80'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#08090c;
+  --panel:#101118;
+  --fg:#f6f7f9;
+  --muted:#9ca3af;
+  --rule:#26272f;
+  --teal:#2dd4bf;
+  --orange:#fb923c;
+  --purple:#c084fc;
+  --sky:#38bdf8;
+  --green:#4ade80;
+  --rose:#fb7185;
+  --amber:#fbbf24;
+  --accent:var(--teal);
+  --sans:system-ui,-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:var(--sans);overflow:clip}
+
+.slide{
+  position:absolute;inset:0;
+  padding:9vh 8vw 12vh;
+  display:flex;flex-direction:column;justify-content:center;
+  opacity:0;pointer-events:none;
+  transform:translateY(-12px);
+  transition:opacity .26s ease,transform .26s ease;
+}
+.slide.is-active{opacity:1;pointer-events:auto;transform:none}
+@media (prefers-reduced-motion:reduce){.slide{transition:none}}
+
+.eyebrow{
+  color:var(--accent);text-transform:uppercase;
+  letter-spacing:.18em;font-size:clamp(.82rem,1.12vw,1.15rem);font-weight:800;
+}
+.title{
+  font-size:clamp(2.2rem,4.4vw,4.4rem);line-height:1.02;letter-spacing:-.03em;
+  font-weight:800;max-width:20ch;margin:2.2vh 0 0;
+}
+.title em{font-style:normal;color:var(--accent)}
+.sub{
+  font-size:clamp(1.15rem,1.85vw,1.9rem);line-height:1.4;color:var(--muted);
+  max-width:62ch;margin:2.4vh 0 0;
+}
+.sub strong{color:var(--fg);font-weight:700}
+
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:2.6vw;margin-top:4.4vh}
+.cols.two{grid-template-columns:repeat(2,1fr)}
+.card pre{margin-top:1.4vh;font-size:clamp(.9rem,1.35vw,1.3rem)}
+.mtable.four .mrow{grid-template-columns:minmax(0,1.6fr) minmax(0,.7fr) minmax(0,.7fr) minmax(0,2.2fr)}
+.mtable.gates .mrow{grid-template-columns:minmax(0,1.1fr) minmax(0,3fr) 4em}
+.takeaways{margin:3vh 0 0;padding-left:1.2em;font-size:clamp(1.15rem,1.9vw,1.9rem);line-height:1.5;max-width:60ch}
+.takeaways li{margin:.3em 0}
+.join{margin-top:4vh;display:flex;flex-direction:column;gap:.6vh}
+.join strong{font:700 clamp(1.1rem,1.7vw,1.7rem)/1.3 var(--mono);color:var(--fg)}
+.card pre{margin-top:1.2vh;white-space:pre-wrap;font-size:clamp(.85rem,1.25vw,1.2rem)}
+.cols .card{min-width:0}
+.flow.flow--grid{--workflow-gap:2.2vw;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--workflow-gap);width:min(72vw,1080px)}
+.flow.flow--grid span{position:relative;text-align:center;padding:.45em .55em}
+.flow.flow--grid span:not(:last-child)::after{content:"→";position:absolute;right:calc(var(--workflow-gap)/-2);top:50%;transform:translate(50%,-50%);color:var(--accent);opacity:.55;font-weight:800}
+.workflow-map{width:min(72vw,1080px)}
+.workflow-map .flow.flow--grid,.workflow-map .cols.steps.four{width:100%}
+.shot--chart{max-height:58vh}
+.slide--measured .shot--chart{max-height:51vh;margin-top:2vh}
+.slide--measured .hint{margin-top:1.35vh;font-size:clamp(.95rem,1.48vw,1.38rem)}
+.slide--gather-run pre.small{font-size:clamp(.82rem,1.15vw,1.12rem);line-height:1.36}
+.slide--tool-call-extra pre.code{margin-top:2vh;font-size:clamp(.9rem,1.48vw,1.38rem);line-height:1.45}
+.slide--tool-call-extra .cols{margin-top:3vh}
+.slide--tool-call-extra .card span{margin-top:.65vh;font-size:clamp(.95rem,1.38vw,1.32rem)}
+.shot{display:block;margin:3vh auto 0;max-height:66vh;width:auto;max-width:100%;object-fit:contain;border:1px solid var(--rule);border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.slide--bg{background:linear-gradient(90deg,rgba(8,9,12,.92) 0%,rgba(8,9,12,.75) 55%,rgba(8,9,12,.35) 100%),var(--bg-image) center/cover no-repeat}
+.flow.flow--mini{margin-top:2.4vh;font-size:clamp(1rem,1.5vw,1.5rem)}
+.flow.flow--mini span{padding:.35em .6em}
+.flow span.is-here,.flow span.is-code.is-here{background:var(--accent);color:#08090c;border-color:var(--accent)}
+.cols.steps.four{grid-template-columns:repeat(4,minmax(0,1fr));gap:2.2vw;width:min(72vw,1080px)}
+.cols.steps{grid-template-columns:repeat(5,1fr);gap:1.6vw;margin-top:3.6vh}
+.cols.steps .card{font-size:clamp(1.05rem,1.6vw,1.6rem)}
+.cols.steps .card span{font-size:clamp(.9rem,1.3vw,1.3rem)}
+.cols .card.card--model{border-top-color:var(--purple)}
+.card.card--model b{color:var(--purple)}
+.card{
+  border-top:3px solid var(--accent);padding:1.6vh 0 0;
+  font-size:clamp(1.2rem,1.95vw,1.95rem);font-weight:700;line-height:1.2;
+}
+.card span{display:block;color:var(--muted);font-size:clamp(1.05rem,1.76vw,1.72rem);font-weight:400;margin-top:1.1vh;line-height:1.35}
+.card b{display:block;color:var(--accent);font:700 clamp(.78rem,1.02vw,1.02rem)/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.9vh}
+
+.flow{
+  display:flex;align-items:center;gap:1.1vw;flex-wrap:wrap;margin-top:4.2vh;
+  font-size:clamp(1.3rem,2.3vw,2.5rem);font-weight:800;letter-spacing:-.02em;
+}
+.flow i{font-style:normal;color:var(--accent);opacity:.55}
+.flow span{padding:.5em .8em;border:1px solid var(--rule);border-radius:10px;background:var(--panel)}
+.flow span.is-code{border-color:var(--accent);color:var(--accent)}
+
+pre{
+  margin:3.2vh 0 0;padding:2vh 1.8vw;border:1px solid var(--rule);border-left:3px solid var(--accent);
+  border-radius:10px;background:#0d0e14;color:#e6e8ee;
+  font:clamp(1.02rem,1.76vw,1.62rem)/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;
+}
+pre b{color:var(--accent);font-weight:700}
+pre.small{font-size:clamp(.85rem,1.3vw,1.25rem)}
+pre .c{color:var(--muted)}
+pre .k{color:var(--sky)}
+pre .s{color:var(--amber)}
+pre .t{color:var(--teal)}
+pre .a{color:var(--purple)}
+pre .n{color:var(--rose)}
+pre .cmd{color:var(--teal);font-weight:800}
+pre.terminal-output{margin-top:2.4vh;padding:1.15em 1.35em;border:1px solid rgba(103,232,249,.24);border-radius:14px;background:rgba(8,18,33,.72);font-size:clamp(.72rem,1.12vw,1.08rem);line-height:1.55;color:#dce8f5}
+pre.terminal-output .ok{color:var(--teal);font-weight:800}
+pre.terminal-output .prompt{color:var(--accent);font-weight:800}
+pre .json-key{color:var(--teal);font-weight:800}
+pre .json-string{color:var(--amber)}
+pre .json-number{color:var(--purple);font-weight:800}
+.clone-command{display:grid;grid-template-columns:minmax(0,1fr) 15vw;gap:2vw;align-items:center}
+.clone-command pre{margin:0}
+.repo-qr{display:grid;justify-items:center;gap:.55em;color:var(--muted);font:700 clamp(.62rem,.78vw,.82rem)/1.2 var(--sans);letter-spacing:.05em;text-align:center;text-decoration:none}
+.repo-qr img{width:11vw;max-width:160px;min-width:112px;padding:8px;border-radius:10px;background:#fff}
+.clone-command--hero{display:grid;grid-template-columns:minmax(0,1fr) 42vw;gap:2vw;align-items:center;margin-top:-7vh}
+.clone-command--hero pre{display:none}
+.clone-url{display:grid;gap:1.1vh;align-content:center;color:var(--muted)}
+.clone-url span{font:800 clamp(.75rem,1vw,1.05rem)/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--purple)}
+.clone-url code{font:800 clamp(1.45rem,2.15vw,2.3rem)/1.28 var(--mono);letter-spacing:-.045em;color:#e8d8ff;word-break:normal}
+.clone-command--hero .repo-qr{width:42vw;font-size:clamp(.88rem,1.1vw,1.1rem);letter-spacing:0;text-align:center}
+.clone-command--hero .repo-qr img{width:37vw;max-width:550px;min-width:410px;padding:18px;border-radius:20px}
+.slide--build pre{font-size:clamp(1.05rem,1.45vw,1.45rem)}
+.slide--structured .hint{margin-top:1.25vh;font-size:clamp(.95rem,1.45vw,1.35rem)}
+.slide--ollama .sub{margin-bottom:1.35vh}
+.slide--ollama pre.terminal-output{margin-top:1.45vh;line-height:1.42}
+pre .verb{color:var(--purple);font-weight:700}
+pre .flag{color:var(--amber);font-weight:700}
+pre.code{font-size:clamp(.95rem,1.55vw,1.45rem);line-height:1.5}
+.slide--extract-code pre.code{font-size:clamp(.78rem,1.28vw,1.15rem);line-height:1.4;margin-top:1.6vh;padding:1.3vh 1.5vw}
+.slide--extract-code .hint{margin-top:1.2vh;font-size:clamp(.85rem,1.27vw,1.2rem);line-height:1.25}
+.slide--workflow-code pre.code{font-size:clamp(.76rem,1.17vw,1.12rem);line-height:1.36;margin-top:1.5vh;padding:1.25vh 1.4vw}
+.slide--workflow-code .hint{margin-top:1.2vh;font-size:clamp(.8rem,1.15vw,1.1rem);line-height:1.25}
+.slide--tight pre.code{font-size:clamp(.85rem,1.3vw,1.2rem);margin-top:2vh;padding:1.4vh 1.4vw}
+.slide--tight .cols{margin-top:2.6vh}
+.card pre{white-space:pre-wrap;overflow-wrap:anywhere}
+/* Syntax spans inside a card's pre must stay inline; .card span above is for card body text. */
+.card pre span{display:inline;font-size:inherit;line-height:inherit;margin:0}
+.card pre.code{font-size:clamp(.85rem,1.25vw,1.2rem);line-height:1.5}
+.hint{margin:2.2vh 0 0;font-size:clamp(1.05rem,1.76vw,1.72rem);color:var(--muted)}
+.hint b{color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.8em}
+.hint + .hint{margin-top:1.1vh}
+.benchmark-sub{max-width:70ch}
+.benchmark-chart{display:grid;grid-template-columns:minmax(0,1fr) minmax(14rem,21vw);gap:4vw;align-items:end;margin-top:3.5vh}
+.benchmark-bars{height:34vh;display:grid;grid-template-columns:repeat(4,1fr);gap:1.3vw;align-items:end;padding:0 1vw;border-bottom:1px solid var(--rule);background:linear-gradient(180deg,transparent 0 24%,rgba(156,163,175,.12) 24.4% 25%,transparent 25.4% 49%,rgba(156,163,175,.12) 49.4% 50%,transparent 50.4% 74%,rgba(156,163,175,.12) 74.4% 75%,transparent 75.4%)}
+.benchmark-bar{height:var(--bar);min-height:2.4rem;display:grid;place-items:start center;padding-top:.65rem;background:linear-gradient(180deg,var(--bar-color,var(--orange)),color-mix(in srgb,var(--bar-color,var(--orange)) 54%,#08090c));border-radius:10px 10px 0 0;color:#08090c;font:800 clamp(1.05rem,1.8vw,1.75rem)/1 var(--mono);box-shadow:0 -12px 36px color-mix(in srgb,var(--bar-color,var(--orange)) 13%,transparent)}
+.benchmark-bar--low{--bar-color:var(--teal)}
+.benchmark-bar--medium{--bar-color:var(--sky)}
+.benchmark-bar--high{--bar-color:var(--purple)}
+.benchmark-labels{display:grid;grid-template-columns:repeat(4,1fr);gap:1.3vw;padding:1.2vh 1vw 0;text-align:center;font:700 clamp(.72rem,1.05vw,1.05rem)/1.25 var(--sans);color:var(--muted)}
+.benchmark-labels b{display:block;color:var(--fg);font-size:1.07em}
+.benchmark-callout{align-self:center;border-left:3px solid var(--accent);padding:1.2vh 0 1.2vh 1.4vw}
+.benchmark-callout strong{display:block;font-size:clamp(2.1rem,4.1vw,4.2rem);line-height:.95;letter-spacing:-.05em;color:var(--accent)}
+.benchmark-callout p{margin:.7vh 0 0;font-size:clamp(1rem,1.45vw,1.45rem);line-height:1.32;color:var(--muted)}
+.benchmark-source{margin:2.2vh 0 0;font-size:clamp(.68rem,.9vw,.9rem);line-height:1.35;color:var(--muted)}
+.benchmark-source a{color:var(--sky);text-decoration-color:rgba(56,189,248,.45);text-underline-offset:.2em}
+.model-chart{display:grid;grid-template-columns:minmax(0,1fr) minmax(13rem,18vw);gap:2.5vw;align-items:center;margin-top:2.4vh}
+.model-chart svg{display:block;width:100%;height:32vh;min-height:225px;overflow:visible}
+.model-chart .grid{stroke:var(--rule);stroke-width:1}.model-chart .axis{stroke:#5b606e;stroke-width:1.3}
+.model-chart .line-nvidia{stroke:var(--green)}.model-chart .line-google{stroke:var(--sky)}.model-chart .line-alibaba{stroke:var(--orange)}
+.model-chart .series{fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.model-chart .dot{stroke:#08090c;stroke-width:4}
+.model-chart .tick{fill:var(--muted);font:700 13px var(--sans)}.model-chart .score{font:800 16px var(--mono)}.model-chart .score-nvidia{fill:var(--green)}.model-chart .score-google{fill:var(--sky)}.model-chart .score-alibaba{fill:var(--orange)}
+.model-legend{display:grid;gap:1.35vh;font-size:clamp(.93rem,1.25vw,1.22rem);line-height:1.3}
+.model-legend div{border-left:3px solid var(--legend);padding-left:1vw}.model-legend b{display:block;color:var(--fg)}.model-legend span{color:var(--muted);font-size:.9em}.model-legend .nvidia{--legend:var(--green)}.model-legend .google{--legend:var(--sky)}.model-legend .alibaba{--legend:var(--orange)}
+.model-compare-note{margin:1.8vh 0 0;display:grid;grid-template-columns:1.15fr .85fr;gap:3vw;font-size:clamp(.82rem,1.13vw,1.12rem);line-height:1.35;color:var(--muted)}
+.model-compare-note b{color:var(--accent)}
+
+.slide--interlude{padding:0;justify-content:stretch}
+.slide--interlude .interlude-panel{
+  width:58%;height:100%;padding:9vh 6vw;
+  display:flex;flex-direction:column;justify-content:center;
+  background:linear-gradient(115deg,#131826 0%,var(--bg) 78%);
+  border-right:1px solid var(--rule);
+}
+.slide--interlude .title{max-width:14ch}
+.interlude-mark{
+  position:absolute;left:58%;right:0;top:0;bottom:0;display:grid;place-items:center;
+  font:800 clamp(6rem,26vh,22rem)/1 var(--sans);letter-spacing:-.05em;
+  color:var(--accent);opacity:.12;
+  pointer-events:none;user-select:none;
+}
+.interlude-mark.interlude-art{opacity:1;background:center/contain no-repeat;-webkit-text-stroke:0;mix-blend-mode:screen;-webkit-mask-image:radial-gradient(circle at center,#000 40%,transparent 70%);mask-image:radial-gradient(circle at center,#000 40%,transparent 70%)}
+.interlude-time{margin-top:3vh;font:700 clamp(1.05rem,1.5vw,1.55rem)/1.25 var(--mono);color:var(--accent);letter-spacing:.08em}
+
+.slide--cover{
+  background:linear-gradient(90deg,rgba(8,9,12,.95) 0%,rgba(8,9,12,.86) 38%,rgba(8,9,12,.3) 100%),
+             url('../assets/local-agent-flow-cover-v1.png') center/cover;
+}
+.slide--cover .title{font-size:clamp(2.8rem,6.4vw,6.6rem);max-width:15ch;letter-spacing:-.045em}
+.slide--cover .title span,.slide--cover .title em{display:block}
+.cover-promise{display:block}
+.cover-local{display:block;margin-top:.35em;color:var(--teal);font-weight:700}
+.cover-meta{margin-top:5vh;display:flex;gap:2.4vw;flex-wrap:wrap;font:600 clamp(1.05rem,1.6vw,1.6rem)/1.3 var(--mono);color:var(--muted)}
+.cover-meta b{color:var(--fg);font-weight:700}
+
+.slide--about{padding:0;display:block}
+.about-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center right}
+.about-shade{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(6,8,14,.985) 0%,rgba(6,8,14,.94) 40%,rgba(6,8,14,.45) 66%,rgba(6,8,14,.05) 100%),
+             linear-gradient(0deg,rgba(6,8,14,.4),rgba(6,8,14,0) 42%);
+}
+.about-panel{
+  position:relative;z-index:2;height:100%;width:min(64%,860px);
+  padding:6vh 0 8vh 8vw;display:flex;flex-direction:column;justify-content:center;
+}
+.about-logo{width:clamp(56px,5.4vw,84px);margin-bottom:2.2vh;filter:hue-rotate(180deg) invert(1) drop-shadow(0 8px 16px rgba(0,0,0,.4))}
+.about-name{font-size:clamp(2rem,3.6vw,3.6rem);font-weight:800;letter-spacing:-.03em;line-height:1;margin:1.4vh 0 0}
+.about-name span{color:var(--muted);font-weight:400}
+.about-summary{margin:1.8vh 0 0;max-width:44ch;font-size:clamp(1.1rem,1.6vw,1.65rem);line-height:1.35;color:rgba(246,247,249,.86)}
+.about-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8vw;max-width:620px;margin-top:3vh}
+.about-links a{
+  display:grid;gap:3px;padding:1.1vh 1vw;text-decoration:none;color:var(--fg);
+  background:rgba(4,7,14,.68);border:1px solid rgba(45,212,191,.26);border-radius:8px;
+  font-size:clamp(.95rem,1.3vw,1.3rem);font-weight:600;
+}
+.about-links a span{color:var(--teal);font:800 .68rem/1 var(--sans);letter-spacing:.14em;text-transform:uppercase}
+.about-community{
+  display:inline-grid;grid-template-columns:34px auto auto;align-items:center;gap:.7vw;
+  justify-self:start;margin-top:2.4vh;padding:1vh 1vw;
+  background:rgba(4,7,14,.66);border:1px solid rgba(45,212,191,.3);border-radius:8px;width:fit-content;
+}
+.about-community img{width:30px;height:30px;object-fit:contain;background:#fff;border-radius:5px}
+.about-community span{color:var(--teal);font:800 .66rem/1 var(--sans);letter-spacing:.13em;text-transform:uppercase}
+.about-community strong{font-size:clamp(.85rem,1.05vw,1.05rem)}
+.about-chips{display:flex;flex-wrap:wrap;gap:.6vw;margin-top:2.4vh}
+.about-chips span{
+  padding:.8vh .9vw;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);border-radius:6px;
+  font-size:clamp(.72rem,.95vw,.95rem);font-weight:700;
+}
+.about-chips span:first-child{border-color:rgba(45,212,191,.45);color:var(--teal)}
+
+.slide--agenda .title{font-size:clamp(1.9rem,3.4vw,3.4rem)}
+.agenda-list{display:grid;gap:.5vh;margin-top:3.2vh}
+.agenda-row{
+  display:grid;grid-template-columns:3rem minmax(0,27rem) minmax(0,1fr);align-items:baseline;gap:1.8vw;
+  padding:.85vh 0;border-top:1px solid var(--rule);
+}
+.agenda-row:first-child{border-top:0}
+.agenda-row b{font:700 clamp(.9rem,1.3vw,1.35rem)/1 var(--mono);color:var(--row-accent,var(--accent))}
+.agenda-row strong::before{
+  content:"";display:inline-block;width:.5em;height:.5em;margin-right:.6em;border-radius:2px;
+  background:var(--row-accent,var(--accent));vertical-align:middle;
+}
+.agenda-row strong{font-size:clamp(1.05rem,1.58vw,1.62rem);font-weight:700}
+.agenda-row span{font-size:clamp(.95rem,1.45vw,1.48rem);color:var(--muted);line-height:1.32}
+
+.envs{display:grid;grid-template-columns:1fr 1fr;gap:1.2vw;margin-top:3vh}
+.envs>span,.envs div>span{display:block;color:var(--accent);font:800 clamp(.78rem,1.02vw,1.02rem)/1.2 var(--sans);letter-spacing:.14em;text-transform:uppercase}
+.envs pre{margin-top:1.1vh;padding:1.6vh 1.2vw;font-size:clamp(1.02rem,1.62vw,1.55rem)}
+.mtable{display:grid;gap:.3vh;margin-top:3vh}
+.mrow{
+  display:grid;grid-template-columns:minmax(0,12.5em) 4.4em 5.6em 3.8em minmax(0,1fr);
+  gap:1.3vw;align-items:baseline;padding:.85vh 0;border-top:1px solid var(--rule);
+  font-size:clamp(1.05rem,1.76vw,1.72rem);
+}
+.mrow--head{border-top:0;padding-bottom:.3vh}
+.mtable--cloud .mrow{grid-template-columns:minmax(0,15em) 4.4em 5.6em 3.8em minmax(0,1fr)}
+.mgroup{padding:.5vh 0 .15vh;border-top:1px solid var(--rule);color:var(--accent);font:800 .95rem/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.mrow.mrow--head span{color:var(--accent);font:800 .95rem/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.mrow strong{font-size:1em;font-weight:700;line-height:1.15}
+.mrow strong .provider{display:inline-block;margin-left:.55em;padding:.3em .45em;border:1px solid currentColor;border-radius:999px;font:800 .54em/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;vertical-align:middle}
+.mrow strong .provider--nvidia{color:var(--green);background:color-mix(in srgb,var(--green) 10%,transparent)}
+.mrow strong .provider--google{color:var(--sky);background:color-mix(in srgb,var(--sky) 10%,transparent)}
+.mrow strong .provider--alibaba{color:var(--orange);background:color-mix(in srgb,var(--orange) 10%,transparent)}
+.mrow strong .provider--liquid{color:var(--purple);background:color-mix(in srgb,var(--purple) 10%,transparent)}
+.mrow span{font-size:1em;color:var(--muted);line-height:1.3}
+.mrow span.num{font-family:var(--mono)}
+.mrow .ok{color:var(--green)}
+.mrow .warn{color:var(--amber)}
+.mrow .slow{color:var(--rose)}
+.mfoot{margin:2.2vh 0 0;font-size:clamp(1.05rem,1.76vw,1.72rem);color:var(--muted);line-height:1.35}
+.mfoot+.mfoot{margin:1.1vh 0 0}
+.mfoot--takeaway{margin-top:1.6vh}
+.mfoot--takeaway span{display:block;margin-top:.45em}
+.mfoot code{font-family:var(--mono);color:var(--fg);font-size:.94em}
+.mrow code{font-family:var(--mono);font-size:.94em}
+.mfoot b{color:var(--accent);font-weight:700}
+.share{display:grid;grid-template-columns:max-content minmax(0,1fr);align-items:center;gap:2.2vw;margin-top:4.4vh;max-width:980px}
+.share-qr{justify-self:start;width:max-content;background:#fff;padding:12px;border-radius:12px;line-height:0;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.share-qr svg{display:block;width:clamp(130px,13.5vw,200px);height:auto}
+.share-text span{display:block;color:var(--accent);font:800 clamp(.8rem,1.05vw,1.05rem)/1 var(--sans);letter-spacing:.16em;text-transform:uppercase}
+.share-text strong{display:block;margin-top:1.2vh;font:600 clamp(1.05rem,1.62vw,1.65rem)/1.3 var(--mono);overflow-wrap:anywhere}
+.share-text p{margin:1.4vh 0 0;color:var(--muted);font-size:clamp(1rem,1.5vw,1.5rem);line-height:1.4}
+
+.slide-foot{
+  position:absolute;left:8vw;right:8vw;bottom:4.6vh;
+  display:flex;justify-content:space-between;align-items:center;gap:2vw;
+  padding-top:1.4vh;border-top:1px solid var(--rule);
+  font:600 clamp(.68rem,.85vw,.9rem)/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+}
+.slide-foot em{font-style:normal;color:var(--accent)}
+.slide-foot .foot-count{font-family:var(--mono);letter-spacing:.06em}
+.slide[data-chrome="off"] .slide-foot{display:none}
+.slide--interlude .slide-foot{left:6vw;right:auto;width:calc(58% - 12vw)}
+
+.progress{position:fixed;left:0;bottom:0;height:3px;background:var(--accent);z-index:5;transition:width .26s ease}
+.badge{
+  position:fixed;right:1.6vw;top:1.8vh;z-index:5;
+  padding:.5em .8em;border:1px solid var(--rose);border-radius:999px;
+  font:800 .68rem/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--rose);
+  background:rgba(8,9,12,.8);
+}
+.badge[hidden]{display:none}
+
+@media screen and (max-aspect-ratio:1/1){
+  .slide:not(.slide--interlude):not(.slide--about){padding:6vh 6vw 11vh}
+  .title{font-size:clamp(1.75rem,6.8vw,3rem)}
+  .sub,.card span,.hint,.share-text p{font-size:clamp(.95rem,4vw,1.15rem)}
+  .card{font-size:clamp(1.05rem,4.6vw,1.35rem)}
+  pre{font-size:clamp(.86rem,3.1vw,1rem)}
+  .flow{font-size:clamp(1.05rem,4.4vw,1.3rem)}
+  .agenda-list{gap:0;margin-top:1.6vh}
+  .agenda-row{padding:.4rem 0;gap:.15rem .8rem}
+  .agenda-row strong{font-size:clamp(.9rem,3.8vw,1.08rem)}
+  .agenda-row span,.agenda-row b{font-size:clamp(.78rem,3.2vw,.95rem)}
+  .envs{grid-template-columns:1fr;gap:.8rem}
+  .envs pre{font-size:clamp(.8rem,3.1vw,1rem)}
+  .mgroup{font-size:.8rem;padding:.6rem 0 .2rem}
+  .mtable--cloud .mrow{grid-template-columns:1fr auto auto}
+  .mtable{gap:0;margin-top:1.6vh}
+  .mrow{grid-template-columns:1fr auto auto;gap:.25rem .8rem;padding:.45rem 0;font-size:clamp(.78rem,3.2vw,.95rem)}
+  .mrow strong{grid-column:1/-1;font-size:clamp(.92rem,3.9vw,1.12rem)}
+  .mrow span:last-child{grid-column:1/-1}
+  .mrow--head{display:none}
+  .mfoot{margin:1.4vh 0 0;font-size:clamp(.86rem,3.5vw,1rem)}
+  .cols,.cols.two{grid-template-columns:1fr}
+  .slide--interlude .interlude-panel{width:100%;border-right:0}
+  .interlude-mark{display:none}
+  .slide--interlude .slide-foot{left:6vw;right:6vw;width:auto}
+  .about-panel{width:88%;padding-left:6vw}
+  .about-links{grid-template-columns:1fr}
+  .share{grid-template-columns:1fr}
+  .agenda-row{grid-template-columns:4.4rem minmax(0,1fr)}
+  .agenda-row span{grid-column:2}
+}
+
+@page{size:1280px 720px;margin:0}
+@media print{
+  html,body{overflow:visible;height:auto;background:#fff}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .progress,.badge{display:none!important}
+  .slide{
+    position:relative;inset:auto;opacity:1!important;transform:none!important;pointer-events:auto;
+    width:1280px;height:720px;overflow:hidden;
+    background-color:var(--bg);
+    break-inside:avoid;page-break-inside:avoid;break-after:page;page-break-after:always;
+  }
+  .slide.is-last{break-after:auto;page-break-after:auto}
+  .slide[hidden],.slide.is-excluded{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<section class="slide slide--cover" data-section="Welcome" data-group="intro" data-chrome="off" data-title="Cover">
+  <div class="eyebrow">Global AI Construct · Brisbane</div>
+  <h1 class="title"><span>Small Models,</span><em>Sharp Jobs.</em></h1>
+  <p class="sub"><span class="cover-promise">Build a local agent with Microsoft Agent Framework.</span><span class="cover-local">On your laptop. No cloud. No API key.</span></p>
+</section>
+
+<section class="slide slide--about" data-section="Welcome" data-group="intro" data-chrome="off" data-title="Speaker">
+  <img class="about-bg" src="../assets/jk-mvp-banner.png" alt="">
+  <div class="about-shade" aria-hidden="true"></div>
+  <div class="about-panel">
+    <img class="about-logo" src="../assets/jk-logo.png" alt="JK">
+    <p class="eyebrow">Builder / Speaker / Community contributor</p>
+    <h2 class="about-name">Jernej Kavka <span>(JK)</span></h2>
+    <p class="about-summary">Agentic AI, Azure AI, coding-agent workflows, .NET and local models that have to survive a bad Wi-Fi night.</p>
+    <div class="about-links" aria-label="Speaker links">
+      <a href="https://github.com/jernejk"><span>GitHub</span>jernejk</a>
+      <a href="https://jkdev.me"><span>Web</span>jkdev.me</a>
+      <a href="https://x.com/jernej_kavka"><span>X</span>@jernej_kavka</a>
+      <a href="https://www.linkedin.com/in/jernejkavka"><span>LinkedIn</span>jernejkavka</a>
+    </div>
+    <div class="about-community">
+      <img src="../assets/buildclub.png" alt="">
+      <span>City Lead</span>
+      <strong>Build Club Brisbane</strong>
+    </div>
+    <div class="about-chips">
+      <span>Microsoft AI MVP</span>
+      <span>@SSWConsulting</span>
+      <span>Brisbane, Australia</span>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-section="Welcome" data-group="intro" data-title="What we build tonight">
+  <div class="eyebrow">What we build tonight</div>
+  <h2 class="title">A crash-review agent that runs on <em>your laptop.</em></h2>
+  <div class="workflow-map">
+    <div class="flow flow--grid">
+      <span class="is-code">Gather</span>
+      <span>Extract</span>
+      <span class="is-code">Validate</span>
+      <span>Analyse</span>
+    </div>
+    <div class="cols steps four">
+      <div class="card"><b>Model + C#</b>Gather<span>Model fills a filter; C# validates, clamps and narrows 1,000 approved local records.</span></div>
+      <div class="card card--model"><b>Model</b>Extract<span>Pick the record IDs that answer the question.</span></div>
+      <div class="card"><b>C#</b>Validate<span>Reject unknown IDs, duplicates and low confidence.</span></div>
+      <div class="card card--model"><b>Model</b>Analyse<span>Summarise the validated records: finding, actions and open questions.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-section="Local models" data-group="core" data-title="LM Studio: find a model">
+  <div class="eyebrow">Local models · LM Studio</div>
+  <h2 class="title">Find a model</h2>
+  <img class="shot" src="../assets/lm-studio-search.png" alt="LM Studio model search showing Qwen, Gemma and Nemotron">
+</section>
+
+<section class="slide" data-section="Local models" data-group="core" data-title="LM Studio: your models">
+  <div class="eyebrow">Local models · LM Studio</div>
+  <h2 class="title">Your models</h2>
+  <img class="shot" src="../assets/lm-studio-my-models.png" alt="LM Studio My Models list">
+</section>
+
+<section class="slide" data-section="Local models" data-group="core" data-title="LM Studio: serve it">
+  <div class="eyebrow">Local models · LM Studio</div>
+  <h2 class="title">Serve it on <em>localhost:1234</em></h2>
+  <img class="shot" src="../assets/lm-studio-developer.png" alt="LM Studio Developer tab with the server running and Nemotron loaded">
+</section>
+
+<section class="slide" data-section="Local models" data-group="core" data-title="LM Studio from the terminal">
+  <div class="eyebrow">Local models · LM Studio</div>
+  <h2 class="title">Or from the terminal</h2>
+  <pre><span class="cmd">lms</span> <span class="verb">get</span> nvidia/nemotron-3-nano-4b               <span class="c"># download</span>
+<span class="cmd">lms</span> <span class="verb">load</span> nvidia-nemotron-3-nano-4b <span class="flag">-c</span> 16384     <span class="c"># load, 16k context</span>
+<span class="cmd">lms</span> <span class="verb">ps</span>                                          <span class="c"># inspect what is loaded</span>
+<span class="cmd">lms</span> <span class="verb">server start</span>                                <span class="c"># http://localhost:1234/v1</span></pre>
+  <pre class="terminal-output"><span class="prompt">$</span> lms load nvidia-nemotron-3-nano-4b -c 16384
+<span class="ok">Model loaded successfully in 1.08s. (2.64 GiB)</span>
+API / SDK identifier: "nvidia-nemotron-3-nano-4b"
+
+<span class="prompt">$</span> lms ps
+<span class="c">IDENTIFIER                 STATUS  SIZE     CONTEXT  DEVICE</span>
+<span class="ok">nvidia-nemotron-3-nano-4b  IDLE    2.84 GB  16384    Local</span>
+
+<span class="prompt">$</span> lms server start
+<span class="ok">Success! Server is now running on port 1234</span></pre>
+</section>
+
+<section class="slide slide--ollama" data-section="Local models" data-group="core" data-title="Ollama from the terminal">
+  <div class="eyebrow">Local models · Ollama</div>
+  <h2 class="title">Or use <em>Ollama</em></h2>
+  <p class="sub">Same OpenAI-compatible endpoint shape, served on <strong>localhost:11434/v1</strong>.</p>
+  <pre><span class="cmd">ollama</span> <span class="verb">pull</span> nemotron-3-nano:4b         <span class="c"># download once</span>
+<span class="cmd">ollama</span> <span class="verb">run</span> nemotron-3-nano:4b          <span class="c"># opens a chat; first run loads it</span>
+<span class="cmd">ollama</span> <span class="verb">ps</span>                             <span class="c"># inspect what is loaded</span></pre>
+  <pre class="terminal-output"><span class="prompt">$</span> ollama pull nemotron-3-nano:4b
+pulling manifest
+<span class="ok">success</span>
+
+<span class="prompt">$</span> ollama run nemotron-3-nano:4b "Say hello in five words"
+<span class="ok">Hello from your local model.</span>
+
+<span class="prompt">$</span> ollama ps
+<span class="c">NAME                  SIZE     PROCESSOR  CONTEXT</span>
+<span class="ok">nemotron-3-nano:4b   2.8 GB   100% GPU   16384</span></pre>
+</section>
+
+<section class="slide" data-section="Local models" data-group="core" data-title="Which model, and why">
+  <div class="eyebrow">Local models</div>
+  <h2 class="title">Which model, <em>and why.</em></h2>
+  <div class="mtable four">
+    <div class="mrow mrow--head"><span>Model</span><span>Size</span><span>Extract + Analyse</span><span>Note</span></div>
+    <div class="mrow"><strong>Nemotron 3 Nano 4B<span class="provider provider--nvidia">NVIDIA</span></strong><span class="num">2.8 GB</span><span class="num ok">~5 s</span><span>tonight's model; verify with <code>ready</code></span></div>
+    <div class="mrow"><strong>Gemma 4 26B-A4B<span class="provider provider--google">Google</span></strong><span class="num">15.6 GB</span><span class="num ok">~5 s</span><span>as fast, needs ~16 GB free</span></div>
+    <div class="mrow"><strong>Qwen 3.8 27B<span class="provider provider--alibaba">Alibaba</span></strong><span class="num">16 GB</span><span class="num slow">~20 s</span><span>correct, slow</span></div>
+    <div class="mrow"><strong>LFM2.5 1.2B<span class="provider provider--liquid">Liquid AI</span></strong><span class="num">1.25 GB</span><span class="num ok">~2 s</span><span>fastest; findings read like instructions</span></div>
+  </div>
+  <p class="mfoot">Measured end to end on one M4 Max with LM Studio; your hardware will differ.</p>
+  <p class="mfoot mfoot--takeaway"><b>Bigger isn't always better for a focused task.</b><span>The code stays the same when you swap.</span></p>
+</section>
+
+<section class="slide slide--clone" data-section="Get started" data-group="core" data-title="Get the repo">
+  <div class="eyebrow">Get started</div>
+  <h2 class="title">Get the <em>repo</em></h2>
+  <p class="sub">Scan the code to get started.</p>
+  <div class="clone-command clone-command--hero"><div class="clone-url"><span>Or type this</span><code>github.com/jernejk/<br>small-models-sharp-jobs</code></div><a class="repo-qr" href="https://github.com/jernejk/small-models-sharp-jobs"><img src="../assets/repository-qr.png" alt="QR code for the workshop repository"><span>Scan to open the repo</span></a></div>
+</section>
+
+<section class="slide slide--build" data-section="Get started" data-group="core" data-title="Open lab 01">
+  <div class="eyebrow">Get started</div>
+  <h2 class="title">Then open <em>lab 01</em></h2>
+  <pre><span class="cmd">git</span> <span class="verb">clone</span> <b>https://github.com/jernejk/small-models-sharp-jobs</b>
+<span class="cmd">cd</span> small-models-sharp-jobs/<b>workshop/01-getting-started</b>
+<span class="cmd">dotnet</span> <span class="verb">build</span>
+<span class="cmd">dotnet</span> <span class="verb">test</span>        <span class="c"># passes already; 5 model tests stay skipped until you set an endpoint</span></pre>
+  <div class="cols two">
+    <div class="card"><b>workshop/01…06</b>One lab at a time<span>Each snapshot has one focused TODO. Finish it, then open the next folder.</span></div>
+    <div class="card"><b>Later numbered lab</b>Recovery path<span>Fall behind? Pair up, then open the matching later lab. The facilitator-only reference stays off the attendee path.</span></div>
+  </div>
+  <p class="hint">For this stage, build and run <code>smoke</code>. The full pipeline arrives in lab 06.</p>
+</section>
+
+<section class="slide" data-section="Get started" data-group="core" data-title="Point it at your model">
+  <div class="eyebrow">Get started</div>
+  <h2 class="title">Point it at <em>your</em> model</h2>
+  <p class="sub">Two settings, stored with <strong>dotnet user-secrets</strong> so nothing lands in git.</p>
+  <pre class="small"><span class="c"># LM Studio</span>
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:1234/v1 --project src/Workshop.App
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nvidia-nemotron-3-nano-4b --project src/Workshop.App
+
+<span class="c"># Ollama</span>
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:11434/v1 --project src/Workshop.App
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nemotron-3-nano:4b --project src/Workshop.App</pre>
+  <p class="hint">Set nothing and you get Ollama. <code>MAF_API_KEY</code> only when your server wants one. Shell variables beat secrets, secrets beat <code>.env</code>.</p>
+</section>
+
+<section class="slide" data-section="Get started" data-group="core" data-title="Your first call">
+  <div class="eyebrow">Get started</div>
+  <h2 class="title">Your first call</h2>
+  <pre class="code">var client = new OpenAIClient(
+        new ApiKeyCredential(settings.ApiKey),
+        new OpenAIClientOptions { Endpoint = new Uri(settings.Endpoint) })
+    .GetChatClient(settings.Model)
+    .AsIChatClient();
+
+AIAgent agent = client.AsAIAgent(
+    instructions: "Reply with exactly the token you are given.",
+    name: "HelloAgent");
+
+var response = await agent.RunAsync("Reply with exactly this token: WORKSHOP_OK");
+Console.WriteLine(response.Text);   <span class="c">// WORKSHOP_OK</span></pre>
+  <p class="hint">Local servers don't check the key; <code>settings.ApiKey</code> is a placeholder like <code>lm-studio</code> unless you point at a hosted endpoint.</p>
+</section>
+
+<section class="slide" data-section="Get started" data-group="core" data-title="One client, any provider">
+  <div class="eyebrow">Get started</div>
+  <h2 class="title">One client, <em>any provider</em></h2>
+  <div class="cols">
+    <div class="card"><b>OpenAIClient</b>Any OpenAI-compatible server<span>LM Studio, Ollama, OpenAI, Azure OpenAI, OpenRouter — the endpoint and key change, the code does not.</span></div>
+    <div class="card"><b>AsAIAgent</b>Chat client &rarr; agent<span>Instructions and a name turn a raw chat client into something you can run.</span></div>
+    <div class="card"><b>RunAsync</b>One request<span>Text goes in, text comes back. Typed output next.</span></div>
+  </div>
+</section>
+
+<section class="slide slide--run" data-section="Get started" data-group="core" data-title="Run it">
+  <div class="eyebrow">Get started</div>
+  <h2 class="title">Run it</h2>
+  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project src/Workshop.App -- smoke</pre>
+  <pre class="terminal-output"><span class="ok">reply: WORKSHOP_OK</span>
+elapsed: 258 ms</pre>
+  <p class="hint">The <code>smoke</code> command also prints which endpoint and model answered.</p>
+  <p class="hint"><b>No reply?</b> Run <code>lms ps</code> or <code>ollama ps</code>.</p>
+  <p class="hint">Usually the model is not loaded, or the port does not match your secrets.</p>
+</section>
+
+<section class="slide slide--structured" data-section="Talking to a model" data-group="core" data-title="Structured output">
+  <div class="eyebrow">Talking to a model</div>
+  <h2 class="title">Structured output</h2>
+  <pre class="code">record SimpleCommand(string Action, string Target);
+
+var response = await agent.RunAsync&lt;SimpleCommand&gt;("Mute the microphone.");
+SimpleCommand command = response.Result;</pre>
+  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project src/Workshop.App -- typed</pre>
+  <pre class="terminal-output"><span class="c">raw JSON</span>
+{<span class="json-key">"action"</span>: <span class="json-string">"mute"</span>, <span class="json-key">"target"</span>: <span class="json-string">"microphone"</span>}
+
+<span class="json-key">action:</span> <span class="json-string">mute</span>
+<span class="json-key">target:</span> <span class="json-string">microphone</span></pre>
+  <p class="hint">The C# type is your contract; <b>a clean parse is not a content check</b>.</p>
+</section>
+
+<section class="slide slide--measured" data-section="Talking to a model" data-group="core" data-title="Measured reasoning effort">
+  <div class="eyebrow">Talking to a model</div>
+  <h2 class="title">Measured reasoning <em>effort</em></h2>
+  <img class="shot shot--chart" src="../assets/reasoning-effort-chart.png" alt="Reasoning effort vs output tokens and recall on the Extract task">
+  <p class="hint"><b>This local lane:</b> MAF → LM Studio → Nemotron 3 Nano 4B. <code>None</code> is no reasoning; <code>Low</code> / <code>Medium</code> / <code>High</code> are the same reasoning-on behaviour here.</p>
+</section>
+
+<section class="slide" data-section="Talking to a model" data-group="core" data-title="Model trade-offs">
+  <div class="eyebrow">External benchmark · selected reasoning variants</div>
+  <h2 class="title">Different models gain <em>differently</em> from reasoning</h2>
+  <p class="sub">Artificial Analysis Intelligence Index. Each line uses only the direct and reasoning variants that publisher currently exposes.</p>
+  <div class="model-chart">
+    <svg viewBox="0 0 820 330" role="img" aria-label="Reasoning effort versus Intelligence Index for Nemotron 3 Nano, Gemma 4 26B and Qwen 3.8 27B">
+      <line class="grid" x1="54" y1="55" x2="790" y2="55"/><line class="grid" x1="54" y1="130" x2="790" y2="130"/><line class="grid" x1="54" y1="205" x2="790" y2="205"/><line class="axis" x1="54" y1="280" x2="790" y2="280"/>
+      <text class="tick" x="18" y="59">55</text><text class="tick" x="18" y="134">35</text><text class="tick" x="18" y="209">15</text>
+      <text class="tick" x="94" y="311">Direct</text><text class="tick" x="304" y="311">Reasoning</text><text class="tick" x="518" y="311">Medium</text><text class="tick" x="714" y="311">XHigh</text>
+      <path class="series line-nvidia" d="M120 235 L350 205"/><circle class="dot line-nvidia" cx="120" cy="235" r="10" fill="var(--green)"/><circle class="dot line-nvidia" cx="350" cy="205" r="10" fill="var(--green)"/><text class="score score-nvidia" x="101" y="225">7</text><text class="score score-nvidia" x="335" y="195">15</text>
+      <path class="series line-google" d="M120 187 L350 165"/><circle class="dot line-google" cx="120" cy="187" r="10" fill="var(--sky)"/><circle class="dot line-google" cx="350" cy="165" r="10" fill="var(--sky)"/><text class="score score-google" x="92" y="178">20*</text><text class="score score-google" x="325" y="155">26*</text>
+      <path class="series line-alibaba" d="M120 130 L350 100 L560 96 L740 66"/><circle class="dot line-alibaba" cx="120" cy="130" r="10" fill="var(--orange)"/><circle class="dot line-alibaba" cx="350" cy="100" r="10" fill="var(--orange)"/><circle class="dot line-alibaba" cx="560" cy="96" r="10" fill="var(--orange)"/><circle class="dot line-alibaba" cx="740" cy="66" r="10" fill="var(--orange)"/><text class="score score-alibaba" x="100" y="120">35</text><text class="score score-alibaba" x="331" y="90">43</text><text class="score score-alibaba" x="541" y="86">44</text><text class="score score-alibaba" x="721" y="56">52</text>
+    </svg>
+    <aside class="model-legend"><div class="nvidia"><b>NVIDIA Nemotron 3 Nano</b><span>Our attendee-model family · 31.6B total / 3.6B active · $0.02 per Index task.</span></div><div class="google"><b>Google Gemma 4 26B</b><span>25.2B total / 3.8B active · $0.04 per Index task.</span></div><div class="alibaba"><b>Alibaba Qwen 3.8 27B</b><span>27B dense · $0.37 per Index task at XHigh.</span></div></aside>
+  </div>
+  <div class="model-compare-note"><p><b>Hosted trade-off map, not a local ranking.</b> Providers, templates, quants and hardware differ; only Qwen has published Low / Medium / XHigh variants.</p></div>
+  <p class="benchmark-source">Source: Artificial Analysis &mdash; <a href="https://artificialanalysis.ai/models/nvidia-nemotron-3-nano-30b-a3b-reasoning">Nemotron</a> · <a href="https://artificialanalysis.ai/models/gemma-4-26b-a4b">Gemma</a> · <a href="https://artificialanalysis.ai/models/qwen3-8-27b">Qwen</a> · accessed 31 Aug 2026. *Gemma Index is an estimate pending independent evaluation.</p>
+</section>
+
+<section class="slide" data-section="Talking to a model" data-group="core" data-title="Reasoning and cost">
+  <div class="eyebrow">External benchmark · Qwen 3.8 27B</div>
+  <h2 class="title">More reasoning also spends <em>more tokens</em></h2>
+  <p class="sub benchmark-sub">Output generated across the same Intelligence Index. Higher effort is not free just because the rate card stays the same.</p>
+  <div class="benchmark-chart">
+    <div>
+      <div class="benchmark-bars" aria-label="Output tokens used across the Artificial Analysis Intelligence Index: non-reasoning 26 million, low 43 million, medium 75 million, extra high 160 million">
+        <div class="benchmark-bar" style="--bar:16.25%">26M</div>
+        <div class="benchmark-bar benchmark-bar--low" style="--bar:26.875%">43M</div>
+        <div class="benchmark-bar benchmark-bar--medium" style="--bar:46.875%">75M</div>
+        <div class="benchmark-bar benchmark-bar--high" style="--bar:100%">160M</div>
+      </div>
+      <div class="benchmark-labels"><span><b>None</b>direct</span><span><b>Low</b>reasoning</span><span><b>Medium</b>reasoning</span><span><b>XHigh</b>reasoning</span></div>
+    </div>
+    <aside class="benchmark-callout"><strong>6.2×</strong><p>more output tokens at XHigh versus direct answers.</p><p>At the listed $3/M output rate: roughly <b>$78 → $480</b> in output-token spend for this full benchmark.</p></aside>
+  </div>
+  <p class="benchmark-source">Source: Artificial Analysis &mdash; <a href="https://artificialanalysis.ai/models/qwen3-8-27b-non-reasoning">None</a> · <a href="https://artificialanalysis.ai/models/qwen3-8-27b-low">Low</a> · <a href="https://artificialanalysis.ai/models/qwen3-8-27b-medium">Medium</a> · <a href="https://artificialanalysis.ai/models/qwen3-8-27b">XHigh</a> · accessed 31 Aug 2026. Dollar estimate is output tokens × Alibaba&rsquo;s listed $3/M output price; excludes input, cache and provider variation. Hosted API data, not local runtime cost.</p>
+</section>
+
+<section class="slide" data-section="Talking to a model" data-group="core" data-title="Choose reasoning effort">
+  <div class="eyebrow">Talking to a model</div>
+  <h2 class="title">Choose reasoning <em>effort</em></h2>
+  <p class="sub">Set it beside your other call options. Choose the smallest effort that fits the job.</p>
+  <pre class="code">ChatOptions = new ChatOptions
+{
+    Reasoning = new ReasoningOptions
+    {
+        Effort = ReasoningEffort.None
+    }
+}</pre>
+  <div class="cols">
+    <div class="card"><b>None</b>Responsive chat<span>Answer directly when you want a quick conversational response.</span></div>
+    <div class="card"><b>Low</b>Simple focused work<span>Use a little thought for bounded tasks with a clear goal.</span></div>
+    <div class="card"><b>Higher</b>Harder problems<span>Spend more only when the task is open-ended enough to justify it.</span></div>
+  </div>
+</section>
+
+<section class="slide slide--bg" style="--bg-image:url('../assets/bg-dataset.jpg')" data-section="The dataset and Gather" data-group="core" data-title="Meet the dataset">
+  <div class="eyebrow">The dataset and Gather</div>
+  <h2 class="title">Meet the dataset</h2>
+  <div class="cols">
+    <div class="card"><b>1,000 records</b>2012–2025, non-fatal<span>Curated from public Victoria Road Crash Data (CC BY 4.0).</span></div>
+    <div class="card"><b>Removed</b>Fatal and pedestrian crashes<span>Road names, coordinates, time of day, person and vehicle tables.</span></div>
+    <div class="card"><b>Kept</b>Six fields<span>id · date · title · summary · severity · sourceReference</span></div>
+  </div>
+  <p class="hint">The <b>model</b> fills a typed filter: date range, term and cap. C# validates and clamps it to 1–20, then narrows this one approved local corpus.</p>
+</section>
+
+<section class="slide" data-section="The dataset and Gather" data-group="core" data-title="One record">
+  <div class="eyebrow">The dataset and Gather</div>
+  <h2 class="title">One record</h2>
+  <pre class="code">{
+  "id": "T20140024624",
+  "date": "2014-11-27",
+  "title": "Road crash record: cross traffic at an intersection",
+  "summary": "Historic non-fatal Victorian road-crash record in Wellington, Gippsland. Crash type: collision
+              with vehicle; category: cross traffic at an intersection; reported severity: other injury
+              accident; vehicles recorded: 2.",
+  "severity": "Other injury accident",
+  "sourceReference": "Victoria Road Crash Data: T20140024624"
+}</pre>
+</section>
+
+<section class="slide" data-section="The dataset and Gather" data-group="core" data-title="Gathering evidence">
+  <div class="eyebrow">The dataset and Gather · Model + C#</div>
+  <h2 class="title">Parse, then gather</h2>
+  <pre class="code">var query = IncidentDataset.ValidateFilter(modelFilter);
+var term = query.Term?.Trim();
+
+var selected = records
+    .Where(r =&gt; query.From is null || r.Date &gt;= query.From)
+    .Where(r =&gt; query.To   is null || r.Date &lt;= query.To)
+    .Where(r =&gt; string.IsNullOrEmpty(term) || Matches(r, term))
+    .OrderByDescending(r =&gt; r.Date).ThenBy(r =&gt; r.Id)
+    .Take(Math.Clamp(query.MaxResults, 1, 20));</pre>
+  <p class="hint">The <b>model</b> fills untrusted filter JSON. C# validates and clamps it, then this deterministic LINQ code produces the ordered, capped pack for Extract.</p>
+</section>
+
+<section class="slide slide--query-filter" data-section="The dataset and Gather" data-group="core" data-title="Model fills the filter">
+  <div class="eyebrow">The dataset and Gather · Model + C#</div>
+  <h2 class="title">Model fills the <em>filter</em></h2>
+  <pre class="code">var agent = Agent("QueryAgent", """
+    Turn the prompt into a date range, term and result cap.
+    Return only the typed contract.
+    """);
+
+var response = await agent.RunAsync&lt;QueryFilter&gt;(prompt);
+var filter = IncidentDataset.ValidateFilter(response.Result);
+var evidence = IncidentDataset.Gather(records, filter);</pre>
+  <p class="hint">The <b>model</b> returns a typed <code>QueryFilter</code>. C# validates it, then filters the one approved local corpus.</p>
+</section>
+
+<section class="slide slide--gather-run" data-section="The dataset and Gather" data-group="core" data-title="Gather: run it">
+  <div class="eyebrow">The dataset and Gather</div>
+  <h2 class="title">Run it</h2>
+  <pre class="small"><span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> src/Workshop.App -- query <span class="flag">--prompt</span> <span class="s">"Show up to 5 intersection crashes from 2012."</span>
+raw:            { … <span class="json-key">"term"</span>: <span class="json-string">"intersection crash"</span>, <span class="json-key">"maxResults"</span>: <span class="n">5</span> }
+validated filter: { <span class="json-key">"from"</span>: <span class="json-string">"2012-01-01"</span>, <span class="json-key">"to"</span>: <span class="json-string">"2012-12-31"</span>, <span class="json-key">"term"</span>: <span class="json-string">"intersection"</span>, <span class="json-key">"maxResults"</span>: <span class="n">5</span> }
+MODEL asked for <b>"intersection crash"</b>. C# validation cut it to <b>"intersection"</b>.
+
+<span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> src/Workshop.App -- run <span class="flag">--prompt</span> <span class="s">"Show up to 5 intersection crashes from 2012."</span>
+filter source: tool-free typed QueryAgent, then C# validation
+gathered: <b>5 record(s)</b>
+gate: <span class="ok">Supported</span>          <span class="c"># Extract and Analyse follow</span>
+
+<span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> src/Workshop.App -- run <span class="flag">--prompt</span> <span class="s">"Find cyclist crashes."</span>
+validated filter: { <span class="json-key">"from"</span>: <span class="ok">null</span>, <span class="json-key">"to"</span>: <span class="ok">null</span>, <span class="json-key">"term"</span>: <span class="json-string">"cyclist"</span>, <span class="json-key">"maxResults"</span>: <span class="n">8</span> }
+gathered: <b>0 record(s)</b>
+gate: <span class="warn">NoEvidence</span>        <span class="c"># Extract and Analyse were not called</span></pre>
+</section>
+
+<section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Extract: in and out">
+  <div class="eyebrow">Extract and Analyse · TODO 4</div>
+  <h2 class="title">Extract: in and out</h2>
+  <div class="cols">
+    <div class="card"><b>Prompt · text</b>Question + evidence pack<pre>Question: What patterns…
+Evidence pack JSON:
+{ "records": [ {…}, {…} ] }</pre></div>
+    <div class="card"><b>Contract · C#</b>The type you ask for<pre class="code">record CrashSelection(
+    string[] RecordIds,
+    string Rationale,
+    int Confidence);</pre></div>
+    <div class="card"><b>Answer · JSON</b>What the model returns<pre>{ <span class="json-key">"recordIds"</span>: [ … ],
+  <span class="json-key">"rationale"</span>: <span class="json-string">"…"</span>,
+  <span class="json-key">"confidence"</span>: <span class="n">95</span> }</pre></div>
+  </div>
+  <p class="hint">The model picks IDs, a rationale and a confidence. It doesn't enforce the rules — the next slide does.</p>
+</section>
+
+<section class="slide slide--extract-code" data-section="Extract and Analyse" data-group="core" data-title="Extract: the code">
+<div class="eyebrow">Extract and Analyse · TODO · workshop/04-extract/src/Workshop.App/CrashPipeline.cs</div>
+  <h2 class="title">Extract: the code</h2>
+  <pre class="code">var agent = Agent("ExtractAgent", """
+    Select only relevant records from the provided evidence pack for the user's question.
+    Return recordIds from the pack exactly, a short rationale, and 0-100 confidence.
+    Do not invent records, facts, causes, or recommendations. You have no tools.
+    """);
+
+var response = await agent.RunAsync&lt;CrashSelection&gt;(
+    $"Question: {question}\nEvidence pack JSON:\n{WorkshopJson.Serialize(evidence)}");
+
+try { return response.Result; }
+catch (Exception ex) when (ex is InvalidOperationException or JsonException) { return null; }</pre>
+  <p class="hint"><code>Agent(name, instructions)</code> is a one-line helper in the same file. The catch turns malformed JSON into <code>null</code>, which the gate reports as <code>UnsupportedSelection</code> instead of a crash.</p>
+</section>
+
+<section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Validate the selection">
+  <div class="eyebrow">Extract and Analyse · code you already have</div>
+  <h2 class="title">Validate the selection</h2>
+  <div class="flow flow--grid flow--mini">
+    <span class="is-code">Gather</span>
+    <span>Extract</span>
+    <span class="is-code is-here">Validate</span>
+    <span>Analyse</span>
+  </div>
+  <pre class="code">var gate = CrashWorkflow.ValidateSelection(evidence, selection, out var selected);
+if (gate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
+    return …;                                   <span class="c">// Analyse is never called</span></pre>
+  <div class="cols">
+    <div class="card"><b>Rejected</b>Unknown, duplicate or blank IDs<span>Null or oversized selections. Confidence outside 0–100. Blank rationale.</span></div>
+    <div class="card"><b>LowConfidence</b>Under 60<span>Valid shape, but the model clearly isn't sure &mdash; stop before Analyse.</span></div>
+    <div class="card"><b>We control the flow</b>Not the model<span>Plain old C# decides if we even make the next call.</span></div>
+  </div>
+</section>
+
+<section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Checkpoint after TODO 4">
+  <div class="eyebrow">Extract and Analyse · checkpoint</div>
+  <h2 class="title">After TODO 4</h2>
+  <pre>$ dotnet run --project src/Workshop.App -- run --prompt "Review intersection crashes."
+
+gathered: capped evidence pack
+gate: <b>UnsupportedAnalysis</b>
+extract JSON:  { "recordIds": [ … ], "rationale": "…", "confidence": 95 }</pre>
+  <p class="hint">Extract works. Analyse is still a stub, so the second gate blocks it. Exactly what we want here.</p>
+</section>
+
+<section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Analyse: in and out">
+  <div class="eyebrow">Extract and Analyse · TODO 5</div>
+  <h2 class="title">Analyse: in and out</h2>
+  <div class="cols">
+    <div class="card"><b>Prompt · text</b>Question + validated records only<pre>Question: What patterns…
+Validated records JSON:
+[ {…}, {…} ]</pre></div>
+    <div class="card"><b>Contract · C#</b>The type you ask for<pre class="code">record CrashAnalysis(
+    string Finding,
+    string[] Actions,
+    string[] Questions,
+    int Confidence);</pre></div>
+    <div class="card"><b>Answer · JSON</b>What the model returns<pre>{ <span class="json-key">"finding"</span>: <span class="json-string">"…"</span>,
+  <span class="json-key">"actions"</span>: [ … ],
+  <span class="json-key">"questions"</span>: [ … ],
+  <span class="json-key">"confidence"</span>: <span class="n">95</span> }</pre></div>
+  </div>
+  <p class="hint">Put "0–100 confidence" in the instruction. Otherwise the model may return <code>0</code>, and the gate stops it.</p>
+</section>
+
+<section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Analyse: the code">
+  <div class="eyebrow">Extract and Analyse · TODO 5 · same file, next method</div>
+  <h2 class="title">Analyse: the code</h2>
+  <pre class="code">var agent = Agent("AnalyseAgent", """
+    Analyse only the compact structured records provided. Return a grounded finding, practical actions,
+    open questions, and 0-100 confidence. Do not claim causation not present in the records.
+    """);
+
+var response = await agent.RunAsync&lt;CrashAnalysis&gt;(
+    $"Question: {question}\nValidated selected records JSON:\n{WorkshopJson.Serialize(selected)}");
+
+try { return response.Result; }
+catch (Exception ex) when (ex is InvalidOperationException or JsonException) { return null; }</pre>
+</section>
+
+<section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Extract and Analyse: run it">
+  <div class="eyebrow">Extract and Analyse</div>
+  <h2 class="title">Run it</h2>
+  <pre>$ dotnet run --project src/Workshop.App -- run --prompt "Review intersection crashes."
+
+gathered: capped evidence pack
+gate: <b>Supported</b>
+extract JSON
+  recordIds: [ … ]   confidence: 95
+analyse JSON
+  finding: "…non-fatal collisions at intersections…
+            <b>All incidents are categorized as 'other injury accident'</b>…"
+  actions: 3   questions: 2   confidence: 95</pre>
+</section>
+
+<section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Read the answer">
+  <div class="eyebrow">Extract and Analyse</div>
+  <h2 class="title"><em>Read</em> the answer</h2>
+  <div class="cols">
+    <div class="card"><b>Supported means</b>The gate said yes<span>The IDs exist, the JSON parsed, confidence is in range. That's all it checked.</span></div>
+    <div class="card"><b>Valid shape ≠ correct facts</b>The gate checks JSON and IDs, not content<span>That bold sentence is wrong: <code>T20200020837</code> is a <em>Serious</em> injury accident.</span></div>
+    <div class="card"><b>So</b>Read the finding<span>Typed output and a passing gate get you a candidate answer. Someone still has to read it.</span></div>
+  </div>
+</section>
+
+<section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="Gates are flow control">
+  <div class="eyebrow">Workflows and graceful failure</div>
+  <h2 class="title">Gates are flow control</h2>
+  <div class="mtable gates">
+    <div class="mrow mrow--head"><span>Gate</span><span>What happens</span><span>Exit</span></div>
+    <div class="mrow"><strong>NoEvidence</strong><span>Gather found nothing, so Extract and Analyse never run.</span><span class="num ok">0</span></div>
+    <div class="mrow"><strong>UnsupportedSelection</strong><span>Bad IDs or shape from Extract. The run stops before Analyse.</span><span class="num warn">2</span></div>
+    <div class="mrow"><strong>LowConfidence</strong><span>Valid shape, confidence under 60. The run stops, with the reason on screen.</span><span class="num warn">2</span></div>
+    <div class="mrow"><strong>UnsupportedAnalysis</strong><span>Analyse returned nothing usable. Caution branch.</span><span class="num warn">2</span></div>
+    <div class="mrow"><strong>Supported</strong><span>Show the finding — with the evidence still on screen.</span><span class="num ok">0</span></div>
+    <div class="mrow"><strong>pipeline error</strong><span>Endpoint down, model not loaded, timeout. You see the real error.</span><span class="num slow">3</span></div>
+  </div>
+  <p class="mfoot">Predictable failure: the app stops <b>and tells you why</b>.</p>
+</section>
+
+<section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="The flow, in plain C#">
+  <div class="eyebrow">Workflows and graceful failure · CrashPipeline.RunAsync</div>
+  <h2 class="title">The flow, in plain C#</h2>
+  <pre class="code">if (evidence.IsEmpty)
+    return new(evidence, null, null, CrashGate.NoEvidence, "No matching records.");
+
+var selection = await ExtractAsync(question, evidence);
+var selectionGate = CrashWorkflow.ValidateSelection(evidence, selection, out var selected);
+if (selectionGate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
+    return new(evidence, selection, null, selectionGate, "Stopped before Analyse.");
+
+var analysis = await AnalyseAsync(question, selected);
+return new(evidence, selection, analysis, CrashWorkflow.ValidateAnalysis(selected, analysis), "…");</pre>
+  <p class="hint">Easy to read and debug. This is exactly what you'll run tonight.</p>
+</section>
+
+<section class="slide slide--workflow-code" data-section="Workflows and graceful failure" data-group="core" data-title="The same flow as a MAF Workflow">
+  <div class="eyebrow">Workflows and graceful failure · Microsoft.Agents.AI.Workflows</div>
+  <h2 class="title">As a <em>MAF Workflow</em></h2>
+  <pre class="code">var workflow = new WorkflowBuilder(gather)
+    .AddEdge&lt;Stage&gt;(gather,  report,  s =&gt; s.Gate is not null)   // NoEvidence → report
+    .AddEdge&lt;Stage&gt;(gather,  extract, s =&gt; s.Gate is null)
+    .AddEdge&lt;Stage&gt;(extract, report,  s =&gt; s.Gate is not null)   // bad selection → report
+    .AddEdge&lt;Stage&gt;(extract, analyse, s =&gt; s.Gate is null)
+    .AddEdge(analyse, report)
+    .WithOutputFrom(report)
+    .Build();
+
+var run = await InProcessExecution.RunAsync(workflow, term);</pre>
+  <p class="hint"><code>gather</code>, <code>extract</code>, <code>analyse</code>, <code>report</code> are executors; <code>Stage</code> carries the pack, the selection and a nullable <code>Gate</code> — null means keep going. This is facilitator research, not a workshop lab: it needs the Workflows package and a <code>WorkflowErrorEvent</code> check.</p>
+</section>
+
+<section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="Workflow or plain code?">
+  <div class="eyebrow">Workflows and graceful failure</div>
+  <h2 class="title">Workflow or plain code?</h2>
+  <div class="cols">
+    <div class="card"><b>Workflow</b>Typed executors joined by edges<span>Conditions on edges, an event per step, checkpoints. But <code>RunAsync</code> swallows executor exceptions — re-raise <code>WorkflowErrorEvent</code> or a dead endpoint exits 0.</span></div>
+    <div class="card"><b>Plain C#</b>The same sequence you can step through<span>Tested tonight with this exact graph — same output, same gates.</span></div>
+    <div class="card"><b>Use a workflow when</b>You actually need fan-out or resuming<span>Don't bother for two calls in a straight line. Gotchas live in facilitator research.</span></div>
+  </div>
+</section>
+
+<section class="slide slide--bg" style="--bg-image:url('../assets/bg-takeaways.jpg')" data-section="Workflows and graceful failure" data-group="outro" data-title="Key takeaways">
+  <div class="eyebrow">Key takeaways</div>
+  <h2 class="title">Small models, <em>sharp jobs.</em></h2>
+  <ul class="takeaways">
+    <li>Give the model one narrow task over data you already filtered.</li>
+    <li>Ask for typed output so you can validate IDs, ranges and required fields in C#.</li>
+    <li>Missing data, bad output and low confidence are ordinary branches you handle in code.</li>
+    <li>Valid JSON doesn't mean it's right, so read the finding.</li>
+    <li>Same <code>IChatClient</code>, any model: swap the endpoint and rerun <code>ready</code>. We measured seven.</li>
+  </ul>
+  <div class="join">
+    <span class="eyebrow">Join the conversation</span>
+    <strong>@SSW_TV · @jernej_kavka · #GlobalAIConstruct</strong>
+  </div>
+</section>
+
+<section class="slide" data-section="Workflows and graceful failure" data-group="outro" data-title="Questions">
+  <div class="eyebrow">Thank you</div>
+  <h2 class="title">Questions?</h2>
+  <p class="sub">Which job in your system is small enough for a 4B model — and what would the gate be?</p>
+  <div class="share" id="share" hidden>
+    <div class="share-qr" id="share-qr"></div>
+    <div class="share-text">
+      <span>Slides, checkpoints and the saved reference run</span>
+      <strong id="share-url"></strong>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-hidden id="extra-three-ways" data-section="Workflows and graceful failure" data-group="extras" data-title="Extra: Three ways to call a model">
+  <div class="eyebrow">Talking to a model</div>
+  <h2 class="title">Three ways to call a model</h2>
+  <div class="cols">
+    <div class="card"><b>1 · Chat</b>Text in, text out<span>Your code has to interpret the answer.</span>
+<pre>await agent.RunAsync("…");</pre></div>
+    <div class="card"><b>2 · Tool call</b>The model asks code to run a function<span>Only registered C# can run. The result goes back to the model.</span>
+<pre>var tool =
+  AIFunctionFactory
+    .Create(Gather);
+tools: [tool]</pre></div>
+    <div class="card"><b>3 · Structured output</b>JSON shaped like a C# type<span>Code parses it, then validates it.</span>
+<pre>await agent.RunAsync&lt;CrashSelection&gt;("…");</pre></div>
+  </div>
+  <p class="hint">Tonight's lab uses 1 and 3. You will see why 2 stays on the slide.</p>
+</section>
+
+<section class="slide slide--tool-call-extra" data-hidden id="extra-tool-calls" data-section="Workflows and graceful failure" data-group="extras" data-title="Extra: Tool calls">
+  <div class="eyebrow">Talking to a model</div>
+  <h2 class="title">Tool calls</h2>
+  <pre class="code">[Description("Search the approved crash sample.")]
+static EvidencePack Gather(string term, int max)
+    =&gt; IncidentDataset.Gather(records, new(null, null, term, max));
+
+AIAgent agent = chat.AsAIAgent(
+    instructions: "Use only the Gather tool. Never guess records.",
+    name: "GatherAgent",
+    tools: [AIFunctionFactory.Create(Gather)]);
+
+var response = await agent.RunAsync("Find crashes involving an intersection.");</pre>
+  <div class="cols">
+    <div class="card"><b>Model</b>Picks the function<span>Name and arguments, from the description and signature.</span></div>
+    <div class="card"><b>Framework</b>Runs the C#<span>Hands the result back; the model continues.</span></div>
+    <div class="card"><b>Tonight</b>No tools on the 4B<span>Tool + JSON did not call the tool. Tonight: typed filter → C# Gather.</span></div>
+  </div>
+</section>
+
+<section class="slide" data-hidden id="extra-harness" data-section="Workflows and graceful failure" data-group="extras" data-title="Extra: Workflow vs Harness">
+  <div class="eyebrow">Presenter extra</div>
+  <h2 class="title">Fixed workflow vs <em>coding-agent harness</em></h2>
+  <p class="sub">A workflow is code you wrote, in an order you chose. A harness (Codex, Claude Code, OpenCode) is a loop the model drives &mdash; planning, session state, compaction, approvals, recovery, knowing when to stop. Write one by hand and you're building all of that yourself. <strong>Use a harness when the problem is open-ended enough to be worth it.</strong></p>
+</section>
+
+<section class="slide" data-hidden id="extra-mcp" data-section="Workflows and graceful failure" data-group="extras" data-title="Extra: MCP">
+  <div class="eyebrow">Presenter extra</div>
+  <h2 class="title">MCP exposes tools; <em>code sets policy.</em></h2>
+  <p class="sub">MCP hands the model tools. It doesn't decide when to stop or what to trust &mdash; your code does. If the model should never see raw evidence, don't hand it raw evidence.</p>
+</section>
+
+<section class="slide" data-hidden id="extra-models" data-section="Workflows and graceful failure" data-group="extras" data-title="Extra: Same app, seven models">
+  <div class="eyebrow">Extra · Same app, seven models</div>
+  <h2 class="title">Same app. <em>Seven models.</em></h2>
+  <div class="mtable">
+    <div class="mrow mrow--head"><span>Model</span><span>Size</span><span>Runs /9</span><span>Median</span><span>Note</span></div>
+    <div class="mrow"><strong>Nemotron 3 Nano 4B</strong><span class="num">2.8 GB</span><span class="num ok">9/9</span><span class="num ok">4.9 s</span><span>attendee lane</span></div>
+    <div class="mrow"><strong>Gemma 4 26B-A4B QAT</strong><span class="num">15.6 GB</span><span class="num ok">9/9</span><span class="num ok">4.7 s</span><span>as fast as 4B, needs 16 GB</span></div>
+    <div class="mrow"><strong>Gemma 4 12B</strong><span class="num">6.8 GB</span><span class="num warn">5/9</span><span class="num warn">9.6 s</span><span>truncated JSON 4/9; after the gate fix, re-run 3/3</span></div>
+    <div class="mrow"><strong>Qwen 3.8 27B</strong><span class="num">16 GB</span><span class="num ok">9/9</span><span class="num slow">20.1 s</span><span>correct, 4&ndash;5&times; slower</span></div>
+    <div class="mrow"><strong>Bonsai 27B</strong><span class="num">8.5 GB</span><span class="num warn">6/9</span><span class="num warn">11.2 s</span><span>under-selects; Analyse overruns &rarr; caution</span></div>
+    <div class="mrow"><strong>LFM2.5 1.2B</strong><span class="num">1.25 GB</span><span class="num ok">9/9</span><span class="num ok">2.0 s</span><span>fastest; findings read as instructions</span></div>
+    <div class="mrow"><strong>Granite 4.0-H Tiny 7B</strong><span class="num">4.2 GB</span><span class="num ok">9/9</span><span class="num ok">3.8 s</span><span>good findings; drops 1/3 on one term</span></div>
+  </div>
+  <p class="mfoot">M4 Max, LM Studio, 29–30 Aug &mdash; <b>file size doesn't predict fitness; the gates made every one safe to run.</b></p>
+</section>
+
+<section class="slide" data-hidden id="extra-coding" data-section="Workflows and graceful failure" data-group="extras" data-title="Extra: A coding model tried the lab">
+  <div class="eyebrow">Extra · A coding model tried the lab</div>
+  <h2 class="title">Three local coding models did <em>both TODOs.</em></h2>
+  <div class="mtable">
+    <div class="mrow mrow--head"><span>Model</span><span>TODOs</span><span>Minutes</span><span>Tests</span><span>Result</span></div>
+    <div class="mrow"><strong>Bonsai 27B</strong><span class="num">both</span><span class="num ok">3 + 3</span><span class="num ok">27/27</span><span>fastest, fully correct</span></div>
+    <div class="mrow"><strong>Qwen 3.8 27B</strong><span class="num">both</span><span class="num warn">7 + 11</span><span class="num ok">27/27</span><span>cleanest code; 5.5 min before its first tool call</span></div>
+    <div class="mrow"><strong>Gemma 4 26B</strong><span class="num">both</span><span class="num warn">11 + 1.5</span><span class="num warn">26/27</span><span>compiled, <code>dotnet test</code> green &mdash; <code>gate: LowConfidence</code> forever</span></div>
+  </div>
+  <p class="mfoot">Gemma's Extract prompt never said <b>&ldquo;rate your confidence 0&ndash;100&rdquo;</b> &mdash; confidence came back 0, and the gate stopped it.</p>
+  <p class="mfoot">OpenCode, 64k context, same laptop serving the 4B.</p>
+</section>
+
+<section class="slide" data-hidden id="extra-coding-cloud" data-section="Workflows and graceful failure" data-group="extras" data-title="Extra: The same task, in the cloud">
+  <div class="eyebrow">Extra · No subscription needed</div>
+  <h2 class="title">Four coding-agent runs, <em>same two TODOs.</em></h2>
+  <div class="mtable mtable--cloud">
+    <div class="mrow mrow--head"><span>Harness + model</span><span>TODOs</span><span>Minutes</span><span>Tests</span><span>Result</span></div>
+    <div class="mgroup">No subscription</div>
+    <div class="mrow"><strong>OpenCode + Big Pickle</strong><span class="num">both</span><span class="num ok">0.5 + 0.4</span><span class="num ok">27/27</span><span>free, no sign-up &mdash; fastest</span></div>
+    <div class="mrow"><strong>OpenCode + Nemotron 3 Ultra</strong><span class="num">both</span><span class="num ok">1.4 + 0.7</span><span class="num ok">27/27</span><span>free, needs an account</span></div>
+    <div class="mgroup">Paid</div>
+    <div class="mrow"><strong>Codex + Luna</strong><span class="num">both</span><span class="num ok">1.4 + 1.3</span><span class="num ok">27/27</span><span>correct, slowest of the four</span></div>
+    <div class="mrow"><strong>Codex + Pebble</strong><span class="num">both</span><span class="num ok">1.1 + 1.0</span><span class="num warn">26/27</span><span>confidence 0 in both steps</span></div>
+  </div>
+  <p class="mfoot">Pebble left out the same sentence as Gemma &mdash; neither Extract prompt asked for <b>confidence 0&ndash;100</b>.</p>
+  <p class="mfoot">Local or cloud, free or paid &mdash; <b>the gate caught what the tests could not.</b></p>
+</section>
+
+
+
+<div class="progress" id="progress"></div>
+<div class="badge" id="badge" hidden>presenter extras visible</div>
+
+<script>
+const SLIDES_URL = "https://small-models-sharp-jobs-workshop-20260829.surge.sh/slides/";
+const SHOW_AGENDA = true;
+
+const SECTIONS = {
+  "Welcome":                         { accent: "#2dd4bf", result: "What we build and how the night runs." },
+  "Local models":                    { accent: "#fb923c", art: "../assets/section-local-models.jpg", result: "LM Studio, Ollama, and why a 4B model." },
+  "Get started":                     { accent: "#c084fc", art: "../assets/section-get-started.jpg", result: "Clone, configure with user-secrets, first call from C#." },
+  "Talking to a model":              { accent: "#38bdf8", art: "../assets/section-talking.jpg", result: "Structured output and reasoning effort." },
+  "The dataset and Gather":          { accent: "#4ade80", art: "../assets/section-dataset.jpg", result: "Model + C#: filter, validate and narrow 1,000 approved crash records." },
+  "Extract and Analyse":             { accent: "#fb7185", art: "../assets/section-extract.jpg", result: "The two model calls you write, and the code that checks them." },
+  "Workflows and graceful failure":  { accent: "#fbbf24", art: "../assets/section-workflows.jpg", result: "Gates as flow control, the same steps as a workflow, swapping models." }
+};
+
+/* ---------- offline QR (byte mode, versions 1-6, ECC M then L) ---------- */
+const QR = (() => {
+  const EXP = new Uint8Array(512), LOG = new Uint8Array(256);
+  for (let i = 0, x = 1; i < 255; i++) { EXP[i] = x; LOG[x] = i; x <<= 1; if (x & 256) x ^= 0x11d; }
+  for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+  const mul = (a, b) => (a === 0 || b === 0) ? 0 : EXP[LOG[a] + LOG[b]];
+
+  const TABLE = {                       // [ec codewords per block, blocks, total data codewords]
+    M: [[10,1,16],[16,1,28],[26,1,44],[18,2,64],[24,2,86],[16,4,108]],
+    L: [[7,1,19],[10,1,34],[15,1,55],[20,1,80],[26,1,108],[18,2,136]]
+  };
+  const LEVEL_BITS = { L: 1, M: 0 };
+
+  function genPoly(n) {
+    let p = [1];
+    for (let i = 0; i < n; i++) {
+      const q = new Array(p.length + 1).fill(0);
+      for (let j = 0; j < p.length; j++) { q[j] ^= p[j]; q[j + 1] ^= mul(p[j], EXP[i]); }
+      p = q;
+    }
+    return p;
+  }
+  function ecc(data, n) {
+    const g = genPoly(n), r = data.concat(new Array(n).fill(0));
+    for (let i = 0; i < data.length; i++) {
+      const f = r[i];
+      if (!f) continue;
+      for (let j = 0; j < g.length; j++) r[i + j] ^= mul(g[j], f);
+    }
+    return r.slice(data.length);
+  }
+
+  const MASKS = [
+    (r, c) => (r + c) % 2 === 0,
+    (r, c) => r % 2 === 0,
+    (r, c) => c % 3 === 0,
+    (r, c) => (r + c) % 3 === 0,
+    (r, c) => ((r >> 1) + Math.floor(c / 3)) % 2 === 0,
+    (r, c) => ((r * c) % 2 + (r * c) % 3) === 0,
+    (r, c) => (((r * c) % 2 + (r * c) % 3) % 2) === 0,
+    (r, c) => (((r + c) % 2 + (r * c) % 3) % 2) === 0
+  ];
+
+  function formatBits(level, mask) {
+    const d = (LEVEL_BITS[level] << 3) | mask;
+    let v = d << 10;
+    for (let i = 4; i >= 0; i--) if (v & (1 << (i + 10))) v ^= 0x537 << i;
+    return ((d << 10) | v) ^ 0x5412;
+  }
+
+  function penalty(m) {
+    const n = m.length;
+    let score = 0, dark = 0;
+    const run = (get) => {
+      for (let a = 0; a < n; a++) {
+        let last = -1, len = 0;
+        for (let b = 0; b < n; b++) {
+          const v = get(a, b);
+          if (v === last) { len++; } else { if (len >= 5) score += 3 + (len - 5); last = v; len = 1; }
+        }
+        if (len >= 5) score += 3 + (len - 5);
+      }
+    };
+    run((a, b) => m[a][b]);
+    run((a, b) => m[b][a]);
+    for (let r = 0; r < n - 1; r++) for (let c = 0; c < n - 1; c++) {
+      const v = m[r][c];
+      if (v === m[r][c + 1] && v === m[r + 1][c] && v === m[r + 1][c + 1]) score += 3;
+    }
+    const P1 = [1,0,1,1,1,0,1,0,0,0,0], P2 = [0,0,0,0,1,0,1,1,1,0,1];
+    const hit = (get, a, b) => {
+      for (const p of [P1, P2]) {
+        let ok = true;
+        for (let k = 0; k < 11; k++) if (get(a, b + k) !== p[k]) { ok = false; break; }
+        if (ok) return true;
+      }
+      return false;
+    };
+    for (let a = 0; a < n; a++) for (let b = 0; b + 11 <= n; b++) {
+      if (hit((x, y) => m[x][y], a, b)) score += 40;
+      if (hit((x, y) => m[y][x], a, b)) score += 40;
+    }
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) dark += m[r][c];
+    score += 10 * Math.floor(Math.abs(dark * 100 / (n * n) - 50) / 5);
+    return score;
+  }
+
+  function encode(text) {
+    const bytes = Array.from(new TextEncoder().encode(text));
+    let spec = null;
+    for (let v = 1; v <= 6 && !spec; v++) {
+      for (const level of ["M", "L"]) {
+        const [ecw, blocks, cap] = TABLE[level][v - 1];
+        if (bytes.length + 2 <= cap) { spec = { v, level, ecw, blocks, cap }; break; }
+      }
+    }
+    if (!spec) return null;
+
+    const bits = [];
+    const put = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >> i) & 1); };
+    put(4, 4); put(bytes.length, 8); bytes.forEach(b => put(b, 8));
+    const capBits = spec.cap * 8;
+    for (let i = 0; i < 4 && bits.length < capBits; i++) bits.push(0);
+    while (bits.length % 8) bits.push(0);
+    const words = [];
+    for (let i = 0; i < bits.length; i += 8) {
+      let b = 0; for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j];
+      words.push(b);
+    }
+    const pad = [0xec, 0x11];
+    for (let i = 0; words.length < spec.cap; i++) words.push(pad[i % 2]);
+
+    const per = spec.cap / spec.blocks, dBlocks = [], eBlocks = [];
+    for (let i = 0; i < spec.blocks; i++) {
+      const blk = words.slice(i * per, (i + 1) * per);
+      dBlocks.push(blk); eBlocks.push(ecc(blk, spec.ecw));
+    }
+    const stream = [];
+    for (let i = 0; i < per; i++) dBlocks.forEach(b => stream.push(b[i]));
+    for (let i = 0; i < spec.ecw; i++) eBlocks.forEach(b => stream.push(b[i]));
+    const dataBits = [];
+    stream.forEach(b => { for (let i = 7; i >= 0; i--) dataBits.push((b >> i) & 1); });
+    if (spec.v >= 2) for (let i = 0; i < 7; i++) dataBits.push(0);
+
+    const size = 17 + 4 * spec.v;
+    const base = Array.from({ length: size }, () => new Array(size).fill(null));
+    const finder = (r, c) => {
+      for (let i = -1; i <= 7; i++) for (let j = -1; j <= 7; j++) {
+        const rr = r + i, cc = c + j;
+        if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
+        const on = (i >= 0 && i <= 6 && (j === 0 || j === 6)) ||
+                   (j >= 0 && j <= 6 && (i === 0 || i === 6)) ||
+                   (i >= 2 && i <= 4 && j >= 2 && j <= 4);
+        base[rr][cc] = on ? 1 : 0;
+      }
+    };
+    finder(0, 0); finder(0, size - 7); finder(size - 7, 0);
+    for (let i = 8; i < size - 8; i++) { base[6][i] = i % 2 === 0 ? 1 : 0; base[i][6] = i % 2 === 0 ? 1 : 0; }
+    if (spec.v > 1) {
+      const p = size - 7;
+      for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++)
+        base[p + i][p + j] = Math.max(Math.abs(i), Math.abs(j)) !== 1 ? 1 : 0;
+    }
+    base[size - 8][8] = 1;
+
+    const reserved = Array.from({ length: size }, () => new Array(size).fill(false));
+    for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) reserved[r][c] = base[r][c] !== null;
+    for (let i = 0; i < 9; i++) { reserved[8][i] = true; reserved[i][8] = true; }
+    for (let i = 0; i < 8; i++) { reserved[8][size - 1 - i] = true; reserved[size - 1 - i][8] = true; }
+
+    let idx = 0, up = true;
+    for (let col = size - 1; col > 0; col -= 2) {
+      if (col === 6) col--;
+      for (let k = 0; k < size; k++) {
+        const row = up ? size - 1 - k : k;
+        for (const c of [col, col - 1]) {
+          if (reserved[row][c]) continue;
+          base[row][c] = idx < dataBits.length ? dataBits[idx++] : 0;
+        }
+      }
+      up = !up;
+    }
+
+    let best = null;
+    for (let mask = 0; mask < 8; mask++) {
+      const m = base.map(row => row.slice());
+      for (let r = 0; r < size; r++) for (let c = 0; c < size; c++)
+        if (!reserved[r][c] && MASKS[mask](r, c)) m[r][c] ^= 1;
+      const fmt = formatBits(spec.level, mask);
+      for (let i = 0; i < 15; i++) {
+        const bit = (fmt >> i) & 1;
+        if (i < 6) m[i][8] = bit;
+        else if (i < 8) m[i + 1][8] = bit;
+        else m[size - 15 + i][8] = bit;
+        if (i < 8) m[8][size - 1 - i] = bit;
+        else if (i === 8) m[8][7] = bit;
+        else m[8][14 - i] = bit;
+      }
+      m[size - 8][8] = 1;
+      const p = penalty(m);
+      if (!best || p < best.p) best = { p, m };
+    }
+    return best.m;
+  }
+
+  function svg(text, quiet = 4) {
+    const m = encode(text);
+    if (!m) return null;
+    const n = m.length, side = n + quiet * 2;
+    let path = "";
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++)
+      if (m[r][c]) path += `M${c + quiet} ${r + quiet}h1v1h-1z`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${side} ${side}" shape-rendering="crispEdges" role="img" aria-label="QR code for the slides link">` +
+           `<rect width="${side}" height="${side}" fill="#fff"/><path d="${path}" fill="#08090c"/></svg>`;
+  }
+
+  return { encode, svg };
+})();
+
+const deck = {
+  all: [],
+  visible: [],
+  index: 0,
+  showExtras: false
+};
+
+function makeSlide(cls, html, section, group) {
+  const el = document.createElement("section");
+  el.className = "slide" + (cls ? " " + cls : "");
+  el.innerHTML = html;
+  el.dataset.section = section;
+  el.dataset.group = group;
+  return el;
+}
+
+function buildGeneratedSlides() {
+  if (!SHOW_AGENDA) return;
+  const authored = Array.from(document.querySelectorAll("section.slide"));
+  const order = [];
+  authored.forEach(s => { if (!order.includes(s.dataset.section)) order.push(s.dataset.section); });
+
+  const rows = Object.keys(SECTIONS).filter(name => name !== order[0]).map((name, i) => {
+    const meta = SECTIONS[name];
+    return `<div class="agenda-row" style="--row-accent:${meta.accent}"><b>0${i + 1}</b><strong>${name}</strong><span>${meta.result}</span></div>`;
+  }).join("");
+  const agenda = makeSlide("slide--agenda", `<div class="eyebrow">Agenda</div>
+    <h2 class="title">Tonight, in <em>six parts.</em></h2>
+    <div class="agenda-list">${rows}</div>`, order[0], "intro");
+  agenda.dataset.title = "Agenda";
+  const anchor = authored.find(s => s.dataset.group === "core");
+  (anchor || authored[authored.length - 1]).before(agenda);
+
+  order.forEach(name => {
+    const inSection = Array.from(document.querySelectorAll(`section.slide[data-section="${name}"]`))
+      .filter(s => s.dataset.group === "core" || s.dataset.group === "outro");
+    const first = inSection[0];
+    if (!first || first.hasAttribute("data-section-intro")) return;
+    const meta = SECTIONS[name] || {};
+    const intro = makeSlide("slide--interlude", `<div class="interlude-panel">
+        <div class="eyebrow">Up next</div>
+        <h2 class="title">${name}<em>.</em></h2>
+        <p class="sub">${meta.result || ""}</p>
+        <div class="interlude-time"></div>
+      </div>`, name, first.dataset.group);
+    intro.setAttribute("data-section-intro", "");
+    intro.dataset.title = "Up next: " + name;
+    first.before(intro);
+  });
+}
+
+const CS_KEYWORDS = /\b(?:var|new|await|async|static|return|try|catch|when|is|not|null|true|false|record|string|int|bool|using|if|else|out|private|public|sealed|class|Task|ValueTask)\b/;
+function highlightCSharp(pre) {
+  const src = pre.textContent;
+  const re = /("""[\s\S]*?""")|(\$?"(?:[^"\\]|\\.)*")|(\/\/[^\n]*|#[^\n]*)|(\[[A-Z][\w.]*(?:\([^\]]*\))?\])|(\b[A-Z][\w]*(?=[\s<>(\[?.,;)]))|(\b\d+(?:\.\d+)?\b)|(\b[a-z]+\b)/g;
+  let out = "", last = 0, m;
+  const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  while ((m = re.exec(src))) {
+    out += esc(src.slice(last, m.index));
+    const [tok, raw, str, com, attr, type, num, word] = m;
+    if (raw || str) out += `<span class="s">${esc(tok)}</span>`;
+    else if (com) out += `<span class="c">${esc(tok)}</span>`;
+    else if (attr) out += `<span class="a">${esc(tok)}</span>`;
+    else if (type) out += `<span class="t">${esc(tok)}</span>`;
+    else if (num) out += `<span class="n">${esc(tok)}</span>`;
+    else if (word && CS_KEYWORDS.test(word)) out += `<span class="k">${esc(tok)}</span>`;
+    else out += esc(tok);
+    last = re.lastIndex;
+  }
+  out += esc(src.slice(last));
+  pre.innerHTML = out;
+}
+document.querySelectorAll("pre.code").forEach(highlightCSharp);
+
+function decorate() {
+  deck.all = Array.from(document.querySelectorAll("section.slide"));
+  const order = [];
+  deck.all.forEach(s => { if (!order.includes(s.dataset.section)) order.push(s.dataset.section); });
+  deck.all.forEach(slide => {
+    const meta = SECTIONS[slide.dataset.section] || {};
+    if (slide.classList.contains("slide--interlude") && !slide.querySelector(".interlude-mark")) {
+      const mark = document.createElement("div");
+      mark.className = "interlude-mark";
+      mark.setAttribute("aria-hidden", "true");
+      if (meta.art) { mark.classList.add("interlude-art"); mark.style.backgroundImage = `url("${meta.art}")`; }
+      else mark.textContent = String(order.indexOf(slide.dataset.section)).padStart(2, "0");
+      slide.appendChild(mark);
+    }
+    if (meta.accent) slide.style.setProperty("--accent", meta.accent);
+    const time = slide.querySelector(".interlude-time");
+    if (time && !time.textContent && meta.time) time.textContent = `minutes ${meta.time}`;
+    if (!slide.querySelector(".slide-foot")) {
+      const foot = document.createElement("div");
+      foot.className = "slide-foot";
+      foot.innerHTML = `<span class="foot-section"><em>${slide.dataset.section || ""}</em></span><span class="foot-count"></span>`;
+      slide.appendChild(foot);
+    }
+  });
+}
+
+function refreshVisible(keep, updateHash = true) {
+  deck.visible = deck.all.filter(s => deck.showExtras || !s.hasAttribute("data-hidden"));
+  deck.all.forEach(s => {
+    const inFlow = deck.visible.includes(s);
+    s.classList.toggle("is-excluded", !inFlow);
+    if (!inFlow) s.classList.remove("is-active");
+  });
+  deck.all.forEach(s => {
+    const c = s.querySelector(".foot-count");
+    if (c) c.textContent = "presenter extra";
+  });
+  deck.visible.forEach((s, i) => {
+    s.classList.toggle("is-last", i === deck.visible.length - 1);
+    const c = s.querySelector(".foot-count");
+    if (c) c.textContent = `${i + 1} / ${deck.visible.length}`;
+  });
+  document.getElementById("badge").hidden = !deck.showExtras;
+  const at = keep ? deck.visible.indexOf(keep) : -1;
+  show(at >= 0 ? at : Math.min(deck.index, deck.visible.length - 1), updateHash);
+}
+
+function show(n, updateHash = true) {
+  deck.index = Math.max(0, Math.min(deck.visible.length - 1, n));
+  const active = deck.visible[deck.index];
+  deck.all.forEach(s => s.classList.toggle("is-active", s === active));
+  const bar = document.getElementById("progress");
+  bar.style.width = `${(deck.index + 1) / deck.visible.length * 100}%`;
+  bar.style.background = (SECTIONS[active.dataset.section] || {}).accent || "var(--teal)";
+  document.title = `${active.dataset.title || "Slide"} · Small Models, Sharp Jobs`;
+  if (updateHash) history.replaceState(null, "", "#" + (deck.index + 1));
+}
+
+function showById(id) {
+  const target = document.getElementById(id);
+  if (!target) return false;
+  deck.all.forEach(s => s.classList.toggle("is-active", s === target));
+  const at = deck.visible.indexOf(target);
+  if (at >= 0) { deck.index = at; }
+  document.getElementById("progress").style.width = at >= 0 ? `${(at + 1) / deck.visible.length * 100}%` : "0%";
+  document.title = `${target.dataset.title || "Slide"} · Small Models, Sharp Jobs`;
+  return true;
+}
+
+function renderShare() {
+  const url = (SLIDES_URL || "").trim();
+  const block = document.getElementById("share");
+  if (!url) return;
+  const markup = QR.svg(url);
+  if (!markup) return;
+  document.getElementById("share-qr").innerHTML = markup;
+  document.getElementById("share-url").textContent = url.replace(/^https?:\/\//, "");
+  block.hidden = false;
+}
+
+const entryHash = location.hash.slice(1);
+buildGeneratedSlides();
+decorate();
+renderShare();
+refreshVisible(null, false);
+
+if (entryHash.startsWith("extra-")) showById(entryHash);
+else if (entryHash) show((parseInt(entryHash, 10) || 1) - 1, false);
+
+document.addEventListener("keydown", e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if (k === "ArrowRight" || k === "PageDown" || k === " ") { e.preventDefault(); show(deck.index + 1); }
+  else if (k === "ArrowLeft" || k === "PageUp") { e.preventDefault(); show(deck.index - 1); }
+  else if (k === "Home") { e.preventDefault(); show(0); }
+  else if (k === "End") { e.preventDefault(); show(deck.visible.length - 1); }
+  else if (k.toLowerCase() === "h") {
+    e.preventDefault();
+    const current = deck.visible[deck.index];
+    deck.showExtras = !deck.showExtras;
+    refreshVisible(current);
+  }
+  else if (k.toLowerCase() === "f" && document.fullscreenEnabled) {
+    e.preventDefault();
+    if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen();
+  }
+});
+
+window.addEventListener("hashchange", () => {
+  const h = location.hash.slice(1);
+  if (h.startsWith("extra-")) showById(h);
+  else show((parseInt(h, 10) || 1) - 1, false);
+});
+</script>
+</body>
+</html>

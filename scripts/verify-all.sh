@@ -35,25 +35,19 @@ check_fails() {
 }
 
 echo "=== deterministic"
-check "canonical tree builds" dotnet build Workshop.slnx -c Release
-check "deterministic tests" dotnet test Workshop.slnx -c Release --no-build
-check "starter/ and solution/ match src/" python3 scripts/generate-starter.py --check
-check "starter/ compiles" dotnet build starter/Workshop.slnx -c Release
-check "solution/ compiles" dotnet build solution/Workshop.slnx -c Release
-check "solution/ tests are green" dotnet test solution/Workshop.slnx -c Release --no-build
+check "facilitator solution builds" dotnet build facilitator/reference/solution/Workshop.slnx -c Release
+check "facilitator deterministic tests" dotnet test facilitator/reference/solution/Workshop.slnx -c Release --no-build
+check "attendee stages build and deterministic checks pass" scripts/validate-workshop-stages.sh
 
 echo "=== attendee experience"
-# The TODOs live in the App, not in Core, so the deterministic suite stays green in starter/.
-# What the unfinished tree cannot do is clear a gate: `run` takes the caution branch and exits 2.
-check_fails "starter/ cannot clear a gate before the TODOs" \
-  dotnet run --project starter/src/Workshop.App -c Release --no-build -- run --term intersection
+check "attendee map is present" test -f workshop/README.md
 
 echo "=== distribution"
 if [[ "${SKIP_PACKAGING:-0}" == "1" ]]; then
   echo "packaging checks SKIPPED (SKIP_PACKAGING=1)"
 else
   check "repository has a commit" git -C "$REPO" rev-parse HEAD
-  check "no git remote is configured" test -z "$(git -C "$REPO" remote)"
+  check "the clone target remote is configured" git -C "$REPO" remote get-url origin
   check "tree is clean" test -z "$(git -C "$REPO" status --porcelain)"
   check "scripts are committed executable" bash scripts/check-script-modes.sh
   check "a clean clone builds and tests" bash scripts/check-distribution.sh clone
@@ -61,17 +55,17 @@ else
 fi
 
 echo "=== demos"
-check "bounded Gather returns records" dotnet run --project src/Workshop.App -c Release --no-build -- gather --term intersection
-check "no-result Gather is a clean empty pack" dotnet run --project src/Workshop.App -c Release --no-build -- gather --term cyclist
+check "completed Gather returns records" dotnet run --project facilitator/reference/solution/src/Workshop.App -c Release --no-build -- gather --term intersection
+check "completed no-result Gather is clean" dotnet run --project facilitator/reference/solution/src/Workshop.App -c Release --no-build -- gather --term cyclist
 
 echo "=== local model (needs the runtime up)"
 if [[ "${SKIP_MODEL:-0}" == "1" ]]; then
   echo "local model gates SKIPPED (SKIP_MODEL=1)"
 else
-  check "smoke" dotnet run --project src/Workshop.App -c Release --no-build -- smoke
-  check "typed contract" dotnet run --project src/Workshop.App -c Release --no-build -- typed
-  check "attendee readiness" dotnet run --project src/Workshop.App -c Release --no-build -- ready --term intersection
-  check "model-backed tests" env WORKSHOP_LOCAL_MODEL=1 dotnet test tests/Workshop.LocalModel.Tests -c Release --no-build
+  check "smoke" dotnet run --project facilitator/reference/solution/src/Workshop.App -c Release --no-build -- smoke
+  check "typed contract" dotnet run --project facilitator/reference/solution/src/Workshop.App -c Release --no-build -- typed
+  check "attendee readiness" dotnet run --project facilitator/reference/solution/src/Workshop.App -c Release --no-build -- ready --prompt "Show up to 5 intersection crashes from 2012."
+  check "model-backed tests" env WORKSHOP_LOCAL_MODEL=1 dotnet test facilitator/reference/solution/tests/Workshop.LocalModel.Tests -c Release --no-build
 fi
 
 echo

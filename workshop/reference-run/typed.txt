@@ -1,6 +1,0 @@
-typed json | LOCAL | endpoint=http://localhost:1234/v1 | model=nvidia-nemotron-3-nano-4b
-raw:
-{"greeting": "Hello everyone, welcome to our offline .NET workshop.", "confidence": 95}
-greeting: Hello everyone, welcome to our offline .NET workshop.
-confidence: 95
-elapsed: 996 ms

@@ -28,14 +28,15 @@ esac
 cd "$WORK/repo"
 echo "=== $MODE at $WORK/repo"
 
-# The documented commands, run exactly as an attendee would type them.
+# The final documented attendee commands, run from the final numbered lab.
+cd workshop/06-workflow
 dotnet build Workshop.slnx -c Release
 dotnet test Workshop.slnx -c Release --no-build
 dotnet run --project src/Workshop.App -c Release --no-build -- gather --term intersection >"$WORK/gather.json"
 
 grep -q '"id"' "$WORK/gather.json" || { echo "distribution FAIL: Gather returned no bounded records" >&2; exit 1; }
 
-for script in scripts/*.sh; do
+for script in "$WORK/repo"/scripts/*.sh; do
   [[ -x "$script" ]] || { echo "distribution FAIL: $script is not executable in $MODE" >&2; exit 1; }
 done
 

@@ -1,0 +1,13 @@
+filter source: tool-free typed QueryAgent, then C# validation
+validated filter: {
+  "from": null,
+  "to": null,
+  "term": "cyclist",
+  "maxResults": 8
+}
+
+explicit calls | LOCAL | model=nemotron-3-nano:4b
+prompt: Find cyclist crashes.
+gathered: 0 record(s)
+gate: NoEvidence
+No matching records. Extract and Analyse were not called.

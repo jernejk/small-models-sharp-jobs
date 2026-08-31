@@ -23,7 +23,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-as_user() { su - "$WORKSHOP_USER" -c "cd '$REPO' && $1"; }
+as_user() { su - "$WORKSHOP_USER" -c "cd '$REPO/workshop/06-workflow' && $1"; }
 
 check() {
   local label="$1"; shift
@@ -70,10 +70,10 @@ check "gather (no model call)" as_user "dotnet run --project src/Workshop.App -c
 
 echo "--- full local path with no network"
 check "smoke" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- smoke"
-check "pipeline run" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- run --term intersection"
+check "pipeline run" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- run --prompt 'Show up to 5 intersection crashes from 2012.'"
 
 echo "--- attendee readiness with no network"
-check "ready" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- ready --term intersection"
+check "ready" as_user "dotnet run --project src/Workshop.App -c Release --no-build -- ready --prompt 'Show up to 5 intersection crashes from 2012.'"
 
 echo
 if [[ $FAILURES -eq 0 ]]; then

@@ -51,10 +51,11 @@ fi
 
 echo
 echo "=== NuGet packages (needs network exactly once)"
-dotnet restore Workshop.slnx || fail "dotnet restore failed"
+dotnet restore workshop/06-workflow/Workshop.slnx || fail "dotnet restore failed"
 
 echo
-echo "=== proving it works offline from here"
+cd "$REPO/workshop/06-workflow"
+echo "=== proving the final lab works offline from here"
 dotnet build Workshop.slnx -c Release --no-restore >/dev/null || fail "build failed"
 
 test_log="$(mktemp)"
@@ -66,7 +67,7 @@ dotnet test Workshop.slnx -c Release --no-build >"$test_log" 2>&1 || {
 grep -E "^Passed!" "$test_log" | sed 's/^/  /'
 
 status=0
-dotnet run --project src/Workshop.App -c Release --no-build -- ready --term intersection || status=$?
+dotnet run --project src/Workshop.App -c Release --no-build -- ready --prompt "Show up to 5 intersection crashes from 2012." || status=$?
 [[ $status -eq 0 ]] || fail "readiness check exited $status - this machine cannot produce the three artifacts yet"
 
 echo

@@ -5,7 +5,7 @@ obj/
 .env
 
 # Runtime output at every tree level. The committed readiness evidence lives in
-# workshop/reference-run/ instead, so a demo run never overwrites what was measured.
+# facilitator/workshop/reference-run/ instead, so a demo run never overwrites what was measured.
 **/artifacts/*
 !**/artifacts/.gitkeep
 
