@@ -3,15 +3,8 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Agents and tools only. Step order is plain C# the attendee can step through in a debugger,
-         not the MAF Workflows API, so that package is deliberately not referenced or pinned. -->
     <PackageVersion Include="Microsoft.Agents.AI" Version="1.17.0" />
     <PackageVersion Include="Microsoft.Agents.AI.OpenAI" Version="1.17.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.11" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-    <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
 </Project>

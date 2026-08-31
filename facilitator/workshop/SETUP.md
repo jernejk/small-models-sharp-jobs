@@ -32,17 +32,19 @@ git clone https://github.com/jernejk/small-models-sharp-jobs && cd small-models-
 ollama pull nemotron-3-nano:4b
 
 # 3. the NuGet packages  (~40 MB, needs network exactly once)
-cd workshop/01-getting-started && dotnet restore
+#    Restore the final lab: it is the only one that references every package.
+dotnet restore workshop/06-workflow/Workshop.slnx
 
 # 4. prove it all works
-dotnet build
-dotnet run --project src/Workshop.App -- smoke          # expect: reply: WORKSHOP_OK after CP-01
+cd workshop/01-getting-started && dotnet build
+dotnet run --project src/Workshop.App                   # expect: WORKSHOP_OK once CP-01 is done
 cd ../06-workflow && dotnet run --project src/Workshop.App -- ready --prompt "Show up to 5 intersection crashes from 2012." # expect: READY: model-backed supported path completed.
 ```
 
-The two test projects report separately. In lab 01: `Workshop.Core.Tests` 9 passed,
-`Workshop.LocalModel.Tests` 22 passed with 5 skipped. The 5 skips need a running model —
-`WORKSHOP_LOCAL_MODEL=1 dotnet test` runs all 27.
+Labs 01 and 02 are one `Program.cs` each with no test project; tests start at lab 03. There the two
+test projects report separately: `Workshop.Core.Tests` 9 passed, `Workshop.LocalModel.Tests` 22
+passed with 5 skipped. The 5 skips need a running model — `WORKSHOP_LOCAL_MODEL=1 dotnet test` runs
+all 27.
 
 `Workshop.LocalModel.Tests` is 22 + 5 skipped in every lab. `Workshop.Core.Tests` grows as the
 contract does: **9** in labs 01–02, **10** in 03–05 (the filter is validated and clamped from 03),
@@ -72,11 +74,13 @@ Precedence is **shell variables > user-secrets > `.env` in the lab root > built-
 `export` in your terminal wins over everything and is the fastest way to try one value. Copying
 `.env.example` to `.env` also works; it loses to a secret with the same key. The lab root is the
 numbered folder you are working in — `workshop/03-gather/.env`, not one `.env` at the top of the
-clone — because each lab is its own self-contained build.
+clone — because each lab is its own self-contained build. Labs 01 and 02 are stripped to one file
+and read shell variables and user-secrets only, so they ship no `.env.example`.
 
-`smoke` is the 1-second check that your endpoint answers at all. LM Studio serves whichever model is
-loaded no matter what `MAF_MODEL` says, so a wrong name will still pass `smoke` — check the
-`model=` line in LM Studio's server log if results look odd.
+Every lab prints its endpoint and model on the first line, which is the 1-second check that the
+right server answered. LM Studio serves whichever model is loaded no matter what `MAF_MODEL` says,
+so a wrong name still succeeds — check the `model=` line in LM Studio's server log if results look
+odd.
 
 If step 4 prints `READY: model-backed supported path completed.`, you are ready. Nothing else needs
 the internet. Run that final command inside `workshop/06-workflow`; the earlier numbered labs

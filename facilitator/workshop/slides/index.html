@@ -115,6 +115,9 @@ pre .t{color:var(--teal)}
 pre .a{color:var(--purple)}
 pre .n{color:var(--rose)}
 pre .cmd{color:var(--teal);font-weight:800}
+pre .ok{color:var(--teal);font-weight:800}
+pre .warn{color:var(--amber);font-weight:800}
+pre .prompt{color:var(--accent);font-weight:800}
 pre.terminal-output{margin-top:2.4vh;padding:1.15em 1.35em;border:1px solid rgba(103,232,249,.24);border-radius:14px;background:rgba(8,18,33,.72);font-size:clamp(.72rem,1.12vw,1.08rem);line-height:1.55;color:#dce8f5}
 pre.terminal-output .ok{color:var(--teal);font-weight:800}
 pre.terminal-output .prompt{color:var(--accent);font-weight:800}
@@ -499,13 +502,12 @@ pulling manifest
   <h2 class="title">Then open <em>lab 01</em></h2>
   <pre><span class="cmd">git</span> <span class="verb">clone</span> <b>https://github.com/jernejk/small-models-sharp-jobs</b>
 <span class="cmd">cd</span> small-models-sharp-jobs/<b>workshop/01-getting-started</b>
-<span class="cmd">dotnet</span> <span class="verb">build</span>
-<span class="cmd">dotnet</span> <span class="verb">test</span>        <span class="c"># passes already; 5 model tests stay skipped until you set an endpoint</span></pre>
+<span class="cmd">dotnet</span> <span class="verb">build</span>        <span class="c"># one project, one file, two packages</span></pre>
   <div class="cols two">
     <div class="card"><b>workshop/01…06</b>One lab at a time<span>Each snapshot has one focused TODO. Finish it, then open the next folder.</span></div>
     <div class="card"><b>Later numbered lab</b>Recovery path<span>Fall behind? Pair up, then open the matching later lab. The facilitator-only reference stays off the attendee path.</span></div>
   </div>
-  <p class="hint">For this stage, build and run <code>smoke</code>. The full pipeline arrives in lab 06.</p>
+  <p class="hint">Labs 01 and 02 are one <code>Program.cs</code> each. Data, gates and tests arrive from lab 03.</p>
 </section>
 
 <section class="slide" data-section="Get started" data-group="core" data-title="Point it at your model">
@@ -519,7 +521,7 @@ pulling manifest
 <span class="c"># Ollama</span>
 <span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:11434/v1 --project src/Workshop.App
 <span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nemotron-3-nano:4b --project src/Workshop.App</pre>
-  <p class="hint">Set nothing and you get Ollama. <code>MAF_API_KEY</code> only when your server wants one. Shell variables beat secrets, secrets beat <code>.env</code>.</p>
+  <p class="hint">Set nothing and you get Ollama. <code>MAF_API_KEY</code> only when your server wants one. Shell variables beat secrets, secrets beat the built-in defaults.</p>
 </section>
 
 <section class="slide" data-section="Get started" data-group="core" data-title="Your first call">
@@ -553,10 +555,10 @@ Console.WriteLine(response.Text);   <span class="c">// WORKSHOP_OK</span></pre>
 <section class="slide slide--run" data-section="Get started" data-group="core" data-title="Run it">
   <div class="eyebrow">Get started</div>
   <h2 class="title">Run it</h2>
-  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project src/Workshop.App -- smoke</pre>
-  <pre class="terminal-output"><span class="ok">reply: WORKSHOP_OK</span>
-elapsed: 258 ms</pre>
-  <p class="hint">The <code>smoke</code> command also prints which endpoint and model answered.</p>
+  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project src/Workshop.App</pre>
+  <pre class="terminal-output">local hello | LOCAL | endpoint=http://localhost:1234/v1 | model=nvidia-nemotron-3-nano-4b
+<span class="ok">WORKSHOP_OK</span></pre>
+  <p class="hint">The first line tells you which endpoint and model actually answered.</p>
   <p class="hint"><b>No reply?</b> Run <code>lms ps</code> or <code>ollama ps</code>.</p>
   <p class="hint">Usually the model is not loaded, or the port does not match your secrets.</p>
 </section>
@@ -568,7 +570,7 @@ elapsed: 258 ms</pre>
 
 var response = await agent.RunAsync&lt;SimpleCommand&gt;("Mute the microphone.");
 SimpleCommand command = response.Result;</pre>
-  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project src/Workshop.App -- typed</pre>
+  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project src/Workshop.App</pre>
   <pre class="terminal-output"><span class="c">raw JSON</span>
 {<span class="json-key">"action"</span>: <span class="json-string">"mute"</span>, <span class="json-key">"target"</span>: <span class="json-string">"microphone"</span>}
 
@@ -720,7 +722,7 @@ gate: <span class="warn">NoEvidence</span>        <span class="c"># Extract and 
   <div class="cols">
     <div class="card"><b>Prompt · text</b>Question + evidence pack<pre>Question: What patterns…
 Evidence pack JSON:
-{ "records": [ {…}, {…} ] }</pre></div>
+{ <span class="json-key">"records"</span>: [ {…}, {…} ] }</pre></div>
     <div class="card"><b>Contract · C#</b>The type you ask for<pre class="code">record CrashSelection(
     string[] RecordIds,
     string Rationale,
@@ -753,7 +755,7 @@ catch (Exception ex) when (ex is InvalidOperationException or JsonException) { r
   <div class="eyebrow">Extract and Analyse · code you already have</div>
   <h2 class="title">Validate the selection</h2>
   <div class="flow flow--grid flow--mini">
-    <span class="is-code">Gather</span>
+    <span>Gather</span>
     <span>Extract</span>
     <span class="is-code is-here">Validate</span>
     <span>Analyse</span>
@@ -771,11 +773,11 @@ if (gate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Checkpoint after TODO 4">
   <div class="eyebrow">Extract and Analyse · checkpoint</div>
   <h2 class="title">After TODO 4</h2>
-  <pre>$ dotnet run --project src/Workshop.App -- run --prompt "Review intersection crashes."
+  <pre><span class="prompt">$</span> <span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> src/Workshop.App -- run <span class="flag">--prompt</span> <span class="s">"Review intersection crashes."</span>
 
 gathered: capped evidence pack
-gate: <b>UnsupportedAnalysis</b>
-extract JSON:  { "recordIds": [ … ], "rationale": "…", "confidence": 95 }</pre>
+gate: <span class="warn">UnsupportedAnalysis</span>
+extract JSON:  { <span class="json-key">"recordIds"</span>: [ … ], <span class="json-key">"rationale"</span>: <span class="json-string">"…"</span>, <span class="json-key">"confidence"</span>: <span class="n">95</span> }</pre>
   <p class="hint">Extract works. Analyse is still a stub, so the second gate blocks it. Exactly what we want here.</p>
 </section>
 
@@ -817,16 +819,16 @@ catch (Exception ex) when (ex is InvalidOperationException or JsonException) { r
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Extract and Analyse: run it">
   <div class="eyebrow">Extract and Analyse</div>
   <h2 class="title">Run it</h2>
-  <pre>$ dotnet run --project src/Workshop.App -- run --prompt "Review intersection crashes."
+  <pre><span class="prompt">$</span> <span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> src/Workshop.App -- run <span class="flag">--prompt</span> <span class="s">"Review intersection crashes."</span>
 
 gathered: capped evidence pack
-gate: <b>Supported</b>
+gate: <span class="ok">Supported</span>
 extract JSON
-  recordIds: [ … ]   confidence: 95
+  <span class="json-key">recordIds</span>: [ … ]   <span class="json-key">confidence</span>: <span class="n">95</span>
 analyse JSON
-  finding: "…non-fatal collisions at intersections…
-            <b>All incidents are categorized as 'other injury accident'</b>…"
-  actions: 3   questions: 2   confidence: 95</pre>
+  <span class="json-key">finding</span>: <span class="json-string">"…non-fatal collisions at intersections…</span>
+            <b>All incidents are categorized as 'other injury accident'</b><span class="json-string">…"</span>
+  <span class="json-key">actions</span>: <span class="n">3</span>   <span class="json-key">questions</span>: <span class="n">2</span>   <span class="json-key">confidence</span>: <span class="n">95</span></pre>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Read the answer">

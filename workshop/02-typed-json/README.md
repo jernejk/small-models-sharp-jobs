@@ -3,14 +3,15 @@
 Hello is now complete. Add one small typed command contract: `Mute the microphone.` becomes action
 `mute` and target `microphone`, not plausible-looking prose.
 
-**Change only:** `src/Workshop.App/CrashPipeline.cs`, `TypedAsync`.
+Still one project and one file. `SimpleCommand` is already declared for you; ask the model for it.
+
+**Change only:** `src/Workshop.App/Program.cs`.
 
 ```bash
 dotnet build
-dotnet run --project src/Workshop.App -- smoke
-dotnet run --project src/Workshop.App -- typed
+dotnet run --project src/Workshop.App
 ```
 
-Expected: smoke prints `WORKSHOP_OK`; typed prints raw JSON plus parsed action/target. Invalid or malformed output exits non-zero.
+Expected: `WORKSHOP_OK` as in lab 01, then `action: mute` and `target: microphone`.
 
-**AI unblock prompt:** `Complete only CP-02 in this lab. Implement TypedAsync in src/Workshop.App/CrashPipeline.cs using a tool-free typed SimpleCommand call. The request is “Mute the microphone.” and the parsed fields are action mute and target microphone. Preserve HelloAsync and all other files. Run dotnet build, smoke, and typed.`
+**AI unblock prompt:** `Complete only CP-02 in this lab. In src/Workshop.App/Program.cs, add a second agent from the same chat client, call RunAsync<SimpleCommand>("Mute the microphone."), and print the action and target from response.Result. Keep it tool-free, keep the existing hello call, and do not add files, projects or keys. Run dotnet build and dotnet run --project src/Workshop.App.`

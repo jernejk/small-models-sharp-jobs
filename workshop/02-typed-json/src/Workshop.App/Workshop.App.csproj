@@ -10,10 +10,4 @@
     <PackageReference Include="Microsoft.Agents.AI.OpenAI" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="../Workshop.Core/Workshop.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="Workshop.LocalModel.Tests" />
-  </ItemGroup>
 </Project>

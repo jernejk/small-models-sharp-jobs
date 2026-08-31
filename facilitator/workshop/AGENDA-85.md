@@ -12,8 +12,8 @@ The dataset and Gather → Extract and Analyse → Workflows and graceful failur
 |---|---|---|---|
 | 0–4 | Welcome · build along or observe · the core sequence · agenda | talk | slides 1–4 |
 | 4–7 | **Local models** · LM Studio and Ollama, both env triples (LM Studio :1234, Ollama :11434) · why a 4B | talk | slides 5–10 |
-| 7–14 | **Get started** · clone, build, `user-secrets`, CP-01 `smoke`. Five-minute rule: anyone without `WORKSHOP_OK` by minute 13 pairs up or reads `facilitator/workshop/reference-run/` | attendees run | slides 11–16 · `reply: WORKSHOP_OK` |
-| 14–18 | **Talking to a model** · structured output · CP-02 `typed` · reasoning: levels, what it costs, the code | attendees run | slides 17–21 · raw JSON then parsed greeting |
+| 7–14 | **Get started** · clone, build, `user-secrets`, CP-01 (`dotnet run`, no subcommand). Five-minute rule: anyone without `WORKSHOP_OK` by minute 13 pairs up or reads `facilitator/workshop/reference-run/` | attendees run | slides 11–16 · `reply: WORKSHOP_OK` |
+| 14–18 | **Talking to a model** · structured output · CP-02 (same `dotnet run`) · reasoning: levels, what it costs, the code | attendees run | slides 17–21 · raw JSON then parsed greeting |
 | 18–26 | **The dataset and Gather** · CP-03 `query --prompt` (model fills the filter), then the deterministic `gather --term intersection` / `--term cyclist` → empty pack | attendees run | slides 22–26 · 8 records · `isEmpty: true` |
 | 26–44 | **Extract and Analyse** · CP-04 — **presenter types the Extract TODO live** (`Agent(...)`, `RunAsync<CrashSelection>`, serialize the pack, catch malformed → null). Attendees type along or move to the next numbered lab. Run: gate moves `UnsupportedSelection` → `UnsupportedAnalysis` | build-along | slides 27–31 · extract JSON with 4 IDs |
 | 44–54 | **Extract and Analyse** · CP-05 — attendees write TODO 5 (the marker lists finding, actions, questions, **0–100 confidence**) or paste. Run: `gate: Supported`, exit 0. Watch for `confidence: 0` — the instruction forgot to ask | attendees build | slides 32–35 · analyse JSON, ~5 s |
