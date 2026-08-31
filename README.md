@@ -2,6 +2,8 @@
 
 An 85-minute build-along for a local, evidence-grounded crash-review workflow.
 
+**Slides:** <https://small-models-sharp-jobs-workshop-20260829.surge.sh/slides/>
+
 ## Start here: attendee labs
 
 The hands-on path is [`workshop/`](workshop/). It contains six independent, progressive projects;
@@ -31,8 +33,10 @@ confidence, and no evidence stop or take a caution branch.
 
 ## Facilitator material
 
-Slides, research, delivery notes, recovery runs, and the finished reference implementation are under
-[`facilitator/`](facilitator/). They are deliberately separate from the attendee path.
+The [slides](https://small-models-sharp-jobs-workshop-20260829.surge.sh/slides/) are also in the repo at
+[`facilitator/workshop/slides/index.html`](facilitator/workshop/slides/index.html) — a single self-contained
+file, so opening it locally works with no network. Research, delivery notes, recovery runs, and the finished
+reference implementation are under [`facilitator/`](facilitator/), deliberately separate from the attendee path.
 
 The repository root intentionally contains no runnable root solution. Start in a numbered lab;
 the finished facilitator-only recovery reference is `facilitator/reference/solution/`.
