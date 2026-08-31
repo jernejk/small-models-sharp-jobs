@@ -56,7 +56,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:
 .cols.two{grid-template-columns:repeat(2,1fr)}
 .card pre{margin-top:1.4vh;font-size:clamp(.9rem,1.35vw,1.3rem)}
 .mtable.four .mrow{grid-template-columns:minmax(0,1.6fr) minmax(0,.7fr) minmax(0,.7fr) minmax(0,2.2fr)}
-.mtable.gates .mrow{grid-template-columns:minmax(0,1.1fr) minmax(0,3fr) 4em}
+.mtable.gates .mrow{grid-template-columns:minmax(0,1.1fr) minmax(0,3fr)}
 .takeaways{margin:3vh 0 0;padding-left:1.2em;font-size:clamp(1.15rem,1.9vw,1.9rem);line-height:1.5;max-width:60ch}
 .takeaways li{margin:.3em 0}
 .join{margin-top:4vh;display:flex;flex-direction:column;gap:.6vh}
@@ -146,6 +146,29 @@ pre.code{font-size:clamp(.95rem,1.55vw,1.45rem);line-height:1.5}
 .slide--extract-code .hint{margin-top:1.2vh;font-size:clamp(.85rem,1.27vw,1.2rem);line-height:1.25}
 .slide--workflow-code pre.code{font-size:clamp(.76rem,1.17vw,1.12rem);line-height:1.36;margin-top:1.5vh;padding:1.25vh 1.4vw}
 .slide--workflow-code .hint{margin-top:1.2vh;font-size:clamp(.8rem,1.15vw,1.1rem);line-height:1.25}
+.slide--flow-code pre.code{font-size:clamp(.7rem,1.05vw,1.02rem);line-height:1.36;margin-top:1.5vh;padding:1.2vh 1.4vw}
+.slide--flow-code .hint{margin-top:1.2vh;font-size:clamp(.85rem,1.25vw,1.18rem)}
+.slide--graph .graph-figure{margin-top:3vh;width:100%}
+.slide--graph svg{width:100%;height:auto;max-height:56vh;display:block}
+.gh-node rect{fill:var(--panel);stroke:var(--rule);stroke-width:1.5}
+.gh-node--end rect{stroke:var(--accent);stroke-width:2}
+.gh-name{fill:var(--accent);font:800 30px var(--mono);text-anchor:middle;letter-spacing:-.01em}
+.gh-type{fill:var(--muted);font:600 17px var(--mono);text-anchor:middle}
+.gh-edge{stroke:var(--teal);stroke-width:2.5;fill:none}
+.gh-edge--stop{stroke:var(--rose);stroke-dasharray:7 6}
+.gh-edge--out{stroke:var(--teal)}
+.gh-cond{font:700 17px var(--mono)}
+.gh-cond--go{fill:var(--teal);text-anchor:middle}
+.gh-cond--stop{fill:var(--rose)}
+.gh-io{fill:var(--muted);font:700 18px var(--mono)}
+.slide--graph .hint{margin-top:2.4vh;font-size:clamp(.9rem,1.32vw,1.25rem);line-height:1.3}
+.slide--gather-agent pre.code{font-size:clamp(.7rem,1.05vw,1.02rem);line-height:1.36;margin-top:1.4vh;padding:1.2vh 1.4vw}
+.slide--gather-agent .hint{margin-top:1.2vh;font-size:clamp(.85rem,1.25vw,1.18rem);line-height:1.3}
+.slide--analyse-code pre.code{font-size:clamp(.72rem,1.08vw,1.05rem);line-height:1.38;margin-top:1.4vh;padding:1.2vh 1.4vw}
+.slide--analyse-code .hint{margin-top:1.2vh;font-size:clamp(.85rem,1.25vw,1.18rem);line-height:1.3}
+.slide--executor pre.code{font-size:clamp(.62rem,.94vw,.92rem);line-height:1.34;margin-top:1.3vh;padding:1.1vh 1.3vw}
+.slide--executor .cols{margin-top:2vh;gap:2vw}
+.slide--executor .card span{margin-top:.6vh;font-size:clamp(.82rem,1.16vw,1.1rem);line-height:1.3}
 .slide--tight pre.code{font-size:clamp(.85rem,1.3vw,1.2rem);margin-top:2vh;padding:1.4vh 1.4vw}
 .slide--tight .cols{margin-top:2.6vh}
 .card pre{white-space:pre-wrap;overflow-wrap:anywhere}
@@ -195,6 +218,9 @@ pre.code{font-size:clamp(.95rem,1.55vw,1.45rem);line-height:1.5}
   pointer-events:none;user-select:none;
 }
 .interlude-mark.interlude-art{opacity:1;background:center/contain no-repeat;-webkit-text-stroke:0;mix-blend-mode:screen;-webkit-mask-image:radial-gradient(circle at center,#000 40%,transparent 70%);mask-image:radial-gradient(circle at center,#000 40%,transparent 70%)}
+.interlude-path{margin-top:2.8vh;display:grid;gap:.8vh}
+.interlude-path span{font:800 clamp(.68rem,.92vw,.94rem)/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.interlude-path code{font:700 clamp(.95rem,1.42vw,1.42rem)/1.35 var(--mono);color:var(--accent);overflow-wrap:anywhere}
 .interlude-time{margin-top:3vh;font:700 clamp(1.05rem,1.5vw,1.55rem)/1.25 var(--mono);color:var(--accent);letter-spacing:.08em}
 
 .slide--cover{
@@ -501,13 +527,13 @@ pulling manifest
   <div class="eyebrow">Get started</div>
   <h2 class="title">Then open <em>lab 01</em></h2>
   <pre><span class="cmd">git</span> <span class="verb">clone</span> <b>https://github.com/jernejk/small-models-sharp-jobs</b>
-<span class="cmd">cd</span> small-models-sharp-jobs/<b>workshop/01-getting-started</b>
-<span class="cmd">dotnet</span> <span class="verb">build</span>        <span class="c"># one project, one Program.cs</span></pre>
+<span class="cmd">cd</span> small-models-sharp-jobs
+<span class="cmd">dotnet</span> <span class="verb">build</span> <b>workshop/01-getting-started</b></pre>
   <div class="cols two">
     <div class="card"><b>workshop/01…06</b>One lab at a time<span>Each snapshot has one focused TODO. Finish it, then open the next folder.</span></div>
     <div class="card"><b>Later numbered lab</b>Recovery path<span>Fall behind? Pair up, then open the matching later lab. The facilitator-only reference stays off the attendee path.</span></div>
   </div>
-  <p class="hint">Labs 01 and 02 are one <code>Program.cs</code> each. Data, gates and tests arrive from lab 03.</p>
+  <p class="hint">Every command tonight runs from the repo root; <code>--project workshop/0X-…</code> picks the lab. Labs 01 and 02 are one <code>Program.cs</code> each; data and gates arrive from lab 03.</p>
 </section>
 
 <section class="slide" data-section="Get started" data-group="core" data-title="Point it at your model">
@@ -515,13 +541,13 @@ pulling manifest
   <h2 class="title">Point it at <em>your</em> model</h2>
   <p class="sub">Two settings, stored with <strong>dotnet user-secrets</strong> so nothing lands in git.</p>
   <pre class="small"><span class="c"># LM Studio</span>
-<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:1234/v1 --project Workshop.App
-<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nvidia-nemotron-3-nano-4b --project Workshop.App
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:1234/v1 <span class="flag">--project</span> workshop/01-getting-started
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nvidia-nemotron-3-nano-4b <span class="flag">--project</span> workshop/01-getting-started
 
 <span class="c"># Ollama</span>
-<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:11434/v1 --project Workshop.App
-<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nemotron-3-nano:4b --project Workshop.App</pre>
-  <p class="hint">Set nothing and you get Ollama. <code>MAF_API_KEY</code> only when your server wants one. Shell variables beat secrets, secrets beat <code>appsettings.json</code>.</p>
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:11434/v1 <span class="flag">--project</span> workshop/01-getting-started
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nemotron-3-nano:4b <span class="flag">--project</span> workshop/01-getting-started</pre>
+  <p class="hint">All six labs share one <code>UserSecretsId</code>, so you set this <b>once</b> and every lab sees it. <code>MAF_API_KEY</code> only when your server wants one. Shell variables beat secrets, secrets beat <code>appsettings.json</code>.</p>
 </section>
 
 <section class="slide" data-section="Get started" data-group="core" data-title="Your first call">
@@ -555,7 +581,7 @@ Console.WriteLine(response.Text);   <span class="c">// WORKSHOP_OK</span></pre>
 <section class="slide slide--run" data-section="Get started" data-group="core" data-title="Run it">
   <div class="eyebrow">Get started</div>
   <h2 class="title">Run it</h2>
-  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project Workshop.App</pre>
+  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> workshop/01-getting-started</pre>
   <pre class="terminal-output">local hello | LOCAL | endpoint=http://localhost:1234/v1 | model=nvidia-nemotron-3-nano-4b
 <span class="ok">WORKSHOP_OK</span></pre>
   <p class="hint">The first line tells you which endpoint and model actually answered.</p>
@@ -568,12 +594,11 @@ Console.WriteLine(response.Text);   <span class="c">// WORKSHOP_OK</span></pre>
   <h2 class="title">Structured output</h2>
   <pre class="code">record SimpleCommand(string Action, string Target);
 
-var response = await agent.RunAsync&lt;SimpleCommand&gt;("Mute the microphone.");
-SimpleCommand command = response.Result;</pre>
-  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project Workshop.App</pre>
-  <pre class="terminal-output"><span class="c">raw JSON</span>
-{<span class="json-key">"action"</span>: <span class="json-string">"mute"</span>, <span class="json-key">"target"</span>: <span class="json-string">"microphone"</span>}
-
+var typed = await typedAgent.RunAsync&lt;SimpleCommand&gt;("Mute the microphone.");
+Console.WriteLine("raw: " + typed.Text);
+SimpleCommand command = typed.Result;</pre>
+  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> workshop/02-typed-json</pre>
+  <pre class="terminal-output">raw: {<span class="json-key">"action"</span>: <span class="json-string">"mute"</span>, <span class="json-key">"target"</span>: <span class="json-string">"microphone"</span>}
 <span class="json-key">action:</span> <span class="json-string">mute</span>
 <span class="json-key">target:</span> <span class="json-string">microphone</span></pre>
   <p class="hint">The C# type is your contract; <b>a clean parse is not a content check</b>.</p>
@@ -624,15 +649,17 @@ SimpleCommand command = response.Result;</pre>
   <p class="benchmark-source">Source: Artificial Analysis &mdash; <a href="https://artificialanalysis.ai/models/qwen3-8-27b-non-reasoning">None</a> · <a href="https://artificialanalysis.ai/models/qwen3-8-27b-low">Low</a> · <a href="https://artificialanalysis.ai/models/qwen3-8-27b-medium">Medium</a> · <a href="https://artificialanalysis.ai/models/qwen3-8-27b">XHigh</a> · accessed 31 Aug 2026. Dollar estimate is output tokens × Alibaba&rsquo;s listed $3/M output price; excludes input, cache and provider variation. Hosted API data, not local runtime cost.</p>
 </section>
 
-<section class="slide" data-section="Talking to a model" data-group="core" data-title="Choose reasoning effort">
+<section class="slide slide--tight" data-section="Talking to a model" data-group="core" data-title="Choose reasoning effort">
   <div class="eyebrow">Talking to a model</div>
   <h2 class="title">Choose reasoning <em>effort</em></h2>
-  <p class="sub">Set it beside your other call options. Choose the smallest effort that fits the job.</p>
   <pre class="code">ChatOptions = new ChatOptions
 {
+    Temperature = 0,
+    MaxOutputTokens = 700,
     Reasoning = new ReasoningOptions
     {
-        Effort = ReasoningEffort.None
+        Effort = ReasoningEffort.None,
+        Output = ReasoningOutput.None
     }
 }</pre>
   <div class="cols">
@@ -671,16 +698,18 @@ SimpleCommand command = response.Result;</pre>
 <section class="slide" data-section="The dataset and Gather" data-group="core" data-title="Gathering evidence">
   <div class="eyebrow">The dataset and Gather · Model + C#</div>
   <h2 class="title">Parse, then gather</h2>
-  <pre class="code">var query = IncidentDataset.ValidateFilter(modelFilter);
-var term = query.Term?.Trim();
+  <pre class="code">if (from is not null &amp;&amp; to is not null &amp;&amp; from &gt; to) (from, to) = (to, from);
+return new CrashQuery(from, to, term, filter?.MaxResults is &gt; 0 and var cap ? Math.Clamp(cap, 1, 20) : 8);
 
-var selected = records
-    .Where(r =&gt; query.From is null || r.Date &gt;= query.From)
-    .Where(r =&gt; query.To   is null || r.Date &lt;= query.To)
-    .Where(r =&gt; string.IsNullOrEmpty(term) || Matches(r, term))
-    .OrderByDescending(r =&gt; r.Date).ThenBy(r =&gt; r.Id)
-    .Take(Math.Clamp(query.MaxResults, 1, 20));</pre>
-  <p class="hint">The <b>model</b> fills untrusted filter JSON. C# validates and clamps it, then this deterministic LINQ code produces the ordered, capped pack for Extract.</p>
+records
+    .Where(r =&gt; filter.From is null || r.Date &gt;= filter.From)
+    .Where(r =&gt; filter.To is null || r.Date &lt;= filter.To)
+    .Where(r =&gt; filter.Term is null || Matches(r, filter.Term))
+    .OrderByDescending(r =&gt; r.Date)
+    .ThenBy(r =&gt; r.Id, StringComparer.Ordinal)
+    .Take(filter.MaxResults)
+    .ToList();</pre>
+  <p class="hint">Both halves of <code>Utilities.cs</code>: <code>ValidateFilter</code> swaps a reversed range and clamps the cap to 1–20, then <code>Gather</code> runs deterministic LINQ over the approved corpus. <b>No agent touches this file.</b></p>
 </section>
 
 <section class="slide slide--query-filter" data-section="The dataset and Gather" data-group="core" data-title="Model fills the filter">
@@ -694,16 +723,39 @@ var evidence = Utilities.Gather(records, filter);</pre>
   <p class="hint">The <b>model</b> returns a typed <code>QueryFilter</code>. C# validates it, then filters the one approved local corpus.</p>
 </section>
 
+<section class="slide slide--gather-agent" data-section="The dataset and Gather" data-group="core" data-title="The GatherAgent">
+  <div class="eyebrow">The dataset and Gather · workshop/03-gather/GatherAgent.cs</div>
+  <h2 class="title">The <em>GatherAgent</em></h2>
+  <pre class="code">public static AIAgent Create(IChatClient client) =&gt; client.AsAIAgent(new ChatClientAgentOptions
+{
+    Name = "GatherAgent",
+    ChatOptions = new ChatOptions
+    {
+        Temperature = 0,
+        MaxOutputTokens = 700,
+        Reasoning = new ReasoningOptions { Effort = ReasoningEffort.None, Output = ReasoningOutput.None },
+        Instructions = """
+        Turn the prompt into a date range, term and result cap.
+        The records are Victorian road crashes from 2012 to 2025.
+        Dates are yyyy-MM-dd. Leave from and to empty unless the prompt names a year or a range.
+        Term is one or two words naming the topic, or empty if the prompt names none.
+        Return only the typed contract. You have no tools.
+        """
+    }
+});</pre>
+  <p class="hint">The whole agent: a name, the call options, and instructions that describe <b>the contract's fields</b> &mdash; never the corpus. <code>Reasoning</code> off is not a style choice: without it the local model streams its thinking into the reply and the typed parse fails, on about 40% of Ollama runs.</p>
+</section>
+
 <section class="slide slide--gather-run" data-section="The dataset and Gather" data-group="core" data-title="Gather: run it">
   <div class="eyebrow">The dataset and Gather</div>
   <h2 class="title">Run it</h2>
-  <pre class="small"><span class="cmd">dotnet</span> <span class="verb">run</span> -- <span class="s">"Show up to 5 intersection crashes from 2012."</span>
+  <pre class="small"><span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> workshop/03-gather -- <span class="s">"Show up to 5 intersection crashes from 2012."</span>
 model filter:     { … <span class="json-key">"term"</span>: <span class="json-string">"intersection crash"</span>, <span class="json-key">"maxResults"</span>: <span class="n">5</span> }
 validated filter: { <span class="json-key">"from"</span>: <span class="json-string">"2012-01-01"</span>, <span class="json-key">"to"</span>: <span class="json-string">"2012-12-31"</span>, <span class="json-key">"term"</span>: <span class="json-string">"intersection"</span>, <span class="json-key">"maxResults"</span>: <span class="n">5</span> }
 gathered: <b>5 record(s)</b>
 MODEL asked for <b>"intersection crash"</b>. C# validation cut it to <b>"intersection"</b>.
 
-<span class="cmd">dotnet</span> <span class="verb">run</span> -- <span class="s">"Find cyclist crashes."</span>
+<span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> workshop/03-gather -- <span class="s">"Find cyclist crashes."</span>
 validated filter: { <span class="json-key">"from"</span>: <span class="ok">null</span>, <span class="json-key">"to"</span>: <span class="ok">null</span>, <span class="json-key">"term"</span>: <span class="json-string">"cyclist"</span>, <span class="json-key">"maxResults"</span>: <span class="n">8</span> }
 gathered: <b>0 record(s)</b>        <span class="c"># a correct answer, not a failure</span></pre>
 </section>
@@ -714,7 +766,7 @@ gathered: <b>0 record(s)</b>        <span class="c"># a correct answer, not a fa
   <div class="cols">
     <div class="card"><b>Prompt · text</b>Question + evidence pack<pre>Question: What patterns…
 Evidence pack JSON:
-{ <span class="json-key">"records"</span>: [ {…}, {…} ] }</pre></div>
+[ {…}, {…} ]</pre></div>
     <div class="card"><b>Contract · C#</b>The type you ask for<pre class="code">record CrashSelection(
     string[] RecordIds,
     string Rationale,
@@ -727,20 +779,21 @@ Evidence pack JSON:
 </section>
 
 <section class="slide slide--extract-code" data-section="Extract and Analyse" data-group="core" data-title="Extract: the code">
-<div class="eyebrow">Extract and Analyse · TODO · workshop/04-extract/src/Workshop.App/CrashPipeline.cs</div>
+<div class="eyebrow">Extract and Analyse · CP-04 · workshop/04-extract/Program.cs</div>
   <h2 class="title">Extract: the code</h2>
-  <pre class="code">var agent = Agent("ExtractAgent", """
-    Select only relevant records from the provided evidence pack for the user's question.
-    Return recordIds from the pack exactly, a short rationale, and 0-100 confidence.
-    Do not invent records, facts, causes, or recommendations. You have no tools.
-    """);
+  <pre class="code">var extract = await ExtractAgent.Create(client).RunAsync&lt;CrashSelection&gt;(
+    ExtractAgent.Prompt(prompt, evidence));
 
-var response = await agent.RunAsync&lt;CrashSelection&gt;(
-    $"Question: {question}\nEvidence pack JSON:\n{WorkshopJson.Serialize(evidence)}");
+selection = Gates.TryTyped(extract);</pre>
+  <pre class="code">public static string Prompt(string question, IReadOnlyList&lt;CrashRecord&gt; evidence) =&gt;
+    $"Question: {question}\nEvidence pack JSON:\n{Utilities.ToJson(evidence)}";
 
-try { return response.Result; }
-catch (Exception ex) when (ex is InvalidOperationException or JsonException) { return null; }</pre>
-  <p class="hint"><code>Agent(name, instructions)</code> is a one-line helper in the same file. The catch turns malformed JSON into <code>null</code>, which the gate reports as <code>UnsupportedSelection</code> instead of a crash.</p>
+public static T? TryTyped&lt;T&gt;(AgentResponse&lt;T&gt; response) where T : class
+{
+    try { return response.Result; }
+    catch (Exception ex) when (ex is InvalidOperationException or JsonException) { return null; }
+}</pre>
+  <p class="hint">Two lines to write. The prompt carries <code>evidence</code>, never <code>records</code> &mdash; Extract cannot see the corpus. <code>TryTyped</code> turns malformed JSON into <code>null</code>, which the gate reports as <code>UnsupportedSelection</code> instead of a crash.</p>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Validate the selection">
@@ -752,11 +805,14 @@ catch (Exception ex) when (ex is InvalidOperationException or JsonException) { r
     <span class="is-code is-here">Validate</span>
     <span>Analyse</span>
   </div>
-  <pre class="code">var gate = CrashWorkflow.ValidateSelection(evidence, selection, out var selected);
-if (gate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
-    return …;                                   <span class="c">// Analyse is never called</span></pre>
+  <pre class="code">var gate = Gates.ValidateSelection(evidence, selection, out var selected);
+
+if (gate is CrashGate.Supported)   <span class="c">// CP-05 goes here, and nowhere else</span>
+{
+    …
+}</pre>
   <div class="cols">
-    <div class="card"><b>Rejected</b>Unknown, duplicate or blank IDs<span>Null or oversized selections. Confidence outside 0–100. Blank rationale.</span></div>
+    <div class="card"><b>Rejected</b>Unknown, duplicate or blank IDs<span>Oversized or null selections, a blank rationale, confidence outside 0–100.</span></div>
     <div class="card"><b>LowConfidence</b>Under 60<span>Valid shape, but the model clearly isn't sure &mdash; stop before Analyse.</span></div>
     <div class="card"><b>We control the flow</b>Not the model<span>Plain old C# decides if we even make the next call.</span></div>
   </div>
@@ -765,12 +821,13 @@ if (gate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Checkpoint after TODO 4">
   <div class="eyebrow">Extract and Analyse · checkpoint</div>
   <h2 class="title">After TODO 4</h2>
-  <pre><span class="prompt">$</span> <span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> src/Workshop.App -- run <span class="flag">--prompt</span> <span class="s">"Review intersection crashes."</span>
+  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> workshop/04-extract -- <span class="s">"Show up to 5 intersection crashes from 2012."</span>
 
-gathered: capped evidence pack
-gate: <span class="warn">UnsupportedAnalysis</span>
-extract JSON:  { <span class="json-key">"recordIds"</span>: [ … ], <span class="json-key">"rationale"</span>: <span class="json-string">"…"</span>, <span class="json-key">"confidence"</span>: <span class="n">95</span> }</pre>
-  <p class="hint">Extract works. Analyse is still a stub, so the second gate blocks it. Exactly what we want here.</p>
+corpus: <b>1000 record(s)</b>
+gathered: <b>5 record(s)</b>
+extract gate: <span class="ok">Supported</span>
+selected: [ { <span class="json-key">"id"</span>: <span class="json-string">"T20120004385"</span>, … }, … ]</pre>
+  <p class="hint">Every ID came back out of the pack the code looked up itself. Analyse arrives in lab 05 &mdash; run <code>-- "Find cyclist crashes."</code> and the gate is <code>NoEvidence</code>, because Extract is never called at all.</p>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Analyse: in and out">
@@ -778,7 +835,7 @@ extract JSON:  { <span class="json-key">"recordIds"</span>: [ … ], <span class
   <h2 class="title">Analyse: in and out</h2>
   <div class="cols">
     <div class="card"><b>Prompt · text</b>Question + validated records only<pre>Question: What patterns…
-Validated records JSON:
+Validated selected records JSON:
 [ {…}, {…} ]</pre></div>
     <div class="card"><b>Contract · C#</b>The type you ask for<pre class="code">record CrashAnalysis(
     string Finding,
@@ -793,34 +850,35 @@ Validated records JSON:
   <p class="hint">Put "0–100 confidence" in the instruction. Otherwise the model may return <code>0</code>, and the gate stops it.</p>
 </section>
 
-<section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Analyse: the code">
-  <div class="eyebrow">Extract and Analyse · TODO 5 · same file, next method</div>
+<section class="slide slide--analyse-code" data-section="Extract and Analyse" data-group="core" data-title="Analyse: the code">
+  <div class="eyebrow">Extract and Analyse · CP-05 · workshop/05-analyse/Program.cs</div>
   <h2 class="title">Analyse: the code</h2>
-  <pre class="code">var agent = Agent("AnalyseAgent", """
-    Analyse only the compact structured records provided. Return a grounded finding, practical actions,
-    open questions, and 0-100 confidence. Do not claim causation not present in the records.
-    """);
+  <pre class="code">var analyse = await AnalyseAgent.Create(client).RunAsync&lt;CrashAnalysis&gt;(
+    AnalyseAgent.Prompt(prompt, selected));
 
-var response = await agent.RunAsync&lt;CrashAnalysis&gt;(
-    $"Question: {question}\nValidated selected records JSON:\n{WorkshopJson.Serialize(selected)}");
-
-try { return response.Result; }
-catch (Exception ex) when (ex is InvalidOperationException or JsonException) { return null; }</pre>
+analysis = Gates.TryTyped(analyse);</pre>
+  <pre class="code">Instructions = """
+    Analyse only the records you are given. Return a grounded finding, practical actions,
+    open questions, and a confidence between 0 and 100.
+    Do not claim a cause the records do not state. Do not mention records you were not given.
+    Return only the typed contract. You have no tools.
+    """</pre>
+  <p class="hint">Same two lines as Extract, against <code>selected</code> &mdash; not the pack, not the corpus. <b>The instruction has to ask for the 0&ndash;100 confidence</b>, or the model fills in a field nobody told it about.</p>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Extract and Analyse: run it">
   <div class="eyebrow">Extract and Analyse</div>
   <h2 class="title">Run it</h2>
-  <pre><span class="prompt">$</span> <span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> src/Workshop.App -- run <span class="flag">--prompt</span> <span class="s">"Review intersection crashes."</span>
+  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> <span class="flag">--project</span> workshop/05-analyse -- <span class="s">"Show up to 5 intersection crashes from 2012."</span>
 
-gathered: capped evidence pack
-gate: <span class="ok">Supported</span>
-extract JSON
-  <span class="json-key">recordIds</span>: [ … ]   <span class="json-key">confidence</span>: <span class="n">95</span>
-analyse JSON
-  <span class="json-key">finding</span>: <span class="json-string">"…non-fatal collisions at intersections…</span>
-            <b>All incidents are categorized as 'other injury accident'</b><span class="json-string">…"</span>
-  <span class="json-key">actions</span>: <span class="n">3</span>   <span class="json-key">questions</span>: <span class="n">2</span>   <span class="json-key">confidence</span>: <span class="n">95</span></pre>
+gathered: <b>5 record(s)</b>
+extract gate: <span class="ok">Supported</span>
+analyse gate: <span class="ok">Supported</span>
+analysis: {
+  <span class="json-key">"finding"</span>: <span class="json-string">"…non-fatal collisions at intersections…</span>
+             <b>All incidents are categorized as 'other injury accident'</b><span class="json-string">…"</span>,
+  <span class="json-key">"actions"</span>: [ … ],  <span class="json-key">"questions"</span>: [ … ],  <span class="json-key">"confidence"</span>: <span class="n">95</span>
+}</pre>
 </section>
 
 <section class="slide" data-section="Extract and Analyse" data-group="core" data-title="Read the answer">
@@ -837,56 +895,139 @@ analyse JSON
   <div class="eyebrow">Workflows and graceful failure</div>
   <h2 class="title">Gates are flow control</h2>
   <div class="mtable gates">
-    <div class="mrow mrow--head"><span>Gate</span><span>What happens</span><span>Exit</span></div>
-    <div class="mrow"><strong>NoEvidence</strong><span>Gather found nothing, so Extract and Analyse never run.</span><span class="num ok">0</span></div>
-    <div class="mrow"><strong>UnsupportedSelection</strong><span>Bad IDs or shape from Extract. The run stops before Analyse.</span><span class="num warn">2</span></div>
-    <div class="mrow"><strong>LowConfidence</strong><span>Valid shape, confidence under 60. The run stops, with the reason on screen.</span><span class="num warn">2</span></div>
-    <div class="mrow"><strong>UnsupportedAnalysis</strong><span>Analyse returned nothing usable. Caution branch.</span><span class="num warn">2</span></div>
-    <div class="mrow"><strong>Supported</strong><span>Show the finding — with the evidence still on screen.</span><span class="num ok">0</span></div>
-    <div class="mrow"><strong>pipeline error</strong><span>Endpoint down, model not loaded, timeout. You see the real error.</span><span class="num slow">3</span></div>
+    <div class="mrow mrow--head"><span>Gate</span><span>What happens</span></div>
+    <div class="mrow"><strong>NoEvidence</strong><span>Gather found nothing, so Extract and Analyse never run.</span></div>
+    <div class="mrow"><strong>UnsupportedSelection</strong><span>Bad IDs or shape from Extract. The run stops before Analyse.</span></div>
+    <div class="mrow"><strong>LowConfidence</strong><span>Valid shape, confidence under 60. The run stops, with the reason on screen.</span></div>
+    <div class="mrow"><strong>UnsupportedAnalysis</strong><span>Analyse returned nothing usable. Caution branch.</span></div>
+    <div class="mrow"><strong>Supported</strong><span>Show the finding — with the evidence still on screen.</span></div>
+    <div class="mrow"><strong>call failed</strong><span>Endpoint down, model not loaded, timeout. You see the real error, not a stack trace.</span></div>
   </div>
   <p class="mfoot">Predictable failure: the app stops <b>and tells you why</b>.</p>
 </section>
 
-<section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="The flow, in plain C#">
-  <div class="eyebrow">Workflows and graceful failure · CrashPipeline.RunAsync</div>
+<section class="slide slide--flow-code" data-section="Workflows and graceful failure" data-group="core" data-title="The flow, in plain C#">
+  <div class="eyebrow">Workflows and graceful failure · workshop/05-analyse/Program.cs</div>
   <h2 class="title">The flow, in plain C#</h2>
-  <pre class="code">if (evidence.IsEmpty)
-    return new(evidence, null, null, CrashGate.NoEvidence, "No matching records.");
+  <pre class="code">var evidence = Utilities.Gather(records, Utilities.ValidateFilter(query.Result));
 
-var selection = await ExtractAsync(question, evidence);
-var selectionGate = CrashWorkflow.ValidateSelection(evidence, selection, out var selected);
-if (selectionGate is CrashGate.UnsupportedSelection or CrashGate.LowConfidence)
-    return new(evidence, selection, null, selectionGate, "Stopped before Analyse.");
+if (evidence.Count == 0)
+{
+    Console.WriteLine("no evidence found: Extract and Analyse are never called.");
+}
+else
+{
+    var gate = Gates.ValidateSelection(evidence, selection, out var selected);
 
-var analysis = await AnalyseAsync(question, selected);
-return new(evidence, selection, analysis, CrashWorkflow.ValidateAnalysis(selected, analysis), "…");</pre>
-  <p class="hint">Easy to read and debug. This is exactly what you'll run tonight.</p>
+    if (gate is CrashGate.Supported)
+    {
+        var analysis = Gates.TryTyped(analyse);
+        Console.WriteLine($"analyse gate: {Gates.ValidateAnalysis(selected, analysis)}");
+    }
+}</pre>
+  <p class="hint">Easy to read and step through &mdash; and every gate is an <code>if</code> <b>you</b> have to remember to write.</p>
 </section>
 
 <section class="slide slide--workflow-code" data-section="Workflows and graceful failure" data-group="core" data-title="The same flow as a MAF Workflow">
   <div class="eyebrow">Workflows and graceful failure · Microsoft.Agents.AI.Workflows</div>
   <h2 class="title">As a <em>MAF Workflow</em></h2>
   <pre class="code">var workflow = new WorkflowBuilder(gather)
-    .AddEdge&lt;Stage&gt;(gather,  report,  s =&gt; s.Gate is not null)   // NoEvidence → report
-    .AddEdge&lt;Stage&gt;(gather,  extract, s =&gt; s.Gate is null)
-    .AddEdge&lt;Stage&gt;(extract, report,  s =&gt; s.Gate is not null)   // bad selection → report
-    .AddEdge&lt;Stage&gt;(extract, analyse, s =&gt; s.Gate is null)
+    .AddEdge&lt;CrashRun&gt;(gather, report, run =&gt; run is { Gate: not null })
+    .AddEdge&lt;CrashRun&gt;(gather, extract, run =&gt; run is { Gate: null })
+    .AddEdge&lt;CrashRun&gt;(extract, report, run =&gt; run is { Gate: not null })
+    .AddEdge&lt;CrashRun&gt;(extract, analyse, run =&gt; run is { Gate: null })
     .AddEdge(analyse, report)
     .WithOutputFrom(report)
     .Build();
 
-var run = await InProcessExecution.RunAsync(workflow, term);</pre>
-  <p class="hint"><code>gather</code>, <code>extract</code>, <code>analyse</code>, <code>report</code> are executors; <code>Stage</code> carries the pack, the selection and a nullable <code>Gate</code> — null means keep going. This is facilitator research, not a workshop lab: it needs the Workflows package and a <code>WorkflowErrorEvent</code> check.</p>
+await using var run = await InProcessExecution.RunAsync(workflow, prompt);</pre>
+  <p class="hint">Four executors, and <code>CrashRun</code> travels the edges &mdash; a non-null <code>Gate</code> means stop and report. There is <b>no edge from <code>gather</code> to <code>analyse</code></b>, so skipping Extract is not a path and you cannot forget its gate. <code>"Find cyclist crashes."</code> prints <code>invoked: gather</code> then <code>invoked: report</code>: Extract and Analyse are never constructed.</p>
+</section>
+
+<section class="slide slide--executor" data-section="Workflows and graceful failure" data-group="core" data-title="Executor&lt;TIn, TOut&gt;">
+  <div class="eyebrow">Workflows and graceful failure · workshop/06-workflow/Executors.cs</div>
+  <h2 class="title">Now open <em>one node</em></h2>
+  <pre class="code">internal sealed class ExtractExecutor(IChatClient client, string prompt)
+    : Executor&lt;CrashRun, CrashRun&gt;("extract")
+{
+    private readonly AIAgent _agent = Agents.Create(client, "ExtractAgent", """
+        Pick the records from the evidence pack that answer the question.
+        Copy recordIds exactly as they appear in the pack. Never invent an id.
+        """);
+
+    public override async ValueTask&lt;CrashRun&gt; HandleAsync(
+        CrashRun run, IWorkflowContext context, CancellationToken cancellationToken = default)
+    {
+        var extract = await _agent.RunAsync&lt;CrashSelection&gt;(
+            $"Question: {prompt}\nEvidence pack JSON:\n{Utilities.ToJson(run.Evidence)}", cancellationToken: cancellationToken);
+
+        var selection = Gates.TryTyped(extract);
+        var gate = Gates.ValidateSelection(run.Evidence, selection, out var selected);
+        return run with { Selection = selection, Selected = selected, Gate = gate is CrashGate.Supported ? null : gate };
+    }
+}</pre>
+  <div class="cols">
+    <div class="card"><b>Same three lines</b>Lab 05's code, moved<span>The instructions, the prompt it sends and the gate it applies were in three places. Now they are in one.</span></div>
+    <div class="card"><b>The signature is the contract</b>Executor&lt;CrashRun, CrashRun&gt;<span>In and out are declared, so a step only wires to something whose types line up.</span></div>
+    <div class="card"><b>The <em>if</em> is gone</b>The graph decides<span>Set <code>Gate</code> and routing does the rest. You stop writing control flow and start declaring it.</span></div>
+  </div>
+</section>
+
+<section class="slide slide--graph" data-section="Workflows and graceful failure" data-group="core" data-title="The graph">
+  <div class="eyebrow">Workflows and graceful failure · the shape those edges build</div>
+  <h2 class="title">The graph</h2>
+  <div class="graph-figure">
+    <svg viewBox="0 0 1240 340" role="img" aria-label="Workflow graph: gather feeds extract, extract feeds analyse, analyse feeds report, and a non-null gate from gather or extract routes straight to report">
+      <defs>
+        <marker id="gh-go" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--teal)"/>
+        </marker>
+        <marker id="gh-stop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--rose)"/>
+        </marker>
+      </defs>
+
+      <text class="gh-io" x="24" y="66">prompt</text>
+      <line class="gh-edge" x1="24" y1="86" x2="98" y2="86" marker-end="url(#gh-go)"/>
+
+      <g class="gh-node"><rect x="100" y="46" width="200" height="80" rx="14"/>
+        <text class="gh-name" x="200" y="82">gather</text>
+        <text class="gh-type" x="200" y="106">string &#8594; CrashRun</text></g>
+      <g class="gh-node"><rect x="380" y="46" width="200" height="80" rx="14"/>
+        <text class="gh-name" x="480" y="82">extract</text>
+        <text class="gh-type" x="480" y="106">CrashRun &#8594; CrashRun</text></g>
+      <g class="gh-node"><rect x="660" y="46" width="200" height="80" rx="14"/>
+        <text class="gh-name" x="760" y="82">analyse</text>
+        <text class="gh-type" x="760" y="106">CrashRun &#8594; CrashRun</text></g>
+      <g class="gh-node gh-node--end"><rect x="940" y="46" width="200" height="80" rx="14"/>
+        <text class="gh-name" x="1040" y="82">report</text>
+        <text class="gh-type" x="1040" y="106">CrashRun &#8594; CrashGate</text></g>
+
+      <line class="gh-edge" x1="300" y1="86" x2="374" y2="86" marker-end="url(#gh-go)"/>
+      <line class="gh-edge" x1="580" y1="86" x2="654" y2="86" marker-end="url(#gh-go)"/>
+      <line class="gh-edge" x1="860" y1="86" x2="934" y2="86" marker-end="url(#gh-go)"/>
+      <text class="gh-cond gh-cond--go" x="337" y="34">Gate: null</text>
+      <text class="gh-cond gh-cond--go" x="617" y="34">Gate: null</text>
+      <text class="gh-cond gh-cond--go" x="897" y="34">always</text>
+
+      <path class="gh-edge gh-edge--stop" d="M200 126 L200 266 Q200 282 216 282 L984 282 Q1000 282 1000 266 L1000 138" marker-end="url(#gh-stop)"/>
+      <path class="gh-edge gh-edge--stop" d="M480 126 L480 206 Q480 222 496 222 L1064 222 Q1080 222 1080 206 L1080 138" marker-end="url(#gh-stop)"/>
+      <text class="gh-cond gh-cond--stop" x="240" y="272">Gate: not null &#8212; nothing downstream runs</text>
+      <text class="gh-cond gh-cond--stop" x="520" y="212">Gate: not null</text>
+
+      <line class="gh-edge gh-edge--out" x1="1140" y1="86" x2="1214" y2="86" marker-end="url(#gh-go)"/>
+    </svg>
+  </div>
+  <p class="hint">Every arrow is one <code>AddEdge</code>. The pipeline reads left to right; the two red paths are the gates. <b>Nothing crosses from <code>gather</code> to <code>analyse</code></b> &mdash; there is no such arrow to draw.</p>
 </section>
 
 <section class="slide" data-section="Workflows and graceful failure" data-group="core" data-title="Workflow or plain code?">
   <div class="eyebrow">Workflows and graceful failure</div>
   <h2 class="title">Workflow or plain code?</h2>
   <div class="cols">
-    <div class="card"><b>Workflow</b>Typed executors joined by edges<span>Conditions on edges, an event per step, checkpoints. But <code>RunAsync</code> swallows executor exceptions — re-raise <code>WorkflowErrorEvent</code> or a dead endpoint exits 0.</span></div>
-    <div class="card"><b>Plain C#</b>The same sequence you can step through<span>Tested tonight with this exact graph — same output, same gates.</span></div>
-    <div class="card"><b>Use a workflow when</b>You actually need fan-out or resuming<span>Don't bother for two calls in a straight line. Gotchas live in facilitator research.</span></div>
+    <div class="card"><b>Workflow</b>Typed executors joined by edges<span>Conditions on edges, an event per step, checkpoints. But <code>RunAsync</code> does not throw — check <code>WorkflowErrorEvent</code> or a dead endpoint gives you no output and exit 0.</span></div>
+    <div class="card"><b>Plain C#</b>The same sequence you can step through<span>Labs 03&ndash;05, and lab 06 is that sequence as a graph — same output, same gates.</span></div>
+    <div class="card"><b>Use a workflow when</b>The shape has to be unrepresentable<span>Fan-out, resuming, or a step you must not be able to skip. Don't bother for two calls in a straight line.</span></div>
   </div>
 </section>
 
@@ -940,8 +1081,8 @@ tools: [tool]</pre></div>
   <div class="eyebrow">Talking to a model</div>
   <h2 class="title">Tool calls</h2>
   <pre class="code">[Description("Search the approved crash sample.")]
-static EvidencePack Gather(string term, int max)
-    =&gt; IncidentDataset.Gather(records, new(null, null, term, max));
+static IReadOnlyList&lt;CrashRecord&gt; Gather(string term, int max)
+    =&gt; Utilities.Gather(records, new CrashQuery(null, null, term, max));
 
 AIAgent agent = chat.AsAIAgent(
     instructions: "Use only the Gather tool. Never guess records.",
@@ -1024,12 +1165,18 @@ const SHOW_AGENDA = true;
 
 const SECTIONS = {
   "Welcome":                         { accent: "#2dd4bf", result: "What we build and how the night runs." },
-  "Local models":                    { accent: "#fb923c", art: "../assets/section-local-models.jpg", result: "LM Studio, Ollama, and why a 4B model." },
-  "Get started":                     { accent: "#c084fc", art: "../assets/section-get-started.jpg", result: "Clone, configure with user-secrets, first call from C#." },
-  "Talking to a model":              { accent: "#38bdf8", art: "../assets/section-talking.jpg", result: "Structured output and reasoning effort." },
-  "The dataset and Gather":          { accent: "#4ade80", art: "../assets/section-dataset.jpg", result: "Model + C#: filter, validate and narrow 1,000 approved crash records." },
-  "Extract and Analyse":             { accent: "#fb7185", art: "../assets/section-extract.jpg", result: "The two model calls you write, and the code that checks them." },
-  "Workflows and graceful failure":  { accent: "#fbbf24", art: "../assets/section-workflows.jpg", result: "Gates as flow control, the same steps as a workflow, swapping models." }
+  "Local models":                    { accent: "#fb923c", art: "../assets/section-local-models.jpg", result: "LM Studio, Ollama, and why a 4B model.",
+                                       codeLabel: "Get the repo", code: "github.com/jernejk/small-models-sharp-jobs" },
+  "Get started":                     { accent: "#c084fc", art: "../assets/section-get-started.jpg", result: "Clone, configure with user-secrets, first call from C#.",
+                                       code: "workshop/01-getting-started/Program.cs" },
+  "Talking to a model":              { accent: "#38bdf8", art: "../assets/section-talking.jpg", result: "Structured output and reasoning effort.",
+                                       code: "workshop/02-typed-json/Program.cs" },
+  "The dataset and Gather":          { accent: "#4ade80", art: "../assets/section-dataset.jpg", result: "Model + C#: filter, validate and narrow 1,000 approved crash records.",
+                                       code: "workshop/03-gather/ — Program.cs, GatherAgent.cs, Utilities.cs" },
+  "Extract and Analyse":             { accent: "#fb7185", art: "../assets/section-extract.jpg", result: "The two model calls you write, and the code that checks them.",
+                                       code: "workshop/04-extract/Program.cs, then workshop/05-analyse/Program.cs" },
+  "Workflows and graceful failure":  { accent: "#fbbf24", art: "../assets/section-workflows.jpg", result: "Gates as flow control, the same steps as a workflow, swapping models.",
+                                       code: "workshop/06-workflow/Executors.cs" }
 };
 
 /* ---------- offline QR (byte mode, versions 1-6, ECC M then L) ---------- */
@@ -1274,6 +1421,7 @@ function buildGeneratedSlides() {
         <div class="eyebrow">Up next</div>
         <h2 class="title">${name}<em>.</em></h2>
         <p class="sub">${meta.result || ""}</p>
+        ${meta.code ? `<div class="interlude-path"><span>${meta.codeLabel || "Where the code is"}</span><code>${meta.code}</code></div>` : ""}
         <div class="interlude-time"></div>
       </div>`, name, first.dataset.group);
     intro.setAttribute("data-section-intro", "");
