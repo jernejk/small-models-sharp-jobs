@@ -10,9 +10,9 @@ dotnet run -- "Find cyclist crashes."
 
 ## From lab 05 to here
 
-Nothing about the agents changed. `GatherAgent`, `ExtractAgent` and `AnalyseAgent` are the same files, with the same instructions. What changed is who calls them.
+In lab 05 a step was two things in two places: an `ExtractAgent` file holding the instructions, and three statements in `Program.cs` calling it. Here a step is **one class**.
 
-**Lab 05 — you call them, in order, and remember the gate yourself:**
+**Lab 05 — the agent is over there, the call is in `Program.cs`:**
 
 ```csharp
 var extract = await ExtractAgent.Create(client).RunAsync<CrashSelection>(ExtractAgent.Prompt(prompt, evidence));
@@ -21,19 +21,27 @@ var gate = Gates.ValidateSelection(evidence, selection, out var selected);
 
 if (gate is CrashGate.Supported)
 {
-    // ... and it is on you to remember that Analyse must not run otherwise
+    // ... and it is on you to remember Analyse must not run otherwise
 }
 ```
 
-**Lab 06 — the same three lines, moved inside an executor:**
+**Lab 06 — instructions, prompt and call live together in the executor:**
 
 ```csharp
 internal sealed class ExtractExecutor(IChatClient client, string prompt)
     : Executor<CrashRun, CrashRun>("extract")
 {
+    private readonly AIAgent _agent = Agents.Create(client, "ExtractAgent", """
+        Pick the records from the evidence pack that answer the question.
+        Copy recordIds exactly as they appear in the pack. Never invent an id.
+        ...
+        """);
+
     public override async ValueTask<CrashRun> HandleAsync(CrashRun run, IWorkflowContext context, CancellationToken cancellationToken = default)
     {
-        var extract = await ExtractAgent.Create(client).RunAsync<CrashSelection>(ExtractAgent.Prompt(prompt, run.Evidence), cancellationToken: cancellationToken);
+        var extract = await _agent.RunAsync<CrashSelection>(
+            $"Question: {prompt}\nEvidence pack JSON:\n{Utilities.ToJson(run.Evidence)}", cancellationToken: cancellationToken);
+
         var selection = Gates.TryTyped(extract);
         var gate = Gates.ValidateSelection(run.Evidence, selection, out var selected);
         return run with { Selection = selection, Selected = selected, Gate = gate is CrashGate.Supported ? null : gate };
@@ -41,10 +49,11 @@ internal sealed class ExtractExecutor(IChatClient client, string prompt)
 }
 ```
 
-The body is identical. The two differences are the whole point:
+The three working lines are unchanged. Three things did change:
 
-1. **The signature is the contract.** `Executor<CrashRun, CrashRun>` says what goes in and what comes out. A step can only be wired to something whose types line up.
-2. **The `if` is gone.** Instead of remembering to skip Analyse, the executor sets `Gate` and the *graph* decides what happens next. You stop writing control flow and start declaring it.
+1. **One step, one class.** The instructions, the prompt it sends and the gate it applies are in one place. `Executors.cs` holds all four steps, so the whole pipeline is one file.
+2. **The signature is the contract.** `Executor<CrashRun, CrashRun>` says what goes in and what comes out, and a step can only be wired to something whose types line up.
+3. **The `if` is gone.** Instead of remembering to skip Analyse, the executor sets `Gate` and the *graph* decides what runs next. You stop writing control flow and start declaring it.
 
 ## What changed from lab 05
 
