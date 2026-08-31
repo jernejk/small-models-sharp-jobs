@@ -5,6 +5,12 @@ using OpenAI;
 
 var prompt = args.Length > 0 ? string.Join(' ', args) : "Show up to 5 intersection crashes from 2012.";
 
+if (string.IsNullOrWhiteSpace(prompt))
+{
+    Console.WriteLine("""Give me a prompt, for example: dotnet run -- "Show up to 5 intersection crashes from 2012." """);
+    return;
+}
+
 var config = new ConfigurationBuilder()
     .SetBasePath(AppContext.BaseDirectory)
     .AddJsonFile("appsettings.json")
