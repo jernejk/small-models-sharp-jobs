@@ -515,12 +515,12 @@ pulling manifest
   <h2 class="title">Point it at <em>your</em> model</h2>
   <p class="sub">Two settings, stored with <strong>dotnet user-secrets</strong> so nothing lands in git.</p>
   <pre class="small"><span class="c"># LM Studio</span>
-<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:1234/v1 --project src/Workshop.App
-<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nvidia-nemotron-3-nano-4b --project src/Workshop.App
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:1234/v1 --project Workshop.App
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nvidia-nemotron-3-nano-4b --project Workshop.App
 
 <span class="c"># Ollama</span>
-<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:11434/v1 --project src/Workshop.App
-<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nemotron-3-nano:4b --project src/Workshop.App</pre>
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:11434/v1 --project Workshop.App
+<span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nemotron-3-nano:4b --project Workshop.App</pre>
   <p class="hint">Set nothing and you get Ollama. <code>MAF_API_KEY</code> only when your server wants one. Shell variables beat secrets, secrets beat the built-in defaults.</p>
 </section>
 
@@ -555,7 +555,7 @@ Console.WriteLine(response.Text);   <span class="c">// WORKSHOP_OK</span></pre>
 <section class="slide slide--run" data-section="Get started" data-group="core" data-title="Run it">
   <div class="eyebrow">Get started</div>
   <h2 class="title">Run it</h2>
-  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project src/Workshop.App</pre>
+  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project Workshop.App</pre>
   <pre class="terminal-output">local hello | LOCAL | endpoint=http://localhost:1234/v1 | model=nvidia-nemotron-3-nano-4b
 <span class="ok">WORKSHOP_OK</span></pre>
   <p class="hint">The first line tells you which endpoint and model actually answered.</p>
@@ -570,7 +570,7 @@ Console.WriteLine(response.Text);   <span class="c">// WORKSHOP_OK</span></pre>
 
 var response = await agent.RunAsync&lt;SimpleCommand&gt;("Mute the microphone.");
 SimpleCommand command = response.Result;</pre>
-  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project src/Workshop.App</pre>
+  <pre><span class="cmd">dotnet</span> <span class="verb">run</span> --project Workshop.App</pre>
   <pre class="terminal-output"><span class="c">raw JSON</span>
 {<span class="json-key">"action"</span>: <span class="json-string">"mute"</span>, <span class="json-key">"target"</span>: <span class="json-string">"microphone"</span>}
 

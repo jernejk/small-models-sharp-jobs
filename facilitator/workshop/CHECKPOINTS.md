@@ -9,7 +9,7 @@ the command switch and the test projects arrive at lab 03.
 
 | Checkpoint | Outcome | Acceptance |
 |---|---|---|
-| CP-01 | Local hello | `dotnet run --project src/Workshop.App` echoes the exact token; a down endpoint or unloaded model throws. |
+| CP-01 | Local hello | `dotnet run --project Workshop.App` echoes the exact token; a down endpoint or unloaded model throws. |
 | CP-02 | Typed JSON | The same command prints `WORKSHOP_OK`, then raw JSON, then the parsed contract. |
 | CP-03 Gather | The model fills an untrusted filter; C# validates it, then filters the approved crash sample by date, term and cap. | `query --prompt "Show up to 5 intersection crashes from 2012."` prints a validated filter; `gather --term definitely-not-present` reports an empty pack. |
 | CP-04 Extract | Question plus compact pack becomes typed selected record IDs and confidence. | Unknown/duplicate IDs and malformed output are rejected in code. |

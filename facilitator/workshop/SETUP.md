@@ -37,7 +37,7 @@ dotnet restore workshop/06-workflow/Workshop.slnx
 
 # 4. prove it all works
 cd workshop/01-getting-started && dotnet build
-dotnet run --project src/Workshop.App                   # expect: WORKSHOP_OK once CP-01 is done
+dotnet run --project Workshop.App                       # expect: WORKSHOP_OK once CP-01 is done
 cd ../06-workflow && dotnet run --project src/Workshop.App -- ready --prompt "Show up to 5 intersection crashes from 2012." # expect: READY: model-backed supported path completed.
 ```
 
@@ -57,17 +57,17 @@ your shell history. Run from the repo root.
 
 ```bash
 # Ollama (the default — you only need this if you changed something)
-dotnet user-secrets --project workshop/01-getting-started/src/Workshop.App set MAF_ENDPOINT http://localhost:11434/v1
-dotnet user-secrets --project workshop/01-getting-started/src/Workshop.App set MAF_MODEL nemotron-3-nano:4b
-dotnet user-secrets --project workshop/01-getting-started/src/Workshop.App set MAF_API_KEY ollama
+dotnet user-secrets --project workshop/01-getting-started/Workshop.App set MAF_ENDPOINT http://localhost:11434/v1
+dotnet user-secrets --project workshop/01-getting-started/Workshop.App set MAF_MODEL nemotron-3-nano:4b
+dotnet user-secrets --project workshop/01-getting-started/Workshop.App set MAF_API_KEY ollama
 
 # LM Studio
-dotnet user-secrets --project workshop/01-getting-started/src/Workshop.App set MAF_ENDPOINT http://localhost:1234/v1
-dotnet user-secrets --project workshop/01-getting-started/src/Workshop.App set MAF_MODEL nvidia-nemotron-3-nano-4b
-dotnet user-secrets --project workshop/01-getting-started/src/Workshop.App set MAF_API_KEY lm-studio
+dotnet user-secrets --project workshop/01-getting-started/Workshop.App set MAF_ENDPOINT http://localhost:1234/v1
+dotnet user-secrets --project workshop/01-getting-started/Workshop.App set MAF_MODEL nvidia-nemotron-3-nano-4b
+dotnet user-secrets --project workshop/01-getting-started/Workshop.App set MAF_API_KEY lm-studio
 ```
 
-`dotnet user-secrets --project workshop/01-getting-started/src/Workshop.App list` shows what is set; `remove MAF_ENDPOINT` or
+`dotnet user-secrets --project workshop/01-getting-started/Workshop.App list` shows what is set; `remove MAF_ENDPOINT` or
 `clear` undoes it. Keys: `MAF_ENDPOINT`, `MAF_MODEL`, `MAF_API_KEY`, `MAF_TIMEOUT_SECONDS`.
 
 Precedence is **shell variables > user-secrets > `.env` in the lab root > built-in defaults**, so an
@@ -136,9 +136,9 @@ If your machine cannot run the model, the same application points at an organise
 by changing configuration only — no code changes:
 
 ```bash
-dotnet user-secrets --project workshop/01-getting-started/src/Workshop.App set MAF_ENDPOINT <participant-owned endpoint>
-dotnet user-secrets --project workshop/01-getting-started/src/Workshop.App set MAF_MODEL <participant-selected model>
-dotnet user-secrets --project workshop/01-getting-started/src/Workshop.App set MAF_API_KEY <participant-owned key if required>
+dotnet user-secrets --project workshop/01-getting-started/Workshop.App set MAF_ENDPOINT <participant-owned endpoint>
+dotnet user-secrets --project workshop/01-getting-started/Workshop.App set MAF_MODEL <participant-selected model>
+dotnet user-secrets --project workshop/01-getting-started/Workshop.App set MAF_API_KEY <participant-owned key if required>
 ```
 
 Keep the key in user-secrets rather than `.env` so it cannot be committed. The organiser will hand
