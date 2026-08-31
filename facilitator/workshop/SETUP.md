@@ -74,8 +74,10 @@ Precedence is **shell variables > user-secrets > `.env` in the lab root > built-
 `export` in your terminal wins over everything and is the fastest way to try one value. Copying
 `.env.example` to `.env` also works; it loses to a secret with the same key. The lab root is the
 numbered folder you are working in — `workshop/03-gather/.env`, not one `.env` at the top of the
-clone — because each lab is its own self-contained build. Labs 01 and 02 are stripped to one file
-and read shell variables and user-secrets only, so they ship no `.env.example`.
+clone — because each lab is its own self-contained build. Labs 01 and 02 ship no `.env.example`:
+their precedence is **shell variables > user-secrets > `appsettings.json`**, layered by
+`ConfigurationBuilder` provider order, with the defaults visible in
+`workshop/01-getting-started/Workshop.App/appsettings.json`.
 
 Every lab prints its endpoint and model on the first line, which is the 1-second check that the
 right server answered. LM Studio serves whichever model is loaded no matter what `MAF_MODEL` says,

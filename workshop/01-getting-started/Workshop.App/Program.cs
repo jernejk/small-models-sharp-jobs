@@ -4,7 +4,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using OpenAI;
 
-var settings = ModelSettings.FromEnvironment();
+var settings = ModelSettings.Load();
 Console.WriteLine($"local hello | {settings.Lane} | endpoint={settings.Endpoint} | model={settings.Model}");
 
 try
@@ -21,18 +21,21 @@ catch (Exception ex)
 
 return 0;
 
-/// <summary>Shell variables beat user-secrets, user-secrets beat these defaults.</summary>
+/// <summary>Later sources win: shell variables beat user-secrets, which beat appsettings.json.</summary>
 internal sealed record ModelSettings(string Endpoint, string ApiKey, string Model)
 {
-    public static ModelSettings FromEnvironment()
+    public static ModelSettings Load()
     {
-        var secrets = new ConfigurationBuilder().AddUserSecrets(typeof(ModelSettings).Assembly, optional: true).Build();
-        return new(
-            Read("MAF_ENDPOINT") ?? "http://localhost:11434/v1",
-            Read("MAF_API_KEY") ?? "ollama",
-            Read("MAF_MODEL") ?? "nemotron-3-nano:4b");
+        var config = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json")
+            .AddUserSecrets<Program>(optional: true)
+            .AddEnvironmentVariables()
+            .Build();
 
-        string? Read(string key) => Environment.GetEnvironmentVariable(key) ?? secrets[key];
+        return new(Required("MAF_ENDPOINT"), Required("MAF_API_KEY"), Required("MAF_MODEL"));
+
+        string Required(string key) => config[key] ?? throw new InvalidOperationException($"{key} is not set in appsettings.json.");
     }
 
     public string Lane => Uri.TryCreate(Endpoint, UriKind.Absolute, out var uri) && uri.IsLoopback ? "LOCAL" : "HOSTED";

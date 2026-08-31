@@ -502,7 +502,7 @@ pulling manifest
   <h2 class="title">Then open <em>lab 01</em></h2>
   <pre><span class="cmd">git</span> <span class="verb">clone</span> <b>https://github.com/jernejk/small-models-sharp-jobs</b>
 <span class="cmd">cd</span> small-models-sharp-jobs/<b>workshop/01-getting-started</b>
-<span class="cmd">dotnet</span> <span class="verb">build</span>        <span class="c"># one project, one file, two packages</span></pre>
+<span class="cmd">dotnet</span> <span class="verb">build</span>        <span class="c"># one project, one Program.cs</span></pre>
   <div class="cols two">
     <div class="card"><b>workshop/01…06</b>One lab at a time<span>Each snapshot has one focused TODO. Finish it, then open the next folder.</span></div>
     <div class="card"><b>Later numbered lab</b>Recovery path<span>Fall behind? Pair up, then open the matching later lab. The facilitator-only reference stays off the attendee path.</span></div>
@@ -521,7 +521,7 @@ pulling manifest
 <span class="c"># Ollama</span>
 <span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_ENDPOINT http://localhost:11434/v1 --project Workshop.App
 <span class="cmd">dotnet</span> <span class="verb">user-secrets set</span> MAF_MODEL nemotron-3-nano:4b --project Workshop.App</pre>
-  <p class="hint">Set nothing and you get Ollama. <code>MAF_API_KEY</code> only when your server wants one. Shell variables beat secrets, secrets beat the built-in defaults.</p>
+  <p class="hint">Set nothing and you get Ollama. <code>MAF_API_KEY</code> only when your server wants one. Shell variables beat secrets, secrets beat <code>appsettings.json</code>.</p>
 </section>
 
 <section class="slide" data-section="Get started" data-group="core" data-title="Your first call">

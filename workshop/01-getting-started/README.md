@@ -4,7 +4,7 @@ Make one local model call that replies with an exact token. This proves the endp
 
 This lab is deliberately bare: one project, the two Agent Framework packages, and `ModelSettings`. Data, gates and tests arrive in the later labs.
 
-**Change only:** `Workshop.App/Program.cs`.
+**Change only:** `Workshop.App/Program.cs`. Defaults live in `Workshop.App/appsettings.json`; `dotnet user-secrets` and shell variables override them.
 
 ```bash
 dotnet build

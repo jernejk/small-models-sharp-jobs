@@ -3,9 +3,9 @@
 Open exactly one numbered folder at a time. Each is a self-contained .NET build with its own
 package configuration, data where required, README, and acceptance command.
 
-Labs 01 and 02 are deliberately bare: one project, one `Program.cs`, two packages, and no data, no
-`.env.example` and no tests. Configure them with `dotnet user-secrets` or shell variables. The
-crash sample, the command switch and the test projects arrive at lab 03.
+Labs 01 and 02 are deliberately bare: one project, one `Program.cs`, and no data, no tests. Defaults
+live in `appsettings.json`; override them with `dotnet user-secrets` or shell variables, in that
+order of precedence. The crash sample, the command switch and the test projects arrive at lab 03.
 
 | Lab | You build | Model needed? |
 |---|---|---|

@@ -5,7 +5,7 @@ Hello is now complete. Add one small typed command contract: `Mute the microphon
 
 Still one project and one file. `SimpleCommand` is already declared for you; ask the model for it.
 
-**Change only:** `Workshop.App/Program.cs`.
+**Change only:** `Workshop.App/Program.cs`. Defaults live in `Workshop.App/appsettings.json`; `dotnet user-secrets` and shell variables override them.
 
 ```bash
 dotnet build
