@@ -31,7 +31,7 @@ internal static class Utilities
         var to = ParseDate(filter?.To);
         if (from is not null && to is not null && from > to) (from, to) = (to, from);
 
-        return new CrashQuery(from, to, term, Math.Clamp(filter?.MaxResults ?? 8, 1, 20));
+        return new CrashQuery(from, to, term, filter?.MaxResults is > 0 and var cap ? Math.Clamp(cap, 1, 20) : 8);
     }
 
     /// <summary>Anything that is not a real date becomes "no date filter" rather than an exception.</summary>

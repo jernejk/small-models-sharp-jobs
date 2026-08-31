@@ -47,10 +47,20 @@ The only input is the prompt. No flags, no subcommands.
 ```bash
 dotnet build
 dotnet run -- "Show up to 5 intersection crashes from 2012."
-dotnet run -- "Find cyclist crashes."
 ```
 
-The first returns 5 records. The second returns **0** — there are no cyclist crashes in this sample, and that empty result is a correct answer, not a failure. Extract and Analyse in the later labs stop there rather than inventing something.
+### Try these
+
+| Prompt | You get | What it shows |
+|---|---|---|
+| `Show up to 5 intersection crashes from 2012.` | 5 records | A year becomes a date range. The model says `"intersection crash"`; the corpus says *"cross traffic (intersections only)"*, so validation strips `crash` before matching. |
+| `Show up to 10 rear end crashes.` | 10 records | The largest category in the sample (205 records), capped where you asked. |
+| `Show up to 5 cyclist crashes.` | **0 records** | There are no cyclist crashes here. An empty result is a correct answer, not a failure — the later labs stop rather than invent. |
+| `Give me 500 crashes.` | 20 records | The model happily asks for 500. C# clamps it to 20. This is the gate doing its job where you can see it. |
+
+Then write your own. **Say how many you want** — a prompt with no cap is at the model's mercy, and you will get a different count run to run.
+
+Real categories in the sample: `rear end`, `cross traffic`, `right through`, `head on`, `struck animal`, `out of control`. Years run 2012–2025. Ask for something that is not there (`pedestrian`, `motorcycle`) and you should get 0 — that is the honest answer.
 
 Run `dotnet run` with no argument and it uses the first prompt as a default.
 
