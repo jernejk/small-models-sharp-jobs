@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -21,25 +22,30 @@ internal static class Utilities
     }
 
     /// <summary>The gate. Whatever the model asked for, these bounds are what the corpus actually sees.</summary>
-    public static QueryFilter ValidateFilter(QueryFilter? filter)
+    public static CrashQuery ValidateFilter(QueryFilter? filter)
     {
         var term = NormalizeTerm(filter?.Term);
         if (term?.Length > 80) term = term[..80];
 
-        var (from, to) = (filter?.From, filter?.To);
+        var from = ParseDate(filter?.From);
+        var to = ParseDate(filter?.To);
         if (from is not null && to is not null && from > to) (from, to) = (to, from);
 
-        return new QueryFilter(from, to, term, Math.Clamp(filter?.MaxResults ?? 8, 1, 20));
+        return new CrashQuery(from, to, term, Math.Clamp(filter?.MaxResults ?? 8, 1, 20));
     }
 
-    public static IReadOnlyList<CrashRecord> Gather(IReadOnlyList<CrashRecord> records, QueryFilter filter) =>
+    /// <summary>Anything that is not a real date becomes "no date filter" rather than an exception.</summary>
+    private static DateOnly? ParseDate(string? value) =>
+        DateOnly.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date) ? date : null;
+
+    public static IReadOnlyList<CrashRecord> Gather(IReadOnlyList<CrashRecord> records, CrashQuery filter) =>
         records
             .Where(r => filter.From is null || r.Date >= filter.From)
             .Where(r => filter.To is null || r.Date <= filter.To)
             .Where(r => filter.Term is null || Matches(r, filter.Term))
             .OrderByDescending(r => r.Date)
             .ThenBy(r => r.Id, StringComparer.Ordinal)
-            .Take(filter.MaxResults ?? 8)
+            .Take(filter.MaxResults)
             .ToList();
 
     /// <summary>Models say "intersection crashes"; the corpus says "cross traffic (intersections only)".
